@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Creator Dashboard | InfinityStyleVerse</title>
+  <link rel="stylesheet" href="../assets/css/creator_dashboard.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Creator Panel</h2>
+      <ul>
+        <li onclick="showSection('upload')">Upload Design</li>
+        <li onclick="showSection('analytics')">Analytics</li>
+        <li onclick="showSection('products')">Product List</li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <section id="upload" class="content-section">Upload Design Section</section>
+      <section id="analytics" class="content-section" style="display:none;">Analytics Section</section>
+      <section id="products" class="content-section" style="display:none;">Product List Section</section>
+    </main>
+  </div>
+
+  <script src="../scripts/creator_dashboard.js"></script>
+</body>
+</html>
