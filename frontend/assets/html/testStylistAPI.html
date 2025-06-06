@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Stylist</title>
+</head>
+<body>
+    <h2>Ask our AI stylist anything</h2>
+    <input type="text" id="question" placeholder="Ask your style question" size="50">
+    <button onclick="getAdvice()">Get Advice</button>
+    <p id="response" style="margin-top: 20px; font-weight: bold;"></p>
+
+    <script>
+        async function getAdvice() {
+            const question = document.getElementById("question").value;
+            const res = await fetch("http://localhost:5000/api/style-advice", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await res.json();
+            document.getElementById("response").innerText = data.advice || data.error;
+        }
+    </script>
+</body>
+</html>
