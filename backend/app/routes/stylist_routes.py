@@ -14,7 +14,8 @@ def style_advice():
         if not prompt:
             return jsonify({"error": "No question provided"}), 400
 
-        result = generator(prompt, max_new_tokens=80, truncation=True)
+        full_prompt = f"You are a helpful AI fashion stylist. {prompt}"
+        result = generator(full_prompt, max_new_tokens=80, truncation=True)
         return jsonify({"advice": result[0]['generated_text']})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
