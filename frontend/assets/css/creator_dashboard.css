@@ -1,16 +1,21 @@
 
 :root {
-  --primary-color: #232f3e;
-  --accent-color: #ff9900;
-  --background-color: #f3f3f3;
+  --primary-color: #2d6363;
+  --accent-color: #607d75;
+  --background-color: #f9f9f9;
   --text-light: #ffffff;
-  --text-dark: #111;
+  --text-dark: #1f3f3f;
+  --card-background: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --hover-accent: #255b5b;
 }
+
 
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
   background-color: var(--background-color);
+  color: var(--text-dark);
 }
 
 .dashboard-container {
@@ -42,15 +47,14 @@ body {
 .sidebar li {
   padding: 10px;
   margin: 8px 0;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  background-color: transparent;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.3s ease;
 }
 
 .sidebar li:hover {
   background-color: var(--accent-color);
-  color: var(--text-dark);
+  color: var(--text-light);
 }
 
 /* Main content area */
@@ -62,50 +66,53 @@ body {
 }
 
 .content-section {
-  background-color: #fff;
+  background-color: var(--card-background);
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px var(--card-shadow);
 }
 
+/* Form styling */
 .form-container {
   max-width: 500px;
   margin-top: 20px;
   background-color: #fff;
   padding: 25px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px var(--card-shadow);
 }
 
 .form-container input,
 .form-container textarea,
 .form-container select {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 5px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  font-size: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
 }
 
 .form-container button {
-  background-color: var(--accent-color);
+  background-color: var(--primary-color);
   border: none;
   padding: 12px 20px;
   font-size: 16px;
-  border-radius: 6px;
-  color: white;
+  border-radius: 8px;
+  color: var(--text-light);
   cursor: pointer;
   margin-top: 10px;
   width: 100%;
+  font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
 .form-container button:hover {
-  background-color: #e38d00;
+  background-color: var(--hover-accent);
 }
 
-
+/* Product Grid */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -114,11 +121,11 @@ body {
 }
 
 .product-card {
-  background: #fff;
+  background: var(--card-background);
   border-radius: 10px;
   padding: 15px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px var(--card-shadow);
   transition: transform 0.2s ease;
 }
 
@@ -133,6 +140,7 @@ body {
   border-radius: 6px;
 }
 
+/* Recommendations */
 #recommendations {
   border-top: 2px solid #eee;
   margin-top: 40px;

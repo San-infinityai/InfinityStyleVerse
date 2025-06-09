@@ -1,7 +1,18 @@
+:root {
+  --primary-color: #2d6363;
+  --accent-color: #607d75;
+  --background-color: #f9f9f9;
+  --text-light: #ffffff;
+  --text-dark: #1f3f3f;
+  --card-background: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --hover-accent: #255b5b;
+}
+
 body {
   font-family: "Segoe UI", sans-serif;
   margin: 0;
-  background: #f5f7fa;
+  background: var(--background-color);
   padding: 30px;
 }
 
@@ -12,7 +23,7 @@ body {
 
 h1 {
   text-align: center;
-  color: #232f3e;
+  color: var(--primary-color);
 }
 
 .filters {
@@ -24,22 +35,23 @@ h1 {
   padding: 10px 20px;
   margin: 5px;
   border: none;
-  background: #232f3e;
-  color: white;
+  background: var(--primary-color);
+  color: var(--text-light);
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .filters button:hover {
-  background-color: #ff9900;
-  color: black;
+  background-color: var(--accent-color);
+  color: var(--text-light);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--card-background);
+  box-shadow: 0 2px 8px var(--card-shadow);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -51,8 +63,8 @@ th, td {
 }
 
 th {
-  background: #232f3e;
-  color: white;
+  background: var(--primary-color);
+  color: var(--text-light);
 }
 
 tr:hover {
