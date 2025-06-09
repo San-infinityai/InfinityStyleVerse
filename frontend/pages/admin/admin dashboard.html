@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard | InfinityStyleVerse</title>
-<link rel="stylesheet" href="../../assets/css/admin_dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/admin_dashboard.css">
 </head>
 <body>
   <div class="admin-container">
@@ -25,6 +25,7 @@
           <th>User</th>
           <th>Role</th>
           <th>Status</th>
+          <th>Actions</th> <!-- New column -->
         </tr>
       </thead>
       <tbody>
@@ -32,21 +33,33 @@
           <td>alice@mail.com</td>
           <td>Creator</td>
           <td>Active</td>
+          <td>
+            <button onclick="editProduct(101)">Edit</button>
+            <button onclick="deleteProduct(101)">Delete</button>
+          </td>
         </tr>
         <tr>
           <td>bob@mail.com</td>
           <td>Customer</td>
           <td>Inactive</td>
+          <td>
+            <button onclick="editProduct(102)">Edit</button>
+            <button onclick="deleteProduct(102)">Delete</button>
+          </td>
         </tr>
         <tr>
           <td>charlie@mail.com</td>
           <td>Creator</td>
           <td>Active</td>
+          <td>
+            <button onclick="editProduct(103)">Edit</button>
+            <button onclick="deleteProduct(103)">Delete</button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <script src="../scripts/admin_dashboard.js"></script>
+  <script src="../../scripts/admin_dashboard.js"></script>
 </body>
 </html>
