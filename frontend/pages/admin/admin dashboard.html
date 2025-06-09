@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | InfinityStyleVerse</title>
+<link rel="stylesheet" href="../../assets/css/admin_dashboard.css">
+</head>
+<body>
+  <div class="admin-container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Filter Buttons -->
+    <div class="filters">
+      <button onclick="filterUsers('all')">All</button>
+      <button onclick="filterUsers('Creator')">Creators</button>
+      <button onclick="filterUsers('Customer')">Customers</button>
+      <button onclick="filterUsers('Inactive')">Inactive</button>
+    </div>
+
+    <!-- Users Table -->
+    <table id="user-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>alice@mail.com</td>
+          <td>Creator</td>
+          <td>Active</td>
+        </tr>
+        <tr>
+          <td>bob@mail.com</td>
+          <td>Customer</td>
+          <td>Inactive</td>
+        </tr>
+        <tr>
+          <td>charlie@mail.com</td>
+          <td>Creator</td>
+          <td>Active</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="../scripts/admin_dashboard.js"></script>
+</body>
+</html>

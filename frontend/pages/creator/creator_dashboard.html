@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Creator Dashboard | InfinityStyleVerse</title>
-  <link rel="stylesheet" href="../assets/css/creator_dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/creator_dashboard.css">
 </head>
 <body>
   <div class="dashboard-container">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h2>Creator Panel</h2>
+      <h2>Creator Dashboard</h2>
       <ul>
         <li onclick="showSection('upload')">Upload Design</li>
         <li onclick="showSection('analytics')">Analytics</li>
@@ -18,14 +18,45 @@
       </ul>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
-      <section id="upload" class="content-section">Upload Design Section</section>
-      <section id="analytics" class="content-section" style="display:none;">Analytics Section</section>
-      <section id="products" class="content-section" style="display:none;">Product List Section</section>
+      <!-- Upload Design Section -->
+      <section id="upload" class="content-section">
+        <h3>Submit New Design</h3>
+        <form id="upload-form" class="form-container">
+          <label for="title">Design Title</label><br>
+          <input type="text" id="title" placeholder="E.g., Summer Vibe Jacket" required><br><br>
+
+          <label for="description">Description</label><br>
+          <textarea id="description" placeholder="Describe your design..." required></textarea><br><br>
+
+          <label for="image">Upload Image</label><br>
+          <input type="file" id="image" accept="image/*" required><br><br>
+
+          <label for="category">Select Category</label><br>
+          <select id="category" required>
+            <option value="">--Select--</option>
+            <option value="Casual">Casual</option>
+            <option value="Formal">Formal</option>
+            <option value="Sportswear">Sportswear</option>
+          </select><br><br>
+
+          <button type="submit">Upload</button>
+        </form>
+      </section>
+
+      <!-- Analytics Section -->
+      <section id="analytics" class="content-section" style="display: none;">
+        Analytics Section
+      </section>
+
+      <!-- Product List Section -->
+      <section id="products" class="content-section" style="display: none;">
+        Product List Section
+      </section>
     </main>
   </div>
 
-  <script src="../scripts/creator_dashboard.js"></script>
+  <script src="../../scripts/creator_dashboard.js"></script>
 </body>
 </html>
