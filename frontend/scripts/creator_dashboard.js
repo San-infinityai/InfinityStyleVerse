@@ -155,3 +155,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const userId = 101; // Replace this with the actual logged-in user ID
   fetchRecommendations(userId);
 });
+
+// Notification
+function showNotification(message) {
+  const bar = document.getElementById("notification-bar");
+  bar.textContent = message;
+  bar.style.display = "block";
+  bar.style.animation = "fadeIn 0.5s ease-in-out";
+
+  // Hide after 4 seconds
+  setTimeout(() => {
+    bar.style.animation = "fadeOut 0.5s ease-in-out";
+    setTimeout(() => {
+      bar.style.display = "none";
+    }, 500); // Match fadeOut duration
+  }, 4000);
+}
