@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Create a New Product</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 40px auto;
+      padding: 40px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .btn-primary {
+      background-color: #2d6363;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #244f4f;
+    }
+
+    .main {
+      display: flex;
+      gap: 40px;
+    }
+
+    .left-panel,
+    .right-panel {
+      flex: 1;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="file"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 15px;
+      transition: border 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #2d6363;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .sizes span,
+    .colors span {
+      display: inline-block;
+      padding: 8px 14px;
+      margin: 4px 6px 0 0;
+      border-radius: 6px;
+      background: #e5e7eb;
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sizes span:hover {
+      background-color: #d1d5db;
+    }
+
+    .colors span {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 50%;
+      border: 2px solid #e5e7eb;
+    }
+
+    .colors span:hover {
+      border-color: #2d6363;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .upload-box {
+      border: 2px dashed #d1d5db;
+      padding: 30px;
+      border-radius: 10px;
+      background: #f9fafb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .upload-box input[type="file"] {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .image-list img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .visibility-options {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .visibility-options label {
+      font-size: 14px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <h2>Create a New Product</h2>
+      <button class="btn-primary">+ New Product</button>
+    </header>
+
+    <main class="main">
+      <section class="left-panel">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" placeholder="Green colour jacket">
+        </div>
+
+        <div class="form-group">
+          <label>Brand</label>
+          <input type="text" placeholder="Moose">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea rows="5" placeholder="We have been doing cloth business..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sale Price</label>
+            <input type="text" placeholder="$100.00">
+          </div>
+          <div class="form-group">
+            <label>Discount</label>
+            <input type="text" placeholder="$20">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Select Your Size</label>
+          <div class="sizes">
+            <span>S</span><span>M</span><span>L</span>
+            <span>XL</span><span>XXL</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Select Colors</label>
+          <div class="colors">
+            <span style="background: #fc0af0;"></span>
+            <span style="background: rgb(2, 97, 50);"></span>
+            <span style="background: rgb(189, 20, 240);"></span>
+
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-secondary">Back</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-primary">Publish</button>
+        </div>
+      </section>
+
+      <section class="right-panel">
+        <div class="form-group">
+          <label>Tag</label>
+          <input type="text" placeholder="Type and enter">
+        </div>
+
+        <div class="form-group">
+          <label>Product Image</label>
+          <div class="upload-box">
+            <p>Drop your image here or</p>
+            <input type="file" id="product-images" accept="image/*" multiple>
+          </div>
+          <div class="image-list" id="preview-container">
+          </div>
+          <small>You need at least 4 images. Pay attention to the quality of the pictures you add (important)</small>
+        </div>
+
+        <div class="form-group">
+          <label>Visibility</label>
+          <div class="visibility-options">
+            <label><input type="radio" name="visibility" checked> Published</label>
+            <label><input type="radio" name="visibility"> Schedule</label>
+            <label><input type="radio" name="visibility"> Hidden</label>
+          </div>
+          <input type="date">
+        </div>
+
+        <div class="form-group">
+          <label>Publish Category</label>
+          <select>
+            <option>Clothing</option>
+            <option>Shoes</option>
+            <option>Accessories</option>
+          </select>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('product-images');
+    const previewContainer = document.getElementById('preview-container');
+
+    fileInput.addEventListener('change', function () {
+      previewContainer.innerHTML = '';
+      const files = this.files;
+
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+</body>
+
+</html>
