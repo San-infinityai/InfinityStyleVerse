@@ -1,48 +1,45 @@
-# backend/app/routes/recommendation_routes.py
-
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import pickle
-from ..models.product import Product
+import numpy as np
+from flask_jwt_extended import jwt_required
 
-recommendation_bp = Blueprint('recommendation', __name__, url_prefix='/api')
+recommendation_bp = Blueprint('recommendation', __name__)
 
-# Load the model and data once when the module loads
-with open(r'C:\xampp\htdocs\infinitystyleverse\models\recommender_model.pkl', 'rb') as f:
+with open(r'C:\xampp\htdocs\infinitystyleverse\models\new_recommender_model.pkl', 'rb') as f:
     model_data = pickle.load(f)
-    df = model_data['df']  # DataFrame with product info
-    similarities = model_data['similarities']  # similarity matrix
+    df = model_data['df']
+    combined_similarities = model_data['similarities']
 
 print("DataFrame columns are:", df.columns)
 
 def get_similar_products(index):
-    scores = list(enumerate(similarities[index]))
+    scores = list(enumerate(combined_similarities[index]))
     scores = sorted(scores, key=lambda x: x[1], reverse=True)
-    top_3 = scores[1:4]  # skip the product itself (index 0)
-    return [(df['title'][i], score) for i, score in top_3]
+    top_3 = scores[1:4]
+    return [(df['product_id'][i], df['title'][i], score, df['image_url'][i]) for i, score in top_3]
 
-@recommendation_bp.route('/recommend/<int:pid>', methods=['GET'])
-def recommend_product(pid):  # Renamed function here
-    product = Product.query.get(pid)
+def find_product_index_by_id(product_id):
+    product_id = str(product_id).strip()
+    df['product_id'] = df['product_id'].astype(str).str.strip()
+    if product_id in df['product_id'].values:
+        return df.index[df['product_id'] == product_id].tolist()[0]
+    else:
+        raise ValueError(f"Product ID {product_id} not found")
 
-    if not product:
-        return jsonify({"error": "Product not found"}), 404
-
-    # Find index of product in df, assuming df has 'id' column
+@recommendation_bp.route('/api/recommend/<product_id>', methods=['GET'])
+@jwt_required()
+def recommend_by_id(product_id):
     try:
-        index = df.index[df['id'] == pid][0]
-    except IndexError:
-        return jsonify({"error": "Recommendation data missing 'id' column or product not found in recommendations"}), 404
-
-    similar_titles = get_similar_products(index)
-
-    # You can retrieve full product details from the DB using the titles, or return titles and scores directly
-    recommendations = []
-    for title, score in similar_titles:
-        rec_product = Product.query.filter_by(title=title).first()
-        if rec_product:
-            recommendations.append(rec_product.to_dict())
-
-    return jsonify({
-        "selected_product": product.to_dict(),
-        "recommendations": recommendations
-    }), 200
+        product_index = find_product_index_by_id(product_id)
+        similar = get_similar_products(product_index)
+        response = {
+            "similar": [
+                {"product_id": pid, "title": title, "score": float(score), "image_url": image_url}
+                for pid, title, score, image_url in similar
+            ]
+        }
+        return jsonify(response)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
