@@ -2,3 +2,13 @@ timestamp,product_id,title,action,input_product_id
 2025-06-16 12:21:40,2,maxi dress,shown,1
 2025-06-16 12:21:51,3,empire puff sleeve dress,shown,1
 2025-06-16 12:21:56,4,smocked fit and flare midi dress,shown,1
+2025-06-17 10:44:35,14,checked causal blazer,shown,101
+2025-06-17 10:44:35,21,spread collar casual shirt,shown,101
+2025-06-17 10:44:35,8,slim collar formal shirt,shown,101
+2025-06-17 10:52:38,2,maxi dress,shown,1
+2025-06-17 10:52:40,3,empire puff sleeve dress,shown,1
+2025-06-17 10:52:41,4,smocked fit and flare midi dress,shown,1
+2025-06-17 10:52:42,4,smocked fit and flare midi dress,clicked,1
+2025-06-17 10:53:25,2,maxi dress,shown,1000
+2025-06-17 10:53:25,8,slim collar formal shirt,shown,1000
+2025-06-17 10:53:25,30,slim fit cotton formal shirt,shown,1000
