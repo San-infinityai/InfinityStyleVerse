@@ -12,3 +12,10 @@ timestamp,product_id,title,action,input_product_id
 2025-06-17 10:53:25,2,maxi dress,shown,1000
 2025-06-17 10:53:25,8,slim collar formal shirt,shown,1000
 2025-06-17 10:53:25,30,slim fit cotton formal shirt,shown,1000
+2025-06-17 18:05:00,2,maxi dress,shown,1
+2025-06-17 18:05:15,3,empire puff sleeve dress,shown,1
+2025-06-17 18:05:16,4,smocked fit and flare midi dress,shown,1
+2025-06-17 18:07:44,2,maxi dress,shown,1
+2025-06-17 18:08:03,2,maxi dress,clicked,1
+2025-06-17 18:08:03,3,empire puff sleeve dress,shown,1
+2025-06-17 18:08:05,4,smocked fit and flare midi dress,shown,1
