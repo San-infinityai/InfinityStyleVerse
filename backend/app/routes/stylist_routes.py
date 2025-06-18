@@ -8,17 +8,52 @@ CORS(app)
 
 generator = pipeline("text-generation", model="gpt2")
 
-def format_ai_output(response):
+# Dictionary with emojis
+clothing_emojis = {
+    'jacket': '🧥',
+    'coat': '🧥',
+    'dress': '👗',
+    'trouser': '👖',
+    'shirt': '👕',
+    'top': '👚',
+    'shoes': '👡',
+    'scarf': '🧣',
+    'tie': '👔',
+    'short': '🩳',  # Base for shorts
+    'gloves': '🧤',
+    'swimsuit': '🩱',
+    'hat': '👒',
+    'cap': '🧢',
+    'beanie': '🧢',
+    'necklace': '📿',
+    'sunglasses': '🕶️'
+}
 
-    cleaned = re.sub(r'[^\w\s\'.,!?]', '', response) 
-    sentences = re.split(r'[.!?]+', cleaned) 
+# Function to format the AI output with emojis
+def format_ai_output(response):
+    cleaned = re.sub(r'[^\w\s\'.,!?]', '', response)
+    sentences = re.split(r'[.!?]+', cleaned)
     complete_sentences = []
     for s in sentences:
         s = s.strip()
-        if s: 
+        if s:  # Non-empty sentence
+            # Check if the original response ends this sentence with valid punctuation
             end_pos = cleaned.index(s) + len(s)
-            if end_pos < len(cleaned) and cleaned[end_pos] in ['.', '!', '?']:
-                complete_sentences.append(s + cleaned[end_pos])
+            original_end = cleaned[end_pos] if end_pos < len(cleaned) else ''
+            if original_end in ['.', '!', '?']:
+                sentence = s + original_end
+                # Adding emojis based on clothing keywords
+                words = s.lower().split()
+                for i, word in enumerate(words):
+                    for clothing_type, emoji in clothing_emojis.items():
+                        # Handling plural
+                        if word == clothing_type or (word.endswith('s') and clothing_type in word[:-1] and clothing_type not in ['shoes', 'gloves']):
+                            original_words = s.split()
+                            original_word = original_words[i]
+                            if emoji not in original_word:
+                                sentence = sentence.replace(original_word, f"{original_word} {emoji}")
+                complete_sentences.append(sentence)
+    # Join back with the last punctuation
     if complete_sentences:
         return ' '.join(complete_sentences).strip() + '.'
     else:
