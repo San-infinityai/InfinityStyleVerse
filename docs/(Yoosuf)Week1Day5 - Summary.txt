@@ -1,0 +1,39 @@
+ESG Insights
+
+Overview
+
+The ESG analysis of the product_esg.csv dataset shows the sustainability performance across materials and countries.
+Below are key findings based on the calculated ESG scores out of 100.
+
+Top Sustainable Materials
+
+The most sustainable materials are hemp, linen, and recycled cotton, each achieving an average ESG score of 100.0 
+according to the analysis. This is likely due to low water usage, low carbon emissions, recyclability and high
+ethical ratings. These materials should be used more often in the future to enhance overall sustainability.
+
+Least Eco-Friendly Items
+
+The least eco-friendly products are shown in India, with the lowest ESG scores observed for:
+Product ID 10: Cotton, India, 13.33
+Product ID 19: Cotton, India, 13.67
+Product ID 1: Cotton, India, 14.00
+
+These low scores are most likely because of a high water usage (e.g., 2700 liters for cotton) and moderate carbon 
+emissions, with a non-recyclable status and lower ethical ratings. 
+
+Average ESG Score by Country
+
+High-Performing Countries: A majority of countries, including Finland, Norway, Netherlands, Spain, Sri Lanka, Sweden, 
+Germany, France, Pakistan, Denmark, Canada, Brazil, Belgium, and Bangladesh, achieved an average ESG score of 100.0.
+
+Moderately Performing Countries: Peru (84.33), Turkey (84.0), Mexico (83.67), and Egypt (83.33) show good performance, 
+showing that it needs improvement in specific metrics like water usage or ethical ratings.
+
+Low-Performing Countries: Thailand, Vietnam, and Indonesia average around 32.0, while New Zealand, Uruguay, Argentina, 
+Australia, and South Africa range from 29.67 to 30.67. These scores are most likely because of higher carbon emissions
+or water use.
+
+Lowest Performers: China (26.0), Italy (21.22), Morocco (21.0), Portugal (20.67), and India (13.87) have low scores, 
+with India showing the lowest average. 
+
+
