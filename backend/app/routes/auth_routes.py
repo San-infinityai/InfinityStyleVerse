@@ -6,6 +6,7 @@ from ..models import User, Product
 from ..database import get_db_session
 from ..database import db 
 import logging
+from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -46,10 +47,12 @@ def register():
         logging.error("Registration error: %s", str(e))
         return jsonify({"msg": "Internal server error"}), 500
 
-
+        
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
+        from datetime import datetime, timedelta
+
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
@@ -59,13 +62,29 @@ def login():
         if not user or not user.verify_password(password):
             return jsonify({"msg": "Bad email or password"}), 401
 
+      
+        user.last_login = datetime.utcnow()
+
+        now = datetime.utcnow()
+        threshold = timedelta(days=30)
+        if user.last_login and now - user.last_login <= threshold:
+            user.status = "Active"
+        else:
+            user.status = "Inactive"
+
+        db.session.commit()  
+
         access_token = create_access_token(identity=str(user.id))
+
         return jsonify({
             "access_token": access_token,
             "user": {
                 "id": user.id,
                 "email": user.email,
-                "name": user.name
+                "name": user.name,
+                "role": user.role,
+                "last_login": user.last_login.strftime('%Y-%m-%d %H:%M:%S'),
+                "status": user.status
             }
         }), 200
 

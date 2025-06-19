@@ -1,5 +1,6 @@
 from ..database import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -7,10 +8,11 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(225)) 
     role = db.Column(db.String(20))
-    
+    last_login=db.Column(db.DateTime,default=None)
     products = db.relationship('Product', backref='user', lazy=True)
     feedbacks = db.relationship('Feedback', backref='user', lazy=True)
-
+    status = db.Column(db.String(10), default='Inactive')
+    
     @property
     def password(self):
         raise AttributeError('Password is not a readable attribute.')

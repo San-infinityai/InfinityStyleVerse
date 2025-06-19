@@ -22,44 +22,99 @@
     <table id="user-table">
       <thead>
         <tr>
-          <th>User</th>
+          <th>Email</th>
           <th>Role</th>
           <th>Status</th>
-          <th>Actions</th> <!-- New column -->
+          <th>Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>alice@mail.com</td>
-          <td>Creator</td>
-          <td>Active</td>
-          <td>
-            <button onclick="editProduct(101)">Edit</button>
-            <button onclick="deleteProduct(101)">Delete</button>
-          </td>
-        </tr>
-        <tr>
-          <td>bob@mail.com</td>
-          <td>Customer</td>
-          <td>Inactive</td>
-          <td>
-            <button onclick="editProduct(102)">Edit</button>
-            <button onclick="deleteProduct(102)">Delete</button>
-          </td>
-        </tr>
-        <tr>
-          <td>charlie@mail.com</td>
-          <td>Creator</td>
-          <td>Active</td>
-          <td>
-            <button onclick="editProduct(103)">Edit</button>
-            <button onclick="deleteProduct(103)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
-  <script src="../../scripts/admin_dashboard.js"></script>
+  <script>
+  async function fetchUsers() {
+  const response = await fetch('http://localhost:5000/admin/users');
+  let users = await response.json();
+
+  // Remove Admin users
+  users = users.filter(user => user.role.toLowerCase() !== 'admin');
+
+  renderUsers(users);
+}
+
+function renderUsers(users) {
+  const tbody = document.querySelector('#user-table tbody');
+  tbody.innerHTML = '';
+
+  users.forEach(user => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${user.email}</td>
+      <td>${user.role}</td>
+      <td>${user.status}</td>
+      <td>
+        <button onclick="editUser(${user.id}, '${user.email}', '${user.role}')">Edit</button>
+        <button onclick="deleteUser(${user.id})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+
+function filterUsers(role) {
+  fetchUsers().then(() => {
+    const rows = document.querySelectorAll('#user-table tbody tr');
+    rows.forEach(row => {
+      const userRole = row.children[1].innerText;
+      const userStatus = row.children[2].innerText;
+      if (role === 'all') {
+        row.style.display = '';
+      } else if (role === 'Inactive') {
+        row.style.display = userStatus === 'Inactive' ? '' : 'none';
+      } else {
+        row.style.display = userRole === role ? '' : 'none';
+      }
+    });
+  });
+}
+
+function deleteUser(userId) {
+  if (confirm("Are you sure you want to delete this user?")) {
+    fetch(`/admin/users/${userId}`, {
+      method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.msg);
+      fetchUsers();
+    });
+  }
+}
+
+function editUser(userId, oldEmail, oldRole) {
+  const newEmail = prompt("Edit Email:", oldEmail);
+  const newRole = prompt("Edit Role (Creator/Customer):", oldRole);
+
+  if (newEmail && newRole) {
+    fetch(`/admin/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: newEmail, role: newRole })
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.msg);
+      fetchUsers();
+    });
+  }
+}
+
+window.onload = fetchUsers;
+
+  </script>
 </body>
 </html>

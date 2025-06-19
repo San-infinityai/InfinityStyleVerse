@@ -183,9 +183,12 @@
         // Store token or user info as needed (e.g., in localStorage)
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user", JSON.stringify(data.user));
+         if (data.user && data.user.role) {
+        localStorage.setItem("userRole", data.user.role);
+      }
         alert("Login successful! Welcome " + data.user.name);
         // Redirect to dashboard or home page
-        window.location.href = "dashboard.html"; // change as needed
+        window.location.href = "onboarding.html"; 
       })
       .catch(error => {
         console.error("Login error:", error);
