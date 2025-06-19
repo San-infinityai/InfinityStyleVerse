@@ -1,0 +1,46 @@
+product_id,material,country,water_use,carbon_emission,recyclable,ethical_rating
+1,cotton,India,2700,15.5,No,2
+2,polyester,China,10,25.0,No,1
+3,organic cotton,Turkey,1500,10.2,Yes,4
+4,recycled polyester,Bangladesh,5,8.0,Yes,3
+5,cotton,Italy,2500,12.8,No,3
+6,polyester,Vietnam,12,22.0,No,2
+7,linen,France,1200,9.5,Yes,5
+8,wool,New Zealand,2000,18.0,No,4
+9,recycled cotton,Spain,300,6.5,Yes,4
+10,cotton,India,2800,16.0,No,2
+11,polyester,China,15,26.0,No,1
+12,organic cotton,Brazil,1400,9.8,Yes,4
+13,recycled polyester,Pakistan,8,7.5,Yes,3
+14,cotton,Portugal,2600,13.5,No,3
+15,polyester,Indonesia,11,23.0,No,2
+16,hemp,Germany,800,7.0,Yes,5
+17,wool,Australia,2100,19.0,No,4
+18,recycled cotton,Sweden,250,5.8,Yes,4
+19,cotton,India,2750,15.8,No,2
+20,polyester,China,13,24.5,No,1
+21,organic cotton,Egypt,1600,11.0,Yes,4
+22,recycled polyester,Bangladesh,6,7.8,Yes,3
+23,cotton,Italy,2450,12.2,No,3
+24,polyester,Vietnam,14,21.5,No,2
+25,linen,Netherlands,1100,8.9,Yes,5
+26,wool,Argentina,2050,17.5,No,4
+27,recycled cotton,Denmark,320,6.0,Yes,4
+28,cotton,India,2650,15.2,No,2
+29,polyester,China,16,25.8,No,1
+30,organic cotton,Peru,1450,10.5,Yes,4
+31,recycled polyester,Sri Lanka,7,7.2,Yes,3
+32,cotton,Morocco,2550,13.0,No,3
+33,polyester,Thailand,10,22.5,No,2
+34,hemp,Canada,850,7.5,Yes,5
+35,wool,South Africa,2150,18.5,No,4
+36,recycled cotton,Norway,280,5.5,Yes,4
+37,cotton,India,2700,15.6,No,2
+38,polyester,China,12,25.2,No,1
+39,organic cotton,Mexico,1550,10.8,Yes,4
+40,recycled polyester,Bangladesh,9,8.2,Yes,3
+41,cotton,Italy,2600,12.9,No,3
+42,polyester,Vietnam,13,23.5,No,2
+43,linen,Belgium,1150,9.0,Yes,5
+44,wool,Uruguay,2000,17.8,No,4
+45,recycled cotton,Finland,300,6.2,Yes,4
