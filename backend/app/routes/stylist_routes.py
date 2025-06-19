@@ -4,7 +4,7 @@ from transformers import pipeline
 import re
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 generator = pipeline("text-generation", model="gpt2")
 
@@ -19,7 +19,7 @@ clothing_emojis = {
     'shoes': '👡',
     'scarf': '🧣',
     'tie': '👔',
-    'short': '🩳',  # Base for shorts
+    'short': '🩳',
     'gloves': '🧤',
     'swimsuit': '🩱',
     'hat': '👒',
@@ -59,19 +59,30 @@ def format_ai_output(response):
     else:
         return cleaned
 
-@app.route('/api/style-advice', methods=['POST'])  
+@app.route('/api/style-advice', methods=['POST'])
 def style_advice():
     try:
-        prompt = request.json.get('question')
+        # Check if request contains JSON
+        if not request.is_json:
+            return jsonify({"error": "Request must be JSON"}), 400
+        
+        data = request.get_json()
+        prompt = data.get('question')
         if not prompt:
-            return jsonify({"error": "No question provided"}), 400
+            return jsonify({"error": "No 'question' key provided in JSON"}), 400
 
+        # Generate advice with a reasonable token limit
         full_prompt = f"You are a helpful AI fashion stylist. {prompt}"
         result = generator(full_prompt, max_new_tokens=80, truncation=True)
         formatted_advice = format_ai_output(result[0]['generated_text'])
         return jsonify({"advice": formatted_advice})
+
+    except ValueError as ve:
+        return jsonify({"error": f"Invalid input data: {str(ve)}"}), 400
+    except KeyError as ke:
+        return jsonify({"error": f"Missing required field: {str(ke)}"}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
