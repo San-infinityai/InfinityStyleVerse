@@ -19,3 +19,23 @@ timestamp,product_id,title,action,input_product_id
 2025-06-17 18:08:03,2,maxi dress,clicked,1
 2025-06-17 18:08:03,3,empire puff sleeve dress,shown,1
 2025-06-17 18:08:05,4,smocked fit and flare midi dress,shown,1
+2025-06-23 13:59:44,2,maxi dress,shown,dress
+2025-06-23 13:59:49,2,maxi dress,clicked,dress
+2025-06-23 13:59:49,1,empire midi dress,shown,dress
+2025-06-23 13:59:51,5,bodycon midi dress,shown,dress
+2025-06-24 10:30:15,11,women formal shirt,shown,shirt
+2025-06-24 10:30:20,12,opaque formal shirt,shown,shirt
+2025-06-24 10:30:21,15,women printed t-shirt,shown,shirt
+2025-06-24 10:30:50,31,men shorts,shown,men's shorts
+2025-06-24 10:30:52,32,men sports shorts,shown,men's shorts
+2025-06-24 10:30:53,33,cotton pace shorts,shown,men's shorts
+2025-06-24 10:42:00,25,men cotton casual shirt,shown,men's shirt
+2025-06-24 10:42:02,31,men shorts,shown,men's shirt
+2025-06-24 10:42:03,35,men cargo trousers,shown,men's shirt
+2025-06-24 10:42:04,35,men cargo trousers,clicked,men's shirt
+2025-06-24 10:42:30,31,men shorts,shown,men short
+2025-06-24 10:42:32,25,men cotton casual shirt,shown,men short
+2025-06-24 10:42:34,35,men cargo trousers,shown,men short
+2025-06-24 10:42:51,31,men shorts,shown,men's shorts
+2025-06-24 10:42:56,32,men sports shorts,shown,men's shorts
+2025-06-24 10:42:59,33,cotton pace shorts,shown,men's shorts
