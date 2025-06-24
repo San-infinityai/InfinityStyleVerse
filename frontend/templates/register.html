@@ -198,14 +198,14 @@
         <button type="submit" class="submit-btn">Register</button>
       </form>
       <div class="login-link">
-        Already have an account? <a href="login.html">Log In</a>
+        Already have an account?  <a href="{{ url_for('main.login_page') }}">Log In</a>
       </div>
     </div>
   </div>
 
   <script>
     document.getElementById("registration-form").addEventListener("submit", function(e) {
-      e.preventDefault(); // prevent default form submission
+      e.preventDefault(); 
 
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
@@ -223,8 +223,9 @@
       .then(data => {
         alert(data.msg || "Registration successful!");
         if (data.msg === "User registered successfully") {
-          // Optionally redirect to login page after successful registration
-          window.location.href = "login.html";
+ 
+        window.location.href = "{{ url_for('main.login_page') }}";
+
         }
       })
       .catch(error => {
@@ -232,6 +233,7 @@
         alert("Registration failed. Please try again.");
       });
     });
+    
   </script>
 </body>
 </html>

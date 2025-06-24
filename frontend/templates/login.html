@@ -155,46 +155,46 @@
         <button type="submit" class="submit-btn">Log In</button>
       </form>
       <div class="login-link">
-        Don't have an account? <a href="register.html">Create an account</a>
+        Don't have an account?  <a href="{{ url_for('main.register_page') }}">Create an account</a>
       </div>
     </div>
-  </div>
+  </div><script>
+  const onboardingUrl = "{{ url_for('main.onboarding') }}";
 
-  <script>
-    document.getElementById("login-form").addEventListener("submit", function(e) {
-      e.preventDefault();
+  document.getElementById("login-form").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-      fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          alert(data.msg || "Login failed");
-          return;
-        }
-        // Store token or user info as needed (e.g., in localStorage)
-        localStorage.setItem("access_token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-         if (data.user && data.user.role) {
+    fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    })
+    .then(async (response) => {
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.msg || "Login failed");
+        return;
+      }
+
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      if (data.user && data.user.role) {
         localStorage.setItem("userRole", data.user.role);
       }
-        alert("Login successful! Welcome " + data.user.name);
-        // Redirect to dashboard or home page
-        window.location.href = "onboarding.html"; 
-      })
-      .catch(error => {
-        console.error("Login error:", error);
-        alert("Login failed due to network error.");
-      });
+
+      alert("Login successful! Welcome " + data.user.name);
+      window.location.href = onboardingUrl;
+    })
+    .catch(error => {
+      console.error("Login error:", error);
+      alert("Login failed due to network error.");
     });
-  </script>
+  });
+</script>
 </body>
 </html>

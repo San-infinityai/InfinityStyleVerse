@@ -12,7 +12,9 @@ class User(db.Model):
     products = db.relationship('Product', backref='user', lazy=True)
     feedbacks = db.relationship('Feedback', backref='user', lazy=True)
     status = db.Column(db.String(10), default='Inactive')
-    
+    bio = db.Column(db.Text, nullable=True)  
+    profile_image = db.Column(db.String(255), nullable=True) 
+
     @property
     def password(self):
         raise AttributeError('Password is not a readable attribute.')

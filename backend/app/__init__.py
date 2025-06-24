@@ -1,4 +1,5 @@
-from flask import Flask, request
+import os
+from flask import Flask, request, send_from_directory
 from .database import db
 from .models import RequestLog
 from .config import Config
@@ -9,13 +10,28 @@ from flask_migrate import Migrate
 migrate = Migrate()
 
 def create_app():
-    app = Flask(__name__)
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # backend\app
+    template_folder = os.path.join(base_dir, '..', '..', 'Frontend', 'templates')
+    static_folder = os.path.join(base_dir, '..', '..', 'Frontend', 'assets')
+
+    app = Flask(
+        __name__,
+        template_folder=template_folder,
+        static_folder=static_folder
+    )
+
     app.config.from_object(Config)
 
     CORS(app)  
     db.init_app(app)
     migrate.init_app(app, db) 
     jwt = JWTManager(app)
+
+    # Add route to serve scripts folder
+    @app.route('/scripts/<path:filename>')
+    def serve_scripts(filename):
+        scripts_dir = os.path.join(base_dir, '..', '..', 'Frontend', 'scripts')
+        return send_from_directory(scripts_dir, filename)
 
     @app.before_request
     def log_request():
@@ -33,14 +49,14 @@ def create_app():
         db.session.add(log)
         db.session.commit()
 
-    # Import blueprints using relative import
+    # Import and register blueprints
     from .routes.auth_routes import auth_bp
     from .routes.product_routes import product_bp
     from .routes.main import main_bp
     from .routes.feedback_routes import feedback_bp
     from .routes.recommendation_routes import recommendation_bp 
     from .routes.admin_routes import admin_bp
-    
+  
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)

@@ -7,6 +7,8 @@ import json
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import current_app
+from flask import Blueprint, request, jsonify, url_for
+
 
 product_bp = Blueprint('product', __name__, url_prefix='/product')
 
@@ -155,3 +157,44 @@ def delete_product(product_id):
 
     return jsonify({"msg": f"Product with id {product_id} deleted successfully"}), 200
 
+
+@product_bp.route('', methods=['GET'])
+def get_products():
+    # Get limit and offset from query parameters, with defaults
+    try:
+        limit = int(request.args.get('limit', 10))
+        offset = int(request.args.get('offset', 0))
+    except ValueError:
+        return jsonify({"error": "Invalid limit or offset"}), 400
+
+    # Query products with pagination
+    products_query = Product.query.limit(limit).offset(offset).all()
+
+    products_list = []
+    for p in products_query:
+        products_list.append({
+            "id": p.id,
+            "title": p.title,
+            "brand": p.brand,
+            "category": p.category,
+            "description": p.description,
+            "sale_price": p.sale_price,
+            "discount": p.discount,
+            "sizes": p.sizes.split(',') if p.sizes else [],
+            "colors": p.colors.split(',') if p.colors else [],
+            "tags": p.tags.split(',') if p.tags else [],
+            # Use product image URL or fallback to placeholder
+            "image_url": p.image_url if p.image_url else url_for('static', filename='images/placeholder.png', _external=True),
+            "image_gallery": json.loads(p.image_gallery) if p.image_gallery else [],
+            "visibility": p.visibility,
+            "publish_date": p.publish_date.strftime('%Y-%m-%d') if p.publish_date else None,
+            "esg_score": p.esg_score,
+            "likes": p.likes,
+            "views": p.views
+        })
+
+    return jsonify({
+        "products": products_list,
+        "limit": limit,
+        "offset": offset
+    }), 200

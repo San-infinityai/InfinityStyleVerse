@@ -7,6 +7,11 @@ from ..database import get_db_session
 from ..database import db 
 import logging
 from datetime import datetime
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import render_template
+import os
+from werkzeug.utils import secure_filename
+
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -91,3 +96,8 @@ def login():
     except Exception as e:
         logging.error("Login error: %s", str(e))
         return jsonify({"msg": "Internal server error"}), 500
+
+@auth_bp.route('/user_profile_view')
+def user_profile_view():
+    # No JWT required because this just serves the profile.html page
+    return render_template('profile.html')
