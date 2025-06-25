@@ -183,7 +183,6 @@ def get_products():
             "sizes": p.sizes.split(',') if p.sizes else [],
             "colors": p.colors.split(',') if p.colors else [],
             "tags": p.tags.split(',') if p.tags else [],
-            # Use product image URL or fallback to placeholder
             "image_url": p.image_url if p.image_url else url_for('static', filename='images/placeholder.png', _external=True),
             "image_gallery": json.loads(p.image_gallery) if p.image_gallery else [],
             "visibility": p.visibility,
