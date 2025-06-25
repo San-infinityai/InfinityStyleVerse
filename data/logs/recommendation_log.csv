@@ -39,3 +39,28 @@ timestamp,product_id,title,action,input_product_id
 2025-06-24 10:42:51,31,men shorts,shown,men's shorts
 2025-06-24 10:42:56,32,men sports shorts,shown,men's shorts
 2025-06-24 10:42:59,33,cotton pace shorts,shown,men's shorts
+2025-06-25 09:51:20,2,maxi dress,shown,dress
+2025-06-25 09:51:20,1,empire midi dress,shown,dress
+2025-06-25 09:51:20,5,bodycon midi dress,shown,dress
+2025-06-25 09:51:40,1,empire midi dress,clicked,dress
+2025-06-25 09:55:53,31,men shorts,shown,shorts
+2025-06-25 09:55:53,33,cotton pace shorts,shown,shorts
+2025-06-25 09:55:53,32,men sports shorts,shown,shorts
+2025-06-25 09:55:59,31,men shorts,clicked,shorts
+2025-06-25 09:59:06,33,cotton pace shorts,clicked,shorts
+2025-06-25 10:00:01,11,women formal shirt,shown,shirt
+2025-06-25 10:00:01,12,opaque formal shirt,shown,shirt
+2025-06-25 10:00:01,15,women printed t-shirt,shown,shirt
+2025-06-25 10:00:04,12,opaque formal shirt,clicked,shirt
+2025-06-25 10:00:24,15,women printed t-shirt,clicked,shirt
+2025-06-25 10:00:31,31,men shorts,shown,shorts
+2025-06-25 10:00:31,33,cotton pace shorts,shown,shorts
+2025-06-25 10:00:31,32,men sports shorts,shown,shorts
+2025-06-25 10:00:33,32,men sports shorts,clicked,shorts
+2025-06-25 10:12:25,13,women striped cotton t-shirt,shown,women's trouser
+2025-06-25 10:12:29,15,women printed t-shirt,shown,women's trouser
+2025-06-25 10:12:31,11,women formal shirt,shown,women's trouser
+2025-06-25 10:14:43,2,maxi dress,shown,dress
+2025-06-25 10:14:43,4,smocked fit and flare midi dress,shown,dress
+2025-06-25 10:14:43,5,bodycon midi dress,shown,dress
+2025-06-25 10:14:45,4,smocked fit and flare midi dress,clicked,dress
