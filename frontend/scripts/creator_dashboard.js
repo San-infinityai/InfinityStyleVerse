@@ -21,12 +21,15 @@ document.getElementById("upload-form").addEventListener("submit", function (e) {
     return;
   }
 
-  // Show Bootstrap success modal
-  const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
-  modal.show();
+  // ✅ Show Bootstrap success modal
+  const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+  uploadModal.show();
 
-  this.reset();
+  // ✅ Reset the form AFTER modal is shown
+  document.getElementById("upload-form").reset();
+  document.getElementById("preview-container").innerHTML = "";
 });
+
 
 // Fetch and display products
 function fetchProducts() {
