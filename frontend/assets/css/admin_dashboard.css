@@ -9,44 +9,59 @@
   --hover-accent: #255b5b;
 }
 
+/* Reset & Base */
 body {
   font-family: "Segoe UI", sans-serif;
   margin: 0;
   background: var(--background-color);
   padding: 30px;
+  color: var(--text-dark);
 }
 
+/* Container */
 .admin-container {
   max-width: 900px;
   margin: auto;
+  padding: 20px;
 }
 
+/* Header */
 h1 {
   text-align: center;
   color: var(--primary-color);
+  margin-bottom: 30px;
 }
 
+/* Filter Buttons */
 .filters {
-  text-align: center;
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
 .filters button {
-  padding: 10px 20px;
-  margin: 5px;
-  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  padding: 12px 20px;
   background: var(--primary-color);
   color: var(--text-light);
-  border-radius: 5px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
+
 .filters button:hover {
   background-color: var(--accent-color);
-  color: var(--text-light);
 }
 
+/* Table Styles */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -54,19 +69,95 @@ table {
   box-shadow: 0 2px 8px var(--card-shadow);
   border-radius: 8px;
   overflow: hidden;
+  font-size: 15px;
 }
 
 th, td {
-  padding: 15px;
+  padding: 15px 20px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
 th {
-  background: var(--primary-color);
+  background-color: var(--primary-color);
   color: var(--text-light);
+  font-weight: 600;
 }
 
 tr:hover {
   background-color: #f1f1f1;
+}
+
+/* Action Buttons */
+td button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  background-color: var(--accent-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+td button:hover {
+  background-color: var(--hover-accent);
+}
+
+/* ✅ Responsive Enhancements */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters button {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+    width: 100%;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tr {
+    margin-bottom: 15px;
+    background: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px var(--card-shadow);
+    padding: 15px;
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+
+  td:last-child {
+    justify-content: flex-start;
+    gap: 10px;
+  }
 }
