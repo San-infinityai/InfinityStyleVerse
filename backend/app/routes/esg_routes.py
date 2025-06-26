@@ -10,10 +10,22 @@ CORS(app)
 model_path = r'C:\Users\acer\Desktop\Infinity AI Work\InfinityStyleVerse\models\esg_model.pkl'
 model = joblib.load(model_path)
 
+def suggest_alternative(material):
+  
+    material = material.lower().strip()  
+    alternatives = {
+        'polyester': 'organic cotton',  # Lower carbon and water use
+        'cotton': 'recycled cotton',    # Reduces water use compared to conventional cotton
+        'nylon': 'recycled nylon',      # Lower carbon footprint
+        'acrylic': 'bamboo fabric',     # Renewable and biodegradable
+        'leather': 'vegan leather'      # Animal-friendly alternative
+    }
+    return alternatives.get(material, 'recycled nylon')  # Recycled nylon if not found
+
 @app.route('/api/esg-score', methods=['POST'])
 def score():
     try:
-        # Getting JSON data from the request
+        
         data = request.get_json()
         if not data:
             return jsonify({'error': 'No data provided'}), 400
@@ -23,12 +35,24 @@ def score():
         if not all(field in data for field in required_fields):
             return jsonify({'error': f'Missing required fields: {required_fields}'}), 400
 
-        # Converting the data to a dataframe for prediction
-        input_df = pd.DataFrame([data])
+        # Checking for material
+        material = data.get('material', '').lower().strip()
+
+        # Converting to dataframe and filter to model features
+        input_df = pd.DataFrame([data])[[ 'water_use', 'carbon_emission', 'ethical_rating']]
 
         # Predicting ESG score
         score = model.predict(input_df)[0]
-        return jsonify({'score': round(score, 2)})
+
+        # Suggesting alternative material
+        alternative = suggest_alternative(material) if material else None
+
+        # Response
+        response = {'score': round(score, 2)}
+        if alternative:
+            response['sustainable_alternative'] = alternative
+
+        return jsonify(response)
 
     except ValueError as ve:
         return jsonify({'error': f'Invalid input data: {str(ve)}'}), 400
