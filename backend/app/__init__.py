@@ -56,7 +56,9 @@ def create_app():
     from .routes.feedback_routes import feedback_bp
     from .routes.recommendation_routes import recommendation_bp 
     from .routes.admin_routes import admin_bp
-  
+    from .routes.design_routes import design_bp
+
+    app.register_blueprint(design_bp, url_prefix='/designs')
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)

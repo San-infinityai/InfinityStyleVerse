@@ -11,7 +11,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import render_template
 import os
 from werkzeug.utils import secure_filename
-
+from backend.app.models.user import User
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -97,7 +97,22 @@ def login():
         logging.error("Login error: %s", str(e))
         return jsonify({"msg": "Internal server error"}), 500
 
-@auth_bp.route('/user_profile_view')
-def user_profile_view():
-    # No JWT required because this just serves the profile.html page
-    return render_template('profile.html')
+@auth_bp.route('/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    # Use getattr to safely get the image attribute or default
+    profile_image_url = getattr(user, 'image', None) or '/static/images/profile.avif'
+
+    return jsonify({
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "bio": user.bio or "",
+        "profile_image_url": profile_image_url
+    })

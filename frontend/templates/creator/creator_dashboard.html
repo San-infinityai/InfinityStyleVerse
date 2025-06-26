@@ -167,7 +167,7 @@
       <li onclick="showSection('analytics')">Analytics</li>
       <li onclick="showSection('products')">Product List</li>
       <li><a href="{{ url_for('main.addproduct') }}">Add new product</a></li>
-      <li><a href="{{ url_for('auth.user_profile_view') }}">Profile</a></li>
+      <li><a href="{{ url_for('main.profileview') }}">Profile</a></li>
     </ul>
   </aside>
 
@@ -176,7 +176,7 @@
     <!-- Upload Design Section -->
     <section id="upload" class="content-section active">
       <h3>Submit New Design</h3>
-      <form id="upload-form" class="form-container">
+      <form id="upload-form" enctype="multipart/form-data" method="POST">
         <label for="title">Design Title</label>
         <input type="text" id="title" placeholder="E.g., Summer Vibe Jacket" required>
 
@@ -294,5 +294,82 @@
     });
   }
 </script>
+<script>
+document.getElementById("upload-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    alert("You are not logged in!");
+    return;
+  }
+
+  const form = e.target;
+  const formData = new FormData();
+
+  formData.append("title", document.getElementById("title").value);
+  formData.append("description", document.getElementById("description").value);
+  formData.append("category", document.getElementById("category").value);
+
+  const imageFile = document.getElementById("image").files[0];
+  formData.append("image", imageFile);
+
+  try {
+    const response = await fetch("http://localhost:5000/designs/upload", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // send JWT for user identification
+      },
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("Design uploaded successfully!");
+      form.reset(); // clear form
+    } else {
+      alert("Upload failed: " + result.message);
+    }
+  } catch (err) {
+    console.error("Upload error:", err);
+    alert("Something went wrong.");
+  }
+});
+</script>
+
+<script>
+ async function fetchUserDesigns(category = 'All') {
+  try {
+    const url = new URL('/designs/my-designs', window.location.origin);
+    if (category && category !== 'All') {
+      url.searchParams.append('category', category);
+    }
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      document.getElementById('product-container').innerHTML = '<p>Please log in to see your designs.</p>';
+      return;
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch designs');
+    }
+
+    const designs = await response.json();
+    displayDesigns(designs);
+
+  } catch (error) {
+    console.error(error);
+    document.getElementById('product-container').innerHTML = `<p>Error loading designs: ${error.message}</p>`;
+  }
+}
+
+</script>
+
 </body>
 </html>

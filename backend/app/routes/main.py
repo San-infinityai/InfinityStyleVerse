@@ -1,9 +1,7 @@
 from flask import Blueprint, render_template
 
-# Create the blueprint
 main_bp = Blueprint('main', __name__)
 
-# Define routes on main_bp, NOT on app
 @main_bp.route('/')
 def home():
     return render_template('about.html')
@@ -56,3 +54,6 @@ def index():
 def addproduct():
     return render_template('addproduct.html')
 
+@main_bp.route('/profileview')
+def profileview():
+    return render_template('profile.html')

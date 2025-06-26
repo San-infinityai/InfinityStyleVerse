@@ -177,74 +177,73 @@
 <body>
   <div class="profile-container">
     <div class="profile-header">
-     <img src="{{ user.image or url_for('static', filename='images/profile.avif') }}" alt="Profile" class="profile-img" />
-<h1>{{ user.name }}</h1>
-<p>{{ user.role or 'Designer' }}</p>
-<div class="stats">
-  <span><strong>{{ design_count }}</strong> Designs</span>
-  <span><strong>{{ saved_count }}</strong> Saved</span>
-</div>
-
+      <!-- Placeholder image and empty text, to be updated by JS -->
+      <img src="/static/images/profile.avif" alt="Profile" class="profile-img" id="profile-image" />
+      <h1 id="profile-name">Loading...</h1>
+      <p id="profile-role">Loading...</p>
+      <div class="stats">
+        <span><strong id="design-count">0</strong> Designs</span>
+        <span><strong id="saved-count">0</strong> Saved</span>
       </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('designs', event)">My Designs</button>
-      <button class="tab" onclick="showTab('saved', event)">Saved Products</button>
-      <button class="tab" onclick="showTab('settings', event)">Settings</button>
-    </div>
-
-    <div class="tab-content active" id="designs">
-      <h2>Uploaded Designs</h2>
-      <div class="card-grid">
-        <div class="card">
-          <img src="../assets/images/shirt.jpg" alt="Design" />
-          <button class="save-btn" onclick="saveCard(this)">❤</button>
-          <h3>Modern Shirt Design</h3>
-          <div class="save-msg">Saved to your library!</div>
-        </div>
-        <div class="card">
-          <img src="../assets/images/shirt.jpg" alt="Design" />
-          <button class="save-btn" onclick="saveCard(this)">❤</button>
-          <h3>Casual Wear</h3>
-          <div class="save-msg">Saved to your library!</div>
-        </div>
-        <div class="card">
-          <img src="../assets/images/shirt.jpg" alt="Design" />
-          <button class="save-btn" onclick="saveCard(this)">❤</button>
-          <h3>Casual Wear</h3>
-          <div class="save-msg">Saved to your library!</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="saved">
-      <h2>Saved Products</h2>
-      <div class="card-grid">
-        <div class="card saved">
-          <img src="../assets/images/shirt.jpg" alt="Saved" />
-          <h3>Premium Shirt</h3>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="settings">
-      <h2>Profile Settings</h2>
-      <form class="settings-form" method="POST" action="/update_profile">
-  <label>Name</label>
-  <input type="text" name="name" value="{{ user.name }}" />
-  <label>Role</label>
-  <input type="text" name="role" value="{{ user.role or '' }}" />
-  <label>Bio</label>
-  <textarea name="bio" rows="3">{{ user.bio or '' }}</textarea>
-  <div class="form-buttons">
-    <button type="button" class="back-btn" onclick="showTab('designs', event)">← Back</button>
-    <button type="submit">Update Profile</button>
-  </div>
-</form>
-
     </div>
   </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('designs', event)">My Designs</button>
+    <button class="tab" onclick="showTab('saved', event)">Saved Products</button>
+    <button class="tab" onclick="showTab('settings', event)">Settings</button>
+  </div>
+
+  <div class="tab-content active" id="designs">
+    <h2>Uploaded Designs</h2>
+    <div class="card-grid">
+      <div class="card">
+        <img src="../assets/images/shirt.jpg" alt="Design" />
+        <button class="save-btn" onclick="saveCard(this)">❤</button>
+        <h3>Modern Shirt Design</h3>
+        <div class="save-msg">Saved to your library!</div>
+      </div>
+      <div class="card">
+        <img src="../assets/images/shirt.jpg" alt="Design" />
+        <button class="save-btn" onclick="saveCard(this)">❤</button>
+        <h3>Casual Wear</h3>
+        <div class="save-msg">Saved to your library!</div>
+      </div>
+      <div class="card">
+        <img src="../assets/images/shirt.jpg" alt="Design" />
+        <button class="save-btn" onclick="saveCard(this)">❤</button>
+        <h3>Casual Wear</h3>
+        <div class="save-msg">Saved to your library!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="saved">
+    <h2>Saved Products</h2>
+    <div class="card-grid">
+      <div class="card saved">
+        <img src="../assets/images/shirt.jpg" alt="Saved" />
+        <h3>Premium Shirt</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="settings">
+    <h2>Profile Settings</h2>
+    <form class="settings-form" method="POST" action="/update_profile">
+      <label>Name</label>
+      <input type="text" name="name" id="input-name" value="" />
+      <label>Role</label>
+      <input type="text" name="role" id="input-role" value="" />
+      <label>Bio</label>
+      <textarea name="bio" id="input-bio" rows="3"></textarea>
+      <div class="form-buttons">
+        <button type="button" class="back-btn" onclick="showTab('designs', event)">← Back</button>
+        <button type="submit">Update Profile</button>
+      </div>
+    </form>
+  </div>
+
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-column">
@@ -292,6 +291,7 @@
       <p>&copy; 2024 InfinityStyleVerse. All Rights Reserved</p>
     </div>
   </footer>
+
   <script>
     function showTab(tabId, event) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -311,44 +311,56 @@
         button.textContent = '💾';
       }, 2000);
     }
-    
   </script>
- <script>
-  async function loadUserProfile() {
-    const token = localStorage.getItem('access_token'); // get JWT token from localStorage
-    if (!token) {
-      alert('You are not logged in');
-      return;
-    }
 
-    const response = await fetch('/auth/profile', {
-      headers: {
-        'Authorization': `Bearer ${token}`
+  <script>
+    async function loadUserProfile() {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        alert("You are not logged in");
+        return;
       }
-    });
 
-    if (!response.ok) {
-      alert('Failed to load profile data');
-      return;
+      try {
+        const response = await fetch("http://localhost:5000/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          alert("Failed to load profile data");
+          return;
+        }
+
+        const user = await response.json();
+
+        // Update profile info on the page
+        document.getElementById("profile-image").src = user.profile_image_url || "/static/images/profile.avif";
+        document.getElementById("profile-name").textContent = user.name || "No Name";
+        document.getElementById("profile-role").textContent = user.role || "Designer";
+
+        // Update form fields in the settings tab
+        document.getElementById("input-name").value = user.name || "";
+        document.getElementById("input-role").value = user.role || "";
+        document.getElementById("input-bio").value = user.bio || "";
+
+        // Update design and saved counts if available
+        document.getElementById("design-count").textContent = user.design_count || 0;
+        document.getElementById("saved-count").textContent = user.saved_count || 0;
+
+      } catch (error) {
+        console.error("Error loading user profile:", error);
+        alert("An error occurred while loading profile data.");
+      }
     }
 
-    const user = await response.json();
-
-    // Update profile info on the page
-    document.querySelector('.profile-header img.profile-img').src = user.profile_image_url || '/static/images/profile.avif';
-    document.querySelector('.profile-header h1').textContent = user.name || 'No Name';
-    document.querySelector('.profile-header p').textContent = user.role || 'Designer';
-
-    // Also update form fields in the settings tab
-    document.querySelector('form.settings-form input[name="name"]').value = user.name || '';
-    document.querySelector('form.settings-form input[name="role"]').value = user.role || '';
-    document.querySelector('form.settings-form textarea[name="bio"]').value = user.bio || '';
-  }
-
-  loadUserProfile();
-</script>
+    window.addEventListener("DOMContentLoaded", loadUserProfile);
+  </script>
 
 </body>
 
 </html>
+
 {% endblock %}
