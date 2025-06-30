@@ -1,46 +1,51 @@
 product_id,material,country,water_use,carbon_emission,recyclable,ethical_rating
-1,cotton,India,2700,15.5,No,2
-2,polyester,China,10,25.0,No,1
-3,organic cotton,Turkey,1500,10.2,Yes,4
-4,recycled polyester,Bangladesh,5,8.0,Yes,3
-5,cotton,Italy,2500,12.8,No,3
-6,polyester,Vietnam,12,22.0,No,2
-7,linen,France,1200,9.5,Yes,5
-8,wool,New Zealand,2000,18.0,No,4
-9,recycled cotton,Spain,300,6.5,Yes,4
-10,cotton,India,2800,16.0,No,2
-11,polyester,China,15,26.0,No,1
-12,organic cotton,Brazil,1400,9.8,Yes,4
-13,recycled polyester,Pakistan,8,7.5,Yes,3
-14,cotton,Portugal,2600,13.5,No,3
-15,polyester,Indonesia,11,23.0,No,2
-16,hemp,Germany,800,7.0,Yes,5
-17,wool,Australia,2100,19.0,No,4
-18,recycled cotton,Sweden,250,5.8,Yes,4
-19,cotton,India,2750,15.8,No,2
-20,polyester,China,13,24.5,No,1
-21,organic cotton,Egypt,1600,11.0,Yes,4
-22,recycled polyester,Bangladesh,6,7.8,Yes,3
-23,cotton,Italy,2450,12.2,No,3
-24,polyester,Vietnam,14,21.5,No,2
-25,linen,Netherlands,1100,8.9,Yes,5
-26,wool,Argentina,2050,17.5,No,4
-27,recycled cotton,Denmark,320,6.0,Yes,4
-28,cotton,India,2650,15.2,No,2
-29,polyester,China,16,25.8,No,1
-30,organic cotton,Peru,1450,10.5,Yes,4
-31,recycled polyester,Sri Lanka,7,7.2,Yes,3
-32,cotton,Morocco,2550,13.0,No,3
-33,polyester,Thailand,10,22.5,No,2
-34,hemp,Canada,850,7.5,Yes,5
-35,wool,South Africa,2150,18.5,No,4
-36,recycled cotton,Norway,280,5.5,Yes,4
-37,cotton,India,2700,15.6,No,2
-38,polyester,China,12,25.2,No,1
-39,organic cotton,Mexico,1550,10.8,Yes,4
-40,recycled polyester,Bangladesh,9,8.2,Yes,3
-41,cotton,Italy,2600,12.9,No,3
-42,polyester,Vietnam,13,23.5,No,2
-43,linen,Belgium,1150,9.0,Yes,5
-44,wool,Uruguay,2000,17.8,No,4
-45,recycled cotton,Finland,300,6.2,Yes,4
+1,Tencel,Australia,4511152.79,1.75,False,2
+2,Vegan Leather,Japan,1951566.31,124.39,False,2
+3,Vegan Leather,USA,467454.52,336.66,False,5
+4,Bamboo Fabric,Italy,899576.9,152.04,False,2
+5,Bamboo Fabric,USA,1809219.9,415.63,True,2
+6,Recycled Polyester,Italy,2244115.38,447.65,True,4
+7,Hemp,Australia,1020265.49,345.64,False,5
+8,Tencel,Brazil,3847649.16,336.7,False,3
+9,Recycled Polyester,France,1494891.28,386.68,True,2
+10,Bamboo Fabric,India,3892548.66,250.94,False,5
+11,Organic Cotton,Italy,3489944.51,417.76,True,4
+12,Hemp,UK,2563102.3,122.81,True,3
+13,Hemp,Japan,3162662.08,413.27,False,5
+14,Tencel,USA,4380926.36,164.83,True,4
+15,Bamboo Fabric,Germany,4210420.72,215.43,True,2
+16,Recycled Polyester,China,1040405.39,227.94,False,3
+17,Bamboo Fabric,USA,4448039.39,45.07,True,5
+18,Recycled Polyester,Japan,1068529.66,335.15,False,2
+19,Bamboo Fabric,China,434142.38,173.93,False,4
+20,Hemp,Australia,2345334.52,437.75,False,3
+21,Vegan Leather,Australia,1549017.38,489.19,True,4
+22,Vegan Leather,Brazil,3398780.12,375.74,True,2
+23,Organic Cotton,India,1166563.37,323.83,False,2
+24,Recycled Polyester,China,4088887.9,240.91,True,4
+25,Recycled Polyester,Brazil,3981108.89,411.26,True,2
+26,Organic Cotton,China,2678432.31,234.31,False,3
+27,Vegan Leather,Brazil,1471160.32,181.28,True,3
+28,Organic Cotton,Brazil,4564734.97,72.78,False,2
+29,Tencel,Japan,404782.57,60.14,False,3
+30,Hemp,France,2206445.72,184.09,True,4
+31,Hemp,USA,3274778.79,189.84,True,5
+32,Bamboo Fabric,Italy,1103107.94,157.86,True,5
+33,Tencel,USA,3912838.88,148.28,False,2
+34,Vegan Leather,UK,2261695.47,356.24,False,2
+35,Recycled Polyester,France,1978759.25,292.76,True,4
+36,Vegan Leather,Brazil,1745500.04,485.95,False,5
+37,Recycled Polyester,USA,2518993.55,480.24,False,3
+38,Recycled Polyester,Australia,4642986.14,255.32,False,2
+39,Hemp,USA,4592843.93,478.34,False,3
+40,Organic Cotton,Germany,2416857.95,418.25,False,4
+41,Tencel,UK,3578456.07,124.81,False,5
+42,Hemp,USA,2208679.26,295.57,True,2
+43,Tencel,Italy,2546933.55,455.62,False,4
+44,Vegan Leather,Italy,4485908.7,434.37,False,5
+45,Recycled Polyester,Italy,4238166.74,315.39,True,4
+46,Tencel,Japan,2935889.82,202.43,False,2
+47,Tencel,UK,66938.2,363.8,True,2
+48,Organic Cotton,India,3007645.93,382.4,True,4
+49,Hemp,India,2328411.6,288.0,True,4
+50,Bamboo Fabric,India,4816032.53,38.25,True,3
