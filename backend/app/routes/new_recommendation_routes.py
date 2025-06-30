@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, Blueprint, jsonify, request
 from flask_cors import CORS
 import pickle
 import csv
@@ -8,10 +8,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import random
+from flask_jwt_extended import jwt_required
 
-# Setting up Flask app
-app = Flask(__name__)
-CORS(app)
+recommendation_bp = Blueprint('recommendation', __name__)
 
 # Loading the saved model data
 with open(r'C:\Users\acer\Desktop\Infinity AI Work\InfinityStyleVerse\models\new_recommender_model.pkl', 'rb') as f:
@@ -42,7 +41,8 @@ def log_event(product_id, title, action, user_input):
         writer.writerow([timestamp, product_id, title, action, user_input])
 
 # Recommend products
-@app.route('/api/recommend', methods=['POST'])
+@recommendation_bp.route('/api/recommend', methods=['POST'])
+@jwt_required()
 def recommend():
     try:
         data = request.get_json()
@@ -111,7 +111,8 @@ def recommend():
         return jsonify({"error": str(e)}), 500
 
 # Log event
-@app.route('/api/log-click', methods=['POST'])
+@recommendation_bp.route('/api/log-click', methods=['POST'])
+@jwt_required()
 def log_click():
     try:
         data = request.get_json()
@@ -127,5 +128,3 @@ def log_click():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
