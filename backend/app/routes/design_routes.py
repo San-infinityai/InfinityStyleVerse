@@ -1,14 +1,12 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from werkzeug.utils import secure_filename
-import os
+import base64
+
 from ..models.design import Design
 from ..models.user import User
 from ..database import db
 
 design_bp = Blueprint('design_bp', __name__)
-
-UPLOAD_FOLDER = 'static/uploads'  # relative to your Flask app root
 
 @design_bp.route('/upload', methods=['POST'])
 @jwt_required()
@@ -27,22 +25,25 @@ def upload_design():
     if not all([title, description, category, image_file]):
         return jsonify({'message': 'Missing required fields'}), 400
 
-    filename = secure_filename(image_file.filename)
+    # Validate MIME type
+    allowed_mime_types = ['image/png', 'image/jpeg','image/jpg']
+    if image_file.mimetype not in allowed_mime_types:
+        return jsonify({'message': 'Only PNG and JPEG images are allowed'}), 400
 
-    upload_folder_abs = os.path.join(current_app.root_path, UPLOAD_FOLDER)
-    if not os.path.exists(upload_folder_abs):
-        os.makedirs(upload_folder_abs)
+    # Validate extension (optional extra safety)
+    allowed_extensions = ['.png', '.jpg', '.jpeg']
+    filename = image_file.filename.lower()
+    if not any(filename.endswith(ext) for ext in allowed_extensions):
+        return jsonify({'message': 'Invalid file extension'}), 400
 
-    image_path_abs = os.path.join(upload_folder_abs, filename)
-    image_file.save(image_path_abs)
-
-    image_path_db = os.path.join('uploads', filename)
+    # Read image bytes
+    image_data = image_file.read()
 
     design = Design(
         title=title,
         description=description,
         category=category,
-        image_url=image_path_db,  # <-- fixed here
+        image_url=image_data,  # correct variable here
         user_id=user.id
     )
     db.session.add(design)
@@ -59,7 +60,6 @@ def get_my_designs():
     if not user:
         return jsonify({'message': 'User not found'}), 404
 
-    # Optional: filter by category query param
     category = request.args.get('category')
 
     query = Design.query.filter_by(user_id=user_id)
@@ -68,22 +68,29 @@ def get_my_designs():
     
     designs = query.all()
 
-    designs_data = [
-        {
+    designs_data = []
+    for d in designs:
+        image_data = d.image_url
+        # Fix if image_data is string (convert to bytes)
+        if isinstance(image_data, str):
+            image_data = image_data.encode('utf-8')
+
+        encoded_image = base64.b64encode(image_data).decode('utf-8')
+        image_data_url = f"data:image/jpg;base64,{encoded_image}"
+
+        designs_data.append({
             'id': d.id,
             'title': d.title,
             'description': d.description,
             'category': d.category,
-            'image_url': d.image_url,
-        }
-        for d in designs
-    ]
+            'image_data_url': image_data_url
+        })
 
     return jsonify(designs_data)
 
+
 @design_bp.route('/designs', methods=['GET'])
 def get_all_designs():
-    # Optional: filter by category query param
     category = request.args.get('category')
 
     query = Design.query
@@ -92,16 +99,22 @@ def get_all_designs():
     
     designs = query.all()
 
-    designs_data = [
-        {
+    designs_data = []
+    for d in designs:
+        image_data = d.image_url
+        if isinstance(image_data, str):
+            image_data = image_data.encode('utf-8')
+
+        encoded_image = base64.b64encode(image_data).decode('utf-8')
+        image_data_url = f"data:image/jpeg;base64,{encoded_image}"
+
+        designs_data.append({
             'id': d.id,
             'title': d.title,
             'description': d.description,
             'category': d.category,
-            'image_url': d.image_url,
-            'user_id': d.user_id,
-        }
-        for d in designs
-    ]
+            'image_data_url': image_data_url,
+            'user_id': d.user_id
+        })
 
     return jsonify(designs_data)

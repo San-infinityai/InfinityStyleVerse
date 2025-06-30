@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Creator Dashboard | InfinityStyleVerse</title>
-   <!-- Include Bootstrap CSS -->
+  <!-- Include Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="../../assets/css/creator_dashboard.css"><style>
+  <style>
     * {
       margin: 0;
       padding: 0;
@@ -134,6 +134,12 @@
       gap: 20px;
     }
 
+    .product-card:hover {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+      transition: all 0.2s;
+    }
+
     .notification-bar {
       background-color: #ffe58f;
       color: #663c00;
@@ -207,13 +213,13 @@
 
     <!-- Product List Section -->
     <section id="products" class="content-section">
+      <h3>Your Products</h3>
       <div class="filter-buttons">
         <button onclick="filterByCategory('All')">All</button>
         <button onclick="filterByCategory('Casual')">Casual</button>
         <button onclick="filterByCategory('Formal')">Formal</button>
-        <button onclick="filterByCategory('Trending')">Trending</button>
+        <button onclick="filterByCategory('Sportswear')">Sportswear</button>
       </div>
-
       <div id="product-container" class="product-grid"></div>
     </section>
 
@@ -275,99 +281,152 @@
     reader.readAsDataURL(file);
   });
 
-  // Example chart for uploads
-  const ctx = document.getElementById('uploadsChart');
-  if (ctx) {
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        datasets: [{
-          label: 'Uploads',
-          data: [3, 6, 4, 8, 7],
-          borderColor: '#2d6363',
-          backgroundColor: 'rgba(45, 99, 99, 0.1)',
-          fill: true,
-          tension: 0.4
-        }]
-      }
-    });
-  }
-</script>
-<script>
-document.getElementById("upload-form").addEventListener("submit", async function (e) {
-  e.preventDefault();
+  // Upload form
+  document.getElementById("upload-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    alert("You are not logged in!");
-    return;
-  }
-
-  const form = e.target;
-  const formData = new FormData();
-
-  formData.append("title", document.getElementById("title").value);
-  formData.append("description", document.getElementById("description").value);
-  formData.append("category", document.getElementById("category").value);
-
-  const imageFile = document.getElementById("image").files[0];
-  formData.append("image", imageFile);
-
-  try {
-    const response = await fetch("http://localhost:5000/designs/upload", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`, // send JWT for user identification
-      },
-      body: formData,
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      alert("Design uploaded successfully!");
-      form.reset(); // clear form
-    } else {
-      alert("Upload failed: " + result.message);
-    }
-  } catch (err) {
-    console.error("Upload error:", err);
-    alert("Something went wrong.");
-  }
-});
-</script>
-
-<script>
- async function fetchUserDesigns(category = 'All') {
-  try {
-    const url = new URL('/designs/my-designs', window.location.origin);
-    if (category && category !== 'All') {
-      url.searchParams.append('category', category);
-    }
-
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem("access_token");
     if (!token) {
-      document.getElementById('product-container').innerHTML = '<p>Please log in to see your designs.</p>';
+      alert("You are not logged in!");
       return;
     }
 
-    const response = await fetch(url.toString(), {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const form = e.target;
+    const formData = new FormData();
+    formData.append("title", document.getElementById("title").value);
+    formData.append("description", document.getElementById("description").value);
+    formData.append("category", document.getElementById("category").value);
+    const imageFile = document.getElementById("image").files[0];
+    formData.append("image", imageFile);
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch designs');
+    try {
+      const response = await fetch("http://localhost:5000/designs/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Design uploaded successfully!");
+        form.reset();
+        fetchUserDesigns(); // Refresh the product list
+      } else {
+        alert("Upload failed: " + result.message);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Something went wrong.");
+    }
+  });
+
+   function showSection(id) {
+    document.querySelectorAll('.content-section').forEach(section => {
+      section.classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+  }
+
+  function displayDesigns(designs) {
+    const container = document.getElementById('product-container');
+    container.innerHTML = '';
+
+    if (designs.length === 0) {
+      container.innerHTML = '<p>No products found for this category.</p>';
+      return;
     }
 
-    const designs = await response.json();
-    displayDesigns(designs);
+    designs.forEach(design => {
+      const card = document.createElement('div');
+      card.classList.add('product-card');
+      card.style.border = '1px solid #e5e7eb';
+      card.style.borderRadius = '8px';
+      card.style.padding = '12px';
+      card.style.background = '#f9fafb';
+      card.style.textAlign = 'center';
 
-  } catch (error) {
-    console.error(error);
-    document.getElementById('product-container').innerHTML = `<p>Error loading designs: ${error.message}</p>`;
+      card.innerHTML = `
+        <img src="${design.image_data_url}" alt="${design.title}" 
+          style="width:100%; height:160px; object-fit:cover; border-radius:6px; margin-bottom:10px;" />
+        <h5 style="font-size:16px; margin:8px 0; color:#1f2937;">${design.title}</h5>
+        <p style="font-size:14px; color:#555;">${design.description}</p>
+      `;
+
+      container.appendChild(card);
+    });
   }
+
+  async function fetchUserDesigns(category = 'All') {
+    try {
+      const url = new URL('http://localhost:5000/designs/my-designs');
+      if (category && category !== 'All') {
+        url.searchParams.append('category', category);
+      }
+
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        document.getElementById('product-container').innerHTML = '<p>Please log in to see your designs.</p>';
+        return;
+      }
+
+      const response = await fetch(url.toString(), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch designs');
+      }
+
+      const designs = await response.json();
+
+      console.log('Fetched designs:', designs);  // Debug log
+
+      displayDesigns(designs);
+
+    } catch (error) {
+      console.error(error);
+      document.getElementById('product-container').innerHTML = `<p>Error loading designs: ${error.message}</p>`;
+    }
+  }
+
+  function filterByCategory(category) {
+    fetchUserDesigns(category);
+  }
+
+  function showProducts() {
+    showSection('products');
+    fetchUserDesigns();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Add click listeners to filter buttons
+    document.querySelectorAll('.filter-buttons button').forEach(button => {
+      button.addEventListener('click', () => {
+        const category = button.textContent.trim();
+        filterByCategory(category);
+      });
+    });
+
+    // Optional: load all designs initially
+    // fetchUserDesigns();
+  });
+
+// Show Product List section and load designs
+function showProducts() {
+  showSection('products');
+  fetchUserDesigns();
 }
+
+// Attach event listener to sidebar Product List button
+document.querySelector('li[onclick="showSection(\'products\')"]').onclick = showProducts;
+
+// Optionally load designs immediately on page load for testing
+document.addEventListener('DOMContentLoaded', () => {
+  // Uncomment below to load designs immediately on page load
+  // fetchUserDesigns();
+});
+
 
 </script>
 

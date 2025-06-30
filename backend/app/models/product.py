@@ -17,7 +17,7 @@ class Product(db.Model):
 
     tags = db.Column(db.String(255))                   
 
-    image_url = db.Column(db.String(255))              
+    image_url = db.Column(db.LargeBinary(length=(2**24 - 1)))                
     image_gallery = db.Column(db.Text)                 
 
     visibility = db.Column(db.String(20), default="Published")  

@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About Us</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link rel="stylesheet" href="assets/css/style.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -216,7 +216,8 @@
 
     <div class="section dark-section">
         <div class="image">
-           <img src="../assets/images/women.avif" alt="What We Do" />
+          <img src="{{ url_for('static', filename='images/women.avif') }}" alt="What We Do" />
+           
         </div>
         <div class="text">
             <h2>Modules We Offer</h2>

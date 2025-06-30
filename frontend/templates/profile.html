@@ -1,8 +1,3 @@
-<!-- profile.html -->
-{% extends 'base.html' %}
-{% block title %}About Us{% endblock %}
-{% block content %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,151 +5,183 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Profile</title>
-  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
+    /* RESET & BASE */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background: #f3f4f6;
+      background: #f9f9fb;
+      color: #333;
       padding: 40px;
-      color: #1f2937;
+      display: flex;
+      justify-content: center;
     }
 
-    .profile-container {
+    .profile-wrapper {
       max-width: 1100px;
-      margin: auto;
-      background: #fff;
-      padding: 40px;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      width: 100%;
     }
 
+    /* CONTAINER */
+    .profile-container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      margin-bottom: 40px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .profile-container:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    }
+
+    /* HEADER */
     .profile-header {
       display: flex;
-      gap: 24px;
       align-items: center;
-      margin-bottom: 32px;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      text-align: center;
     }
 
     .profile-img {
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid #e5e7eb;
-      background: #d1d5db;
+      border: 3px solid #ececec;
+      background: #f4f4f4;
+      transition: transform 0.3s ease;
+    }
+    .profile-img:hover {
+      transform: scale(1.05);
     }
 
     .profile-info h1 {
       font-size: 28px;
       font-weight: 600;
-      margin-bottom: 6px;
+      color: #444;
     }
 
     .profile-info p {
       font-size: 16px;
-      color: #6b7280;
+      color: #777;
     }
 
+    /* STATS */
     .stats {
-      margin-top: 10px;
-      font-size: 14px;
       display: flex;
       gap: 20px;
-      color: #4b5563;
+      font-size: 14px;
+      color: #555;
+      justify-content: center;
+      margin-top: 10px;
     }
 
+    /* TABS */
     .tabs {
       display: flex;
-      gap: 16px;
-      margin-bottom: 24px;
+      justify-content: center;
+      gap: 12px;
+      margin: 30px 0 20px;
+      flex-wrap: wrap;
     }
 
     .tab {
       padding: 10px 22px;
-      background: #e5e7eb;
+      background: #f1f5f9;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 500;
-      transition: 0.3s;
+      color: #555;
+      transition: all 0.3s;
     }
 
     .tab:hover,
     .tab.active {
-      background: #2d6363;
-      color: #fff;
+      background: #d6e4ec;
+      color: #333;
     }
 
+    /* TAB CONTENT */
     .tab-content {
       display: none;
+      animation: fadeIn 0.4s ease;
+      text-align: center;
     }
 
     .tab-content.active {
       display: block;
     }
 
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(10px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    /* CARD GRID */
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      justify-content: center;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 24px;
     }
 
+    /* CARD */
     .card {
-      background: #fefefe;
-      border-radius: 14px;
+      background: #ffffff;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+      text-align: center;
       position: relative;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
     }
 
     .card img {
-      width: 180px;
-      height: 140px;
+      width: 100%;
+      height: 160px;
       object-fit: cover;
-      border-radius: 12px;
-      margin-top: 16px;
-      border: 1px solid #ddd;
     }
 
     .card h3 {
-      margin-top: 12px;
       font-size: 16px;
       font-weight: 600;
-      text-align: center;
+      margin: 14px 0;
       padding: 0 12px;
+      color: #444;
     }
 
+    /* SAVE BUTTON */
     .save-btn {
       position: absolute;
       top: 12px;
       right: 12px;
-      background: #fff;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
       border-radius: 50%;
-      border: 1px solid #d1d5db;
       padding: 6px;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
       transition: background 0.3s;
     }
 
     .save-btn:hover {
-      background: #e0f2f1;
+      background: #fef3c7;
     }
 
     .save-msg {
@@ -171,126 +198,129 @@
     .card.saved .save-msg {
       display: block;
     }
+
+    /* SETTINGS FORM */
+    .settings-form {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .settings-form label {
+      display: block;
+      margin-top: 16px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .settings-form input,
+    .settings-form textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      margin-top: 6px;
+      background: #f9fafb;
+    }
+
+    .settings-form .form-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .settings-form button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .settings-form .back-btn {
+      background: #e0e7ff;
+      color: #374151;
+    }
+
+    .settings-form .back-btn:hover {
+      background: #c7d2fe;
+    }
+
+    .settings-form button[type="submit"] {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .settings-form button[type="submit"]:hover {
+      background: #a7f3d0;
+    }
+
   </style>
 </head>
 
 <body>
-  <div class="profile-container">
-    <div class="profile-header">
-      <!-- Placeholder image and empty text, to be updated by JS -->
-      <img src="/static/images/profile.avif" alt="Profile" class="profile-img" id="profile-image" />
-      <h1 id="profile-name">Loading...</h1>
-      <p id="profile-role">Loading...</p>
-      <div class="stats">
-        <span><strong id="design-count">0</strong> Designs</span>
-        <span><strong id="saved-count">0</strong> Saved</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('designs', event)">My Designs</button>
-    <button class="tab" onclick="showTab('saved', event)">Saved Products</button>
-    <button class="tab" onclick="showTab('settings', event)">Settings</button>
-  </div>
-
-  <div class="tab-content active" id="designs">
-    <h2>Uploaded Designs</h2>
-    <div class="card-grid">
-      <div class="card">
-        <img src="../assets/images/shirt.jpg" alt="Design" />
-        <button class="save-btn" onclick="saveCard(this)">❤</button>
-        <h3>Modern Shirt Design</h3>
-        <div class="save-msg">Saved to your library!</div>
-      </div>
-      <div class="card">
-        <img src="../assets/images/shirt.jpg" alt="Design" />
-        <button class="save-btn" onclick="saveCard(this)">❤</button>
-        <h3>Casual Wear</h3>
-        <div class="save-msg">Saved to your library!</div>
-      </div>
-      <div class="card">
-        <img src="../assets/images/shirt.jpg" alt="Design" />
-        <button class="save-btn" onclick="saveCard(this)">❤</button>
-        <h3>Casual Wear</h3>
-        <div class="save-msg">Saved to your library!</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="saved">
-    <h2>Saved Products</h2>
-    <div class="card-grid">
-      <div class="card saved">
-        <img src="../assets/images/shirt.jpg" alt="Saved" />
-        <h3>Premium Shirt</h3>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="settings">
-    <h2>Profile Settings</h2>
-    <form class="settings-form" method="POST" action="/update_profile">
-      <label>Name</label>
-      <input type="text" name="name" id="input-name" value="" />
-      <label>Role</label>
-      <input type="text" name="role" id="input-role" value="" />
-      <label>Bio</label>
-      <textarea name="bio" id="input-bio" rows="3"></textarea>
-      <div class="form-buttons">
-        <button type="button" class="back-btn" onclick="showTab('designs', event)">← Back</button>
-        <button type="submit">Update Profile</button>
-      </div>
-    </form>
-  </div>
-
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-column">
-        <div class="social-icons">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-youtube"></i></a>
-          <a href="#"><i class="fab fa-pinterest-p"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
+  <div class="profile-wrapper">
+    <div class="profile-container">
+      <div class="profile-header">
+        <img src="/static/images/default-profile.png" alt="Profile" class="profile-img" id="profile-image" />
+        <div class="profile-info">
+          <h1 id="profile-name">Loading...</h1>
+          <p id="profile-role">Loading...</p>
+          <div class="stats">
+            <span><strong id="design-count">0</strong> Designs</span>
+            <span><strong id="saved-count">0</strong> Saved</span>
+          </div>
         </div>
-        <br />
-        <address class="footer-address">
-          <p>+123 456 7897</p>
-          <p>Havelock Road</p>
-          <p>Colombo 05</p>
-        </address>
       </div>
-      <div class="footer-column">
-        <h4>My Account</h4>
-        <ul>
-          <li><a href="#">Sign In</a></li>
-          <li><a href="#">Register</a></li>
-          <li><a href="#">Order status</a></li>
-        </ul>
-      </div>
-      <div class="footer-column">
-        <h4>Help</h4>
-        <ul>
-          <li><a href="#">Shipping</a></li>
-          <li><a href="#">Returns</a></li>
-          <li><a href="#">Sizing</a></li>
-        </ul>
-      </div>
+    </div>
 
-      <div class="footer-column">
-        <h4>Legal Stuff</h4>
-        <ul>
-          <li><a href="#">Shipping & Delivery</a></li>
-          <li><a href="#">Terms & Conditions</a></li>
-          <li><a href="#">Privacy & Policy</a></li>
-        </ul>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('designs', event)">My Designs</button>
+      <button class="tab" onclick="showTab('saved', event)">Saved Products</button>
+      <button class="tab" onclick="showTab('settings', event)">Settings</button>
+    </div>
+
+    <div class="tab-content active" id="designs">
+      <h2>Uploaded Designs</h2>
+      <div class="card-grid">
+        <div class="card">
+          <img src="../assets/images/shirt.jpg" alt="Design" />
+          <button class="save-btn" onclick="saveCard(this)">❤</button>
+          <h3>Modern Shirt Design</h3>
+          <div class="save-msg">Saved to your library!</div>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 InfinityStyleVerse. All Rights Reserved</p>
+
+    <div class="tab-content" id="saved">
+      <h2>Saved Products</h2>
+      <div class="card-grid">
+        <div class="card saved">
+          <img src="../assets/images/shirt.jpg" alt="Saved" />
+          <h3>Premium Shirt</h3>
+        </div>
+      </div>
     </div>
-  </footer>
+
+    <div class="tab-content" id="settings">
+      <h2>Profile Settings</h2>
+      <form id="profile-form" enctype="multipart/form-data">
+        <label>Name</label>
+        <input type="text" name="name" id="input-name" />
+        <label>Role</label>
+        <input type="text" name="role" id="input-role" />
+        <label>Bio</label>
+        <textarea name="bio" id="input-bio" rows="3"></textarea>
+        <label>Profile Photo</label>
+        <input type="file" name="profile_image" accept="image/*" />
+        <div class="form-buttons">
+          <button type="button" class="back-btn" onclick="showTab('designs', event)">← Back</button>
+          <button type="submit">Update Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script>
     function showTab(tabId, event) {
@@ -308,59 +338,76 @@
       setTimeout(() => {
         card.classList.remove('saved');
         button.disabled = false;
-        button.textContent = '💾';
+        button.textContent = '❤';
       }, 2000);
     }
-  </script>
 
-  <script>
     async function loadUserProfile() {
       const token = localStorage.getItem("access_token");
-
       if (!token) {
         alert("You are not logged in");
         return;
       }
-
       try {
         const response = await fetch("http://localhost:5000/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!response.ok) {
           alert("Failed to load profile data");
           return;
         }
-
         const user = await response.json();
-
-        // Update profile info on the page
-        document.getElementById("profile-image").src = user.profile_image_url || "/static/images/profile.avif";
+        document.getElementById("profile-image").src = user.profile_image_url || "/static/images/default-profile.png";
         document.getElementById("profile-name").textContent = user.name || "No Name";
         document.getElementById("profile-role").textContent = user.role || "Designer";
-
-        // Update form fields in the settings tab
         document.getElementById("input-name").value = user.name || "";
         document.getElementById("input-role").value = user.role || "";
         document.getElementById("input-bio").value = user.bio || "";
-
-        // Update design and saved counts if available
         document.getElementById("design-count").textContent = user.design_count || 0;
         document.getElementById("saved-count").textContent = user.saved_count || 0;
-
       } catch (error) {
-        console.error("Error loading user profile:", error);
-        alert("An error occurred while loading profile data.");
+        console.error("Error loading profile:", error);
       }
     }
 
     window.addEventListener("DOMContentLoaded", loadUserProfile);
+
+    // Wait until the DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+
+  form.addEventListener('submit', async function(event) {
+    event.preventDefault(); // Stop the browser's default form submission
+
+    // Create a FormData object from the form
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('http://localhost:5000/auth/update_profile', {
+        method: 'POST',
+        headers: {
+          // IMPORTANT: Do NOT set Content-Type manually here!
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle error response
+        alert('Error: ' + (data.msg || 'An error occurred.'));
+        return;
+      }
+
+      // Handle success response
+      alert(data.msg || 'Profile updated successfully!');
+    } catch (error) {
+      console.error('Request failed:', error);
+      alert('An unexpected error occurred.');
+    }
+  });
+});
   </script>
-
 </body>
-
 </html>
-
-{% endblock %}

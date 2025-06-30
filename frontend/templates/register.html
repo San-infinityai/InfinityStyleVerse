@@ -224,7 +224,7 @@
         alert(data.msg || "Registration successful!");
         if (data.msg === "User registered successfully") {
  
-        window.location.href = "{{ url_for('main.login_page') }}";
+       window.location.href = "{{ url_for('main.onboarding') }}";
 
         }
       })

@@ -158,8 +158,10 @@
         Don't have an account?  <a href="{{ url_for('main.register_page') }}">Create an account</a>
       </div>
     </div>
-  </div><script>
-  const onboardingUrl = "{{ url_for('main.onboarding') }}";
+  </div>
+  <script>
+  // Remove this if you no longer need onboarding
+  // const onboardingUrl = "{{ url_for('main.onboarding') }}";
 
   document.getElementById("login-form").addEventListener("submit", function(e) {
     e.preventDefault();
@@ -188,13 +190,43 @@
       }
 
       alert("Login successful! Welcome " + data.user.name);
-      window.location.href = onboardingUrl;
+      goToHome(); // <<<<<<<<<<<<<<<<<< HERE
     })
     .catch(error => {
       console.error("Login error:", error);
       alert("Login failed due to network error.");
     });
   });
+
+  function goToHome() {
+    let user;
+    try {
+      user = JSON.parse(localStorage.getItem('user'));
+    } catch (e) {
+      console.error("Failed to parse user data:", e);
+      user = null;
+    }
+
+    const role = user?.role?.toLowerCase() || 'guest';
+
+    switch (role) {
+      case 'creator':
+        window.location.href = "/creator/dashboard";
+        break;
+      case 'admin':
+        window.location.href = "/admin/dashboard";
+        break;
+      case 'customer':
+        window.location.href = "/customer/home";
+        break;
+      case 'staff':
+        window.location.href = "/staff/dashboard";
+        break;
+      default:
+        window.location.href = "/index";
+    }
+  }
 </script>
+
 </body>
 </html>
