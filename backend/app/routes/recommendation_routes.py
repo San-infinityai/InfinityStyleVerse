@@ -11,7 +11,7 @@ import random
 from flask_jwt_extended import jwt_required
 import joblib
 import pandas as pd
-#from ..models import Product, ProductImage
+from ..models import Product, ProductImage
 from ..utils.esg_utils import generate_esg_columns, compute_esg_score
 
 esg_model_path = r'C:\Users\USER\OneDrive\Desktop\Infinity AI\ApparelWeb\InfinityStyleVerse\models\esg_model.pkl'
@@ -183,11 +183,14 @@ def recommend_full():
             weight_color * color_scores
         )
 
-        # Boost ESG scores if score ≥ 70
-        eco_boost = 1.2
+        # Boost ESG scores if score ≥ 70 by 10% and 20% if score >= 85
+        eco_boost_1 = 1.1
+        eco_boost_2 = 1.2   # For highly sustainable products
         for i in range(len(combined_scores)):
-            if df.loc[i, 'esg_score'] >= 70:
-                combined_scores[i] *= eco_boost
+            if df.loc[i, 'esg_score'] >= 85:
+                combined_scores[i] *= eco_boost_2
+            elif df.loc[i, 'esg_score'] >= 70:
+                combined_scores[i] *= eco_boost_1
                 
         # Sort by updated combined score
         scores_with_indices = sorted(enumerate(combined_scores), key=lambda x: x[1], reverse=True)
