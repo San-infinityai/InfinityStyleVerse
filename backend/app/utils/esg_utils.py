@@ -37,9 +37,30 @@ def compute_esg_score(df, model):
     features = df[['water_use', 'carbon_emission', 'ethical_rating']].fillna(0)
     df['esg_score'] = model.predict(features)
 
+    #Category-specific weighting
+    def adjust_score(row):
+        material = str(row.get('material', '')).lower().strip()
+        score = row['esg_score']
+
+        if 'leather' in material and 'vegan' not in material:
+            score -= 15
+        elif 'polyester' in material:
+            score -= 10
+        elif 'organic cotton' in material:
+            score += 10
+        elif 'bamboo' in material:
+            score += 8
+        elif 'recycled' in material:
+            score += 12
+
+        return score
+
+    df['esg_score'] = df.apply(adjust_score, axis=1)
+
     # Validation: ensure ESG score is between 0 and 100
     if (df['esg_score'] < 0).any() or (df['esg_score'] > 100).any():
         print("Warning: Some ESG scores fall outside the expected range (0–100). Clipping them.")
         df['esg_score'] = df['esg_score'].clip(lower=0, upper=100)
 
     return df
+
