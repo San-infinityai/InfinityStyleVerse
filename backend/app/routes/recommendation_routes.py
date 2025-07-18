@@ -1,45 +1,207 @@
-from flask import Blueprint, jsonify, request
+from flask import Flask, Blueprint, jsonify, request
+from flask_cors import CORS
 import pickle
+import csv
+import os
+from datetime import datetime
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import random
 from flask_jwt_extended import jwt_required
+from ..models import Product, ProductImage
 
 recommendation_bp = Blueprint('recommendation', __name__)
 
-with open(r'C:\xampp\htdocs\infinitystyleverse\models\new_recommender_model.pkl', 'rb') as f:
+# Loading the saved model data
+with open(r'C:\Users\DELL\Desktop\htdocs\infinitystyleverse\models\new_recommender_model.pkl', 'rb') as f:
     model_data = pickle.load(f)
     df = model_data['df']
     combined_similarities = model_data['similarities']
 
-print("DataFrame columns are:", df.columns)
+df['product_id'] = df['product_id'].astype(str).str.strip()
 
-def get_similar_products(index):
-    scores = list(enumerate(combined_similarities[index]))
-    scores = sorted(scores, key=lambda x: x[1], reverse=True)
-    top_3 = scores[1:4]
-    return [(df['product_id'][i], df['title'][i], score, df['image_url'][i]) for i, score in top_3]
+df['combined_text'] = df['title'] + " " + df['descriptions']
 
-def find_product_index_by_id(product_id):
-    product_id = str(product_id).strip()
-    df['product_id'] = df['product_id'].astype(str).str.strip()
-    if product_id in df['product_id'].values:
-        return df.index[df['product_id'] == product_id].tolist()[0]
-    else:
-        raise ValueError(f"Product ID {product_id} not found")
+# Recompute TF-IDF only which is needed to process new user text input
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(df['combined_text'])
 
-@recommendation_bp.route('/api/recommend/<product_id>', methods=['GET'])
+# Log file setup
+log_file = r'C:\Users\DELL\Desktop\htdocs\infinitystyleverse\data\logs\recommendation_log.csv'
+if not os.path.exists(log_file):
+    with open(log_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['timestamp', 'product_id', 'title', 'action', 'input'])
+
+# Log function
+def log_event(product_id, title, action, user_input):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with open(log_file, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([timestamp, product_id, title, action, user_input])
+
+# Recommend products
+@recommendation_bp.route('/api/recommend', methods=['POST'])
 @jwt_required()
-def recommend_by_id(product_id):
+def recommend():
     try:
-        product_index = find_product_index_by_id(product_id)
-        similar = get_similar_products(product_index)
-        response = {
-            "similar": [
-                {"product_id": pid, "title": title, "score": float(score), "image_url": image_url}
-                for pid, title, score, image_url in similar
-            ]
-        }
-        return jsonify(response)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+        data = request.get_json()
+        user_input = data.get('query', '').strip().lower()
+
+        if not user_input:
+            return jsonify({"error": "No input provided"}), 400
+
+        # Convert user input to TF-IDF vector
+        user_vector = tfidf.transform([user_input])
+        text_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
+
+        category_scores = np.max(combined_similarities, axis=1)
+        color_scores = np.max(combined_similarities, axis=1)
+
+        # Combine weighted scores
+        weight_text = 0.6
+        weight_category = 0.2
+        weight_color = 0.2
+
+        combined_scores = (
+            weight_text * text_scores +
+            weight_category * category_scores +
+            weight_color * color_scores
+        )
+
+        # Get top 3
+        scores_with_indices = sorted(enumerate(combined_scores), key=lambda x: x[1], reverse=True)
+        top_3 = scores_with_indices[:3]
+
+        recommendations = []
+        for i, score in top_3:
+            product = {
+                'product_id': df.loc[i, 'product_id'],
+                'title': df.loc[i, 'title'],
+                'description': df.loc[i, 'descriptions'],
+                'category': df.loc[i, 'category'],
+                'color': df.loc[i, 'color'],
+                'image_url': df.loc[i, 'image_url'],
+                'score': float(score)
+            }
+            log_event(product['product_id'], product['title'], 'shown', user_input)
+            recommendations.append(product)
+
+        # fallback process
+        if max(score for _, score in top_3) < 0.1:
+            recommendations = []
+            fallback_indices = random.sample(range(len(df)), 3)
+            for i in fallback_indices:
+                product = {
+                    'product_id': df.loc[i, 'product_id'],
+                    'title': df.loc[i, 'title'],
+                    'description': df.loc[i, 'descriptions'],
+                    'category': df.loc[i, 'category'],
+                    'color': df.loc[i, 'color'],
+                    'image_url': df.loc[i, 'image_url'],
+                    'score': 0.0
+                }
+                log_event(product['product_id'], product['title'], 'shown', user_input)
+                recommendations.append(product)
+
+        return jsonify({"results": recommendations})
+
     except Exception as e:
+        print("Error in /api/recommend:", e)
+        return jsonify({"error": str(e)}), 500
+
+# Log event
+@recommendation_bp.route('/api/log-click', methods=['POST'])
+@jwt_required()
+def log_click():
+    try:
+        data = request.get_json()
+        product_id = data.get('product_id')
+        title = data.get('title')
+        user_input = data.get('input', '')
+        if not product_id or not title:
+            return jsonify({"error": "Missing product_id or title"}), 400
+
+        log_event(product_id, title, 'clicked', user_input)
+        return jsonify({"message": "Click logged"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# This endpoint receives a text query from the user,
+# computes similarity scores against the product dataset,
+# retrieves the top 3 matching products from the database,
+# and returns their full details along with the similarity score.
+
+import os
+
+@recommendation_bp.route('/api/recommend-full', methods=['POST'])
+@jwt_required()
+def recommend_full():
+    try:
+        data = request.get_json()
+        user_input = data.get('query', '').strip().lower()
+
+        if not user_input:
+            return jsonify({"error": "No input provided"}), 400
+
+        user_vector = tfidf.transform([user_input])
+        text_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
+
+        category_scores = np.max(combined_similarities, axis=1)
+        color_scores = np.max(combined_similarities, axis=1)
+
+        # Read weights from environment variables with defaults
+        weight_text = float(os.environ.get("WEIGHT_TEXT", "0.6"))
+        weight_category = float(os.environ.get("WEIGHT_CATEGORY", "0.2"))
+        weight_color = float(os.environ.get("WEIGHT_COLOR", "0.2"))
+        print("WEIGHT_TEXT =", os.environ.get("WEIGHT_TEXT"))
+
+        combined_scores = (
+            weight_text * text_scores +
+            weight_category * category_scores +
+            weight_color * color_scores
+        )
+
+        scores_with_indices = sorted(enumerate(combined_scores), key=lambda x: x[1], reverse=True)
+        top_3 = scores_with_indices[:3]
+
+        product_ids = [df.loc[i, 'product_id'] for i, _ in top_3]
+
+        # Log events
+        for pid in product_ids:
+            title = df[df['product_id'] == pid]['title'].values[0]
+            log_event(pid, title, 'shown', user_input)
+
+        int_ids = [int(pid) for pid in product_ids]
+
+        products = Product.query.filter(Product.id.in_(int_ids)).all()
+
+        score_map = {int(pid): float(score) for pid, score in zip(product_ids, [s for _, s in top_3])}
+
+        results = []
+        for p in products:
+            results.append({
+                "id": p.id,
+                "title": p.title,
+                "brand": p.brand,
+                "category": p.category,
+                "description": p.description,
+                "sale_price": p.sale_price,
+                "discount": p.discount,
+                "colors": p.colors.split(",") if p.colors else [],
+                "sizes": p.sizes.split(",") if p.sizes else [],
+                "tags": p.tags.split(",") if p.tags else [],
+                "publish_date": p.publish_date.isoformat() if p.publish_date else None,
+                "score": score_map.get(p.id, 0.0)
+            })
+
+        if not results:
+            return jsonify({"error": "No matching products found in database."}), 404
+
+        return jsonify({"results": results})
+
+    except Exception as e:
+        print("Error in /api/recommend-full:", e)
         return jsonify({"error": str(e)}), 500
