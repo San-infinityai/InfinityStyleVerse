@@ -9,12 +9,22 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import random
 from flask_jwt_extended import jwt_required
+import joblib
+import pandas as pd
 from ..models import Product, ProductImage
+from ..utils.esg_utils import generate_esg_columns, compute_esg_score
+
+esg_model_path = r'C:\Users\USER\OneDrive\Desktop\Infinity AI\ApparelWeb\InfinityStyleVerse\models\esg_model.pkl'
+esg_model = joblib.load(esg_model_path)
 
 recommendation_bp = Blueprint('recommendation', __name__)
 
 # Loading the saved model data
-with open(r'C:\Users\DELL\Desktop\htdocs\infinitystyleverse\models\new_recommender_model.pkl', 'rb') as f:
+MODEL_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'new_recommender_model.pkl')
+)
+
+with open(MODEL_PATH, 'rb') as f:
     model_data = pickle.load(f)
     df = model_data['df']
     combined_similarities = model_data['similarities']
@@ -28,7 +38,14 @@ tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['combined_text'])
 
 # Log file setup
-log_file = r'C:\Users\DELL\Desktop\htdocs\infinitystyleverse\data\logs\recommendation_log.csv'
+# Set up a relative path for the log file
+log_file = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'data', 'logs', 'recommendation_log.csv')
+)
+
+# Ensure the parent directory exists
+os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
 if not os.path.exists(log_file):
     with open(log_file, 'w', newline='') as f:
         writer = csv.writer(f)
@@ -40,6 +57,16 @@ def log_event(product_id, title, action, user_input):
     with open(log_file, 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow([timestamp, product_id, title, action, user_input])
+
+import numpy as np
+import pandas as pd
+
+# Add ESG columns and compute ESG scores
+df = generate_esg_columns(df)
+df = compute_esg_score(df, esg_model)
+
+# Preview results
+print(df.head())
 
 # Recommend products
 @recommendation_bp.route('/api/recommend', methods=['POST'])
@@ -129,13 +156,6 @@ def log_click():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# This endpoint receives a text query from the user,
-# computes similarity scores against the product dataset,
-# retrieves the top 3 matching products from the database,
-# and returns their full details along with the similarity score.
-
-import os
-
 @recommendation_bp.route('/api/recommend-full', methods=['POST'])
 @jwt_required()
 def recommend_full():
@@ -146,17 +166,16 @@ def recommend_full():
         if not user_input:
             return jsonify({"error": "No input provided"}), 400
 
+        
         user_vector = tfidf.transform([user_input])
         text_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
 
         category_scores = np.max(combined_similarities, axis=1)
         color_scores = np.max(combined_similarities, axis=1)
 
-        # Read weights from environment variables with defaults
-        weight_text = float(os.environ.get("WEIGHT_TEXT", "0.6"))
-        weight_category = float(os.environ.get("WEIGHT_CATEGORY", "0.2"))
-        weight_color = float(os.environ.get("WEIGHT_COLOR", "0.2"))
-        print("WEIGHT_TEXT =", os.environ.get("WEIGHT_TEXT"))
+        weight_text = 0.6
+        weight_category = 0.2
+        weight_color = 0.2
 
         combined_scores = (
             weight_text * text_scores +
@@ -164,8 +183,30 @@ def recommend_full():
             weight_color * color_scores
         )
 
+        # Boost ESG scores if score ≥ 70 by 10% and 20% if score >= 85
+        eco_boost_1 = 1.1
+        eco_boost_2 = 1.2   # For highly sustainable products
+        for i in range(len(combined_scores)):
+            if df.loc[i, 'esg_score'] >= 85:
+                combined_scores[i] *= eco_boost_2
+            elif df.loc[i, 'esg_score'] >= 70:
+                combined_scores[i] *= eco_boost_1
+                
+        # Sort by updated combined score
         scores_with_indices = sorted(enumerate(combined_scores), key=lambda x: x[1], reverse=True)
-        top_3 = scores_with_indices[:3]
+        
+        # Filter out products with ESG < 50
+        filtered = [(i, score) for i, score in scores_with_indices if df.loc[i, 'esg_score'] >= 50]
+        
+        # Take top 3
+        top_3 = filtered[:3]
+
+        print("Top 3 after ESG filtering:")
+        for i, score in top_3:
+            print(f"Title: {df.loc[i, 'title']}, ESG Score: {df.loc[i, 'esg_score']}, Final Score: {score}")
+
+        # scores_with_indices = sorted(enumerate(combined_scores), key=lambda x: x[1], reverse=True)
+        # top_3 = scores_with_indices[:3]
 
         product_ids = [df.loc[i, 'product_id'] for i, _ in top_3]
 
@@ -174,10 +215,13 @@ def recommend_full():
             title = df[df['product_id'] == pid]['title'].values[0]
             log_event(pid, title, 'shown', user_input)
 
+        # Convert IDs to integers 
         int_ids = [int(pid) for pid in product_ids]
 
+    
         products = Product.query.filter(Product.id.in_(int_ids)).all()
 
+       
         score_map = {int(pid): float(score) for pid, score in zip(product_ids, [s for _, s in top_3])}
 
         results = []
