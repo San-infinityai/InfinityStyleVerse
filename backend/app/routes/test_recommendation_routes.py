@@ -14,7 +14,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Loading the saved model data
-with open(r'C:\Users\acer\Desktop\Infinity AI Work\InfinityStyleVerse\models\new_recommender_model.pkl', 'rb') as f:
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..','..', '..', 'models', 'new_recommender_model.pkl')
+with open(MODEL_PATH, 'rb') as f:
     model_data = pickle.load(f)
     df = model_data['df']
     combined_similarities = model_data['similarities']
@@ -28,7 +29,8 @@ tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['combined_text'])
 
 # Log file setup
-log_file = r'C:\Users\acer\Desktop\Infinity AI Work\InfinityStyleVerse\data\logs\recommendation_log.csv'
+log_file = os.path.join(os.path.dirname(__file__), '..' ,'..', '..', 'data', 'logs', 'recommendation_log.csv')
+os.makedirs(os.path.dirname(log_file), exist_ok=True)
 if not os.path.exists(log_file):
     with open(log_file, 'w', newline='') as f:
         writer = csv.writer(f)

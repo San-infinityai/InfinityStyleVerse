@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 import pickle
 import csv
@@ -14,7 +14,7 @@ import pandas as pd
 from ..models import Product, ProductImage
 from ..utils.esg_utils import generate_esg_columns, compute_esg_score
 
-esg_model_path = r'C:\Users\USER\OneDrive\Desktop\Infinity AI\ApparelWeb\InfinityStyleVerse\models\esg_model.pkl'
+esg_model_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'esg_model.pkl')
 esg_model = joblib.load(esg_model_path)
 
 recommendation_bp = Blueprint('recommendation', __name__)
@@ -58,8 +58,6 @@ def log_event(product_id, title, action, user_input):
         writer = csv.writer(f)
         writer.writerow([timestamp, product_id, title, action, user_input])
 
-import numpy as np
-import pandas as pd
 
 # Add ESG columns and compute ESG scores
 df = generate_esg_columns(df)
