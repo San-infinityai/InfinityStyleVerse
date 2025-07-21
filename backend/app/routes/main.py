@@ -29,10 +29,14 @@ def register_page():
 @main_bp.route('/onboarding')
 def onboarding():
     return render_template('onboarding.html')
-
+    
 @main_bp.route('/creator/dashboard')
 def creator_dashboard():
     return render_template('creator/creator_dashboard.html')
+
+@main_bp.route('/creator/display')
+def creator_display():
+    return render_template('creator/display.html')
 
 @main_bp.route('/admin/dashboard')
 def admin_dashboard():

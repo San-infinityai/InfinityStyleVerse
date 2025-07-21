@@ -6,9 +6,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from werkzeug.utils import secure_filename
 import logging
 import os
+import base64
 from datetime import datetime, timedelta
-
-from ..models import User, Product
+from ..models import User, Product, Design
 from ..database import get_db_session, db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -67,12 +67,12 @@ def login():
         threshold = timedelta(days=30)
 
         # Update last login and status
-        user.last_login = now
         if user.last_login and now - user.last_login <= threshold:
             user.status = "Active"
         else:
             user.status = "Inactive"
 
+        user.last_login = now
         db.session.commit()
 
         access_token = create_access_token(identity=str(user.id))
@@ -103,14 +103,25 @@ def get_profile():
     if not user:
         return jsonify({"msg": "User not found"}), 404
 
-    profile_image_url = getattr(user, 'image', None) or '/static/images/profile.avif'
+    # Encode profile image
+    if user.image_url:
+        b64_data = base64.b64encode(user.image_url).decode('utf-8')
+        profile_image_url = f"data:{user.image_mime};base64,{b64_data}"
+    else:
+        profile_image_url = "/static/images/default-profile.png"
+
+    # Count designs and products
+    design_count = Design.query.filter_by(user_id=user.id).count()
+    product_count = Product.query.filter_by(user_id=user.id).count()
 
     return jsonify({
         "name": user.name,
         "email": user.email,
         "role": user.role,
         "bio": user.bio or "",
-        "profile_image_url": profile_image_url
+        "profile_image_url": profile_image_url,
+        "design_count": design_count,
+        "saved_count": product_count
     })
 
 
@@ -145,14 +156,13 @@ def update_profile():
             if ext not in allowed_extensions:
                 return jsonify({"msg": "Invalid file type"}), 400
 
-            upload_dir = os.path.join(current_app.root_path, 'static/uploads/profile_photos')
-            os.makedirs(upload_dir, exist_ok=True)
+            # Read file bytes
+            file_data = file.read()
+            mime_type = file.mimetype or "image/jpeg"
 
-            unique_filename = f"user_{user_id}{ext}"
-            file_path = os.path.join(upload_dir, unique_filename)
-            file.save(file_path)
-
-            user.image = f"/static/uploads/profile_photos/{unique_filename}"
+            # Store in database
+            user.image_url = file_data
+            user.image_mime = mime_type
 
     db.session.commit()
 

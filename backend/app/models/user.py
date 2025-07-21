@@ -13,7 +13,8 @@ class User(db.Model):
     feedbacks = db.relationship('Feedback', backref='user', lazy=True)
     status = db.Column(db.String(10), default='Inactive')
     bio = db.Column(db.Text, nullable=True)  
-    profile_image = db.Column(db.String(255), nullable=True) 
+    image_url = db.Column(db.LargeBinary(length=(2**24 - 1))) 
+    image_mime = db.Column(db.String(50), nullable=False) 
 
     @property
     def password(self):

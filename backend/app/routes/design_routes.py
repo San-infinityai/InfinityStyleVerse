@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import base64
 
@@ -25,31 +25,34 @@ def upload_design():
     if not all([title, description, category, image_file]):
         return jsonify({'message': 'Missing required fields'}), 400
 
-    # Validate MIME type
-    allowed_mime_types = ['image/png', 'image/jpeg','image/jpg']
+    allowed_mime_types = ['image/png', 'image/jpeg']
     if image_file.mimetype not in allowed_mime_types:
         return jsonify({'message': 'Only PNG and JPEG images are allowed'}), 400
 
-    # Validate extension (optional extra safety)
-    allowed_extensions = ['.png', '.jpg', '.jpeg']
     filename = image_file.filename.lower()
+    allowed_extensions = ['.png', '.jpg', '.jpeg']
     if not any(filename.endswith(ext) for ext in allowed_extensions):
         return jsonify({'message': 'Invalid file extension'}), 400
 
-    # Read image bytes
     image_data = image_file.read()
 
     design = Design(
         title=title,
         description=description,
         category=category,
-        image_url=image_data,  # correct variable here
+        image_url=image_data,  # consider renaming to image_data in your model
+        image_mime=image_file.mimetype,
         user_id=user.id
     )
-    db.session.add(design)
-    db.session.commit()
+    try:
+        db.session.add(design)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to save design', 'error': str(e)}), 500
 
-    return jsonify({'message': 'Design uploaded successfully'})
+    return jsonify({'message': 'Design uploaded successfully', 'id': design.id})
+
 
 @design_bp.route('/my-designs', methods=['GET'])
 @jwt_required()
@@ -61,22 +64,16 @@ def get_my_designs():
         return jsonify({'message': 'User not found'}), 404
 
     category = request.args.get('category')
-
     query = Design.query.filter_by(user_id=user_id)
     if category and category != 'All':
         query = query.filter_by(category=category)
-    
+
     designs = query.all()
 
     designs_data = []
     for d in designs:
-        image_data = d.image_url
-        # Fix if image_data is string (convert to bytes)
-        if isinstance(image_data, str):
-            image_data = image_data.encode('utf-8')
-
-        encoded_image = base64.b64encode(image_data).decode('utf-8')
-        image_data_url = f"data:image/jpg;base64,{encoded_image}"
+        encoded_image = base64.b64encode(d.image_url).decode('utf-8')
+        image_data_url = f"data:{d.image_mime};base64,{encoded_image}"
 
         designs_data.append({
             'id': d.id,
@@ -96,17 +93,13 @@ def get_all_designs():
     query = Design.query
     if category and category != 'All':
         query = query.filter_by(category=category)
-    
+
     designs = query.all()
 
     designs_data = []
     for d in designs:
-        image_data = d.image_url
-        if isinstance(image_data, str):
-            image_data = image_data.encode('utf-8')
-
-        encoded_image = base64.b64encode(image_data).decode('utf-8')
-        image_data_url = f"data:image/jpeg;base64,{encoded_image}"
+        encoded_image = base64.b64encode(d.image_url).decode('utf-8')
+        image_data_url = f"data:{d.image_mime};base64,{encoded_image}"
 
         designs_data.append({
             'id': d.id,
@@ -118,3 +111,72 @@ def get_all_designs():
         })
 
     return jsonify(designs_data)
+
+
+@design_bp.route('/design-image/<int:design_id>', methods=['GET'])
+def get_design_image(design_id):
+    """
+    Serve raw binary image for <img src="/api/design-image/1"> usage.
+    """
+    design = Design.query.get(design_id)
+    if not design:
+        return jsonify({'message': 'Design not found'}), 404
+
+    return Response(design.image_url, mimetype=design.image_mime)
+
+@design_bp.route('/designs/<int:design_id>', methods=['PUT'])
+@jwt_required()
+def update_design(design_id):
+    user_id = get_jwt_identity()
+    design = Design.query.get(design_id)
+
+    if not design:
+        return jsonify({'message': 'Design not found'}), 404
+
+    if design.user_id != int(user_id):
+        return jsonify({'message': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': 'No input data provided'}), 400
+
+    title = data.get('title')
+    description = data.get('description')
+    category = data.get('category')
+
+    if title:
+        design.title = title
+    if description:
+        design.description = description
+    if category:
+        design.category = category
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to update design', 'error': str(e)}), 500
+
+    return jsonify({'message': 'Design updated successfully'})
+
+
+@design_bp.route('/designs/<int:design_id>', methods=['DELETE'])
+@jwt_required()
+def delete_design(design_id):
+    user_id = get_jwt_identity()
+    design = Design.query.get(design_id)
+
+    if not design:
+        return jsonify({'message': 'Design not found'}), 404
+
+    if design.user_id != int(user_id):
+        return jsonify({'message': 'Unauthorized'}), 403
+
+    try:
+        db.session.delete(design)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to delete design', 'error': str(e)}), 500
+
+    return jsonify({'message': 'Design deleted successfully'})

@@ -236,7 +236,9 @@ def recommend_full():
                 "sizes": p.sizes.split(",") if p.sizes else [],
                 "tags": p.tags.split(",") if p.tags else [],
                 "publish_date": p.publish_date.isoformat() if p.publish_date else None,
-                "score": score_map.get(p.id, 0.0)
+                "score": score_map.get(p.id, 0.0),
+                "esg_score": float(df_row['esg_score']),
+                "esg_badge": df_row['esg_badge']
             })
 
         if not results:

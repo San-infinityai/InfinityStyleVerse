@@ -6,6 +6,8 @@ from .config import Config
 from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
 from flask_cors import CORS  
 from flask_migrate import Migrate 
+from dotenv import load_dotenv
+load_dotenv()
 
 migrate = Migrate()
 
