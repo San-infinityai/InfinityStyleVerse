@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Loading the saved model data
-MODEL_PATH = os.path.join(os.path.dirname(__file__), '..','..', '..', 'models', 'new_recommender_model.pkl')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'new_recommender_model.pkl')
 with open(MODEL_PATH, 'rb') as f:
     model_data = pickle.load(f)
     df = model_data['df']
