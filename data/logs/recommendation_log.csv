@@ -68,3 +68,7 @@ timestamp,product_id,title,action,input_product_id
 2025-07-21 10:29:59,4,smocked fit and flare midi dress,shown,dress
 2025-07-21 10:29:59,5,bodycon midi dress,shown,dress
 2025-07-21 10:30:03,5,bodycon midi dress,clicked,dress
+2025-07-21 15:28:19,31,men shorts,shown,shorts
+2025-07-21 15:28:19,33,cotton pace shorts,shown,shorts
+2025-07-21 15:28:19,32,men sports shorts,shown,shorts
+2025-07-21 15:28:24,33,cotton pace shorts,clicked,shorts
