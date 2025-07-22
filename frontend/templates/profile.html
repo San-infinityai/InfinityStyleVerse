@@ -5,275 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>User Profile</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <style>
-    /* RESET & BASE */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: #f9f9fb;
-      color: #333;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
-    }
-    .profile-wrapper {
-      max-width: 1100px;
-      width: 100%;
-    }
-    .profile-container {
-      background: #ffffff;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-      margin-bottom: 40px;
-      transition: box-shadow 0.3s ease;
-    }
-    .profile-container:hover {
-      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-    }
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      justify-content: center;
-      flex-wrap: wrap;
-      text-align: center;
-    }
-    .profile-img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #ececec;
-      background: #f4f4f4;
-      transition: transform 0.3s ease;
-    }
-    .profile-img:hover {
-      transform: scale(1.05);
-    }
-    .profile-info h1 {
-      font-size: 28px;
-      font-weight: 600;
-      color: #444;
-    }
-    .profile-info p {
-      font-size: 16px;
-      color: #777;
-    }
-    .stats {
-      display: flex;
-      gap: 20px;
-      font-size: 14px;
-      color: #555;
-      justify-content: center;
-      margin-top: 10px;
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin: 30px 0 20px;
-      flex-wrap: wrap;
-    }
-    .tab {
-      padding: 10px 22px;
-      background: #f1f5f9;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      color: #555;
-      transition: all 0.3s;
-    }
-    .tab:hover,
-    .tab.active {
-      background: #d6e4ec;
-      color: #333;
-    }
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.4s ease;
-      text-align: center;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity:0; transform: translateY(10px); }
-      to { opacity:1; transform: translateY(0); }
-    }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-      text-align: center;
-      position: relative;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    }
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-    }
-    .card h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 14px 0;
-      padding: 0 12px;
-      color: #444;
-    }
-    /* SAVE BUTTON */
-    .save-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      border-radius: 50%;
-      padding: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-    .save-btn:hover {
-      background: #fef3c7;
-    }
-    .save-msg {
-      position: absolute;
-      bottom: 10px;
-      font-size: 13px;
-      background: #d1fae5;
-      color: #065f46;
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: none;
-    }
-    .card.saved .save-msg {
-      display: block;
-    }
-    /* SETTINGS FORM */
-    .settings-form {
-      max-width: 500px;
-      margin: 0 auto;
-      text-align: left;
-    }
-    .settings-form label {
-      display: block;
-      margin-top: 16px;
-      font-weight: 500;
-      color: #555;
-    }
-    .settings-form input,
-    .settings-form textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      margin-top: 6px;
-      background: #f9fafb;
-    }
-    .settings-form .form-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    .settings-form button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .settings-form .back-btn {
-      background: #e0e7ff;
-      color: #374151;
-    }
-    .settings-form .back-btn:hover {
-      background: #c7d2fe;
-    }
-    .settings-form button[type="submit"] {
-      background: #d1fae5;
-      color: #065f46;
-    }
-    .settings-form button[type="submit"]:hover {
-      background: #a7f3d0;
-    }
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-    }
-    .product-card {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: box-shadow 0.2s, transform 0.2s;
-      position: relative;
-    }
-    .product-card:hover {
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      transform: translateY(-2px);
-    }
-    .product-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-    .product-title {
-      font-size: 16px;
-      color: #1f2937;
-      margin: 8px 0;
-      font-weight: 600;
-    }
-    .product-description {
-      font-size: 14px;
-      color: #555;
-      min-height: 40px;
-      margin-bottom: 6px;
-    }
-    .product-price {
-      font-size: 14px;
-      font-weight: 700;
-      color: #111;
-      margin-bottom: 6px;
-    }
-  </style>
-</head>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+ </head>
 <body>
   <div class="profile-wrapper">
     <div class="profile-container">
       <div class="profile-header">
         <img src="/static/images/default-profile.png" alt="Profile" class="profile-img" id="profile-image"/>
-       <div class="profile-info">
-  <h1 id="profile-name">Loading...</h1>
-  <p id="profile-role">Loading...</p>
-  <p id="profile-bio">Loading bio...</p>
-  <div class="stats">
-    <span><strong id="design-count">0</strong> Designs</span>
-    <span><strong id="saved-count">0</strong> Saved</span>
-  </div>
-</div>
-
+        <div class="profile-info">
+          <h1 id="profile-name">Loading...</h1>
+          <p id="profile-role">Loading...</p>
+          <p id="profile-bio">Loading bio...</p>
+          <div class="stats">
+            <span><strong id="design-count">0</strong> Designs</span>
+            <span><strong id="saved-count">0</strong> Saved</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -295,15 +42,19 @@
 
     <div class="tab-content" id="settings">
       <h2>Profile Settings</h2>
-      <form id="profile-form" enctype="multipart/form-data">
-        <label>Name</label>
+      <form id="profile-form" enctype="multipart/form-data" class="settings-form">
+        <label for="input-name">Name</label>
         <input type="text" name="name" id="input-name"/>
-        <label>Role</label>
+
+        <label for="input-role">Role</label>
         <input type="text" name="role" id="input-role"/>
-        <label>Bio</label>
+
+        <label for="input-bio">Bio</label>
         <textarea name="bio" id="input-bio" rows="3"></textarea>
-        <label>Profile Photo</label>
-        <input type="file" name="profile_image" accept="image/*"/>
+
+        <label for="input-image">Profile Photo</label>
+        <input type="file" name="profile_image" accept="image/*" id="input-image"/>
+
         <div class="form-buttons">
           <button type="button" class="back-btn" onclick="showTab('designs', event)">← Back</button>
           <button type="submit">Update Profile</button>
@@ -313,158 +64,137 @@
   </div>
 
   <script>
-  async function loadUserProfile() {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      alert("You are not logged in");
-      return;
-    }
-    try {
-      const response = await fetch("http://localhost:5000/auth/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        alert("Failed to load profile data");
+    async function loadUserProfile() {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        alert("You are not logged in");
         return;
       }
-      const user = await response.json();
-      document.getElementById("profile-image").src = user.profile_image_url || "/static/images/default-profile.png";
-      document.getElementById("profile-name").textContent = user.name || "No Name";
-      document.getElementById("profile-role").textContent = user.role || "Designer";
-      document.getElementById("input-name").value = user.name || "";
-      document.getElementById("input-role").value = user.role || "";
-      document.getElementById("design-count").textContent = user.design_count || 0;
-      document.getElementById("saved-count").textContent = user.saved_count || 0;
-      document.getElementById("profile-bio").textContent = user.bio || "";
-
-    } catch (error) {
-      console.error("Error loading profile:", error);
-    }
-  }
-async function loadUserDesigns() {
-  const token = localStorage.getItem("access_token");
-  const grid = document.getElementById("design-grid");
-
-  if (!token) {
-    grid.innerHTML = "<p>Please log in.</p>";
-    return;
-  }
-
-  try {
-    const res = await fetch("http://localhost:5000/designs/my-designs", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch designs");
-
-    const designs = await res.json();
-    grid.innerHTML = "";
-
-    designs.forEach(design => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <img src="${design.image_data_url}" alt="${design.title}" 
-          style="width:100%; height:160px; object-fit:cover; border-radius:6px; margin-bottom:10px;" />
-        <h5 style="font-size:16px; margin:8px 0; color:#1f2937;">${design.title}</h5>
-        <p style="font-size:14px; color:#555;">${design.description}</p>
-      `;
-      grid.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error(err);
-    grid.innerHTML = "<p>Error loading designs.</p>";
-  }
-}
-
-
- 
- async function loadUserProducts() {
-     // Fetch all products for 'product' section
-  try {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-    const response = await fetch('http://localhost:5000/product/my-products', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error('Failed to fetch products');
-    const products = await response.json();
-    displayProducts(products);
-  } catch (error) {
-    console.error(error);
-    document.getElementById('product-list').innerHTML = '<p>Error loading products.</p>';
-  }
-}
-
-function displayProducts(products) {
-  const container = document.getElementById('product-grid');
-  container.innerHTML = products.length ? '' : '<p>No products available.</p>';
-
-  products.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    const imgSrc = product.images && product.images.length > 0
-      ? product.images[0]
-      : 'https://via.placeholder.com/220x160?text=No+Image';
-
-    card.innerHTML = `
-      <img src="${imgSrc}" alt="${product.title}" />
-      <div class="product-title">${product.title}</div>
-      <div class="product-price">${product.sale_price ? '$'+product.sale_price : ''}</div>
-      <div class="product-description">${product.description || ''}</div>
-    `;
-
-    card.addEventListener('click', () => openModal(product.images, product));
-    container.appendChild(card);
-  });
-}
-  function showTab(tabId, event) {
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
-
-    // Load content on tab switch
-    if (tabId === 'designs') {
-      loadUserDesigns();
-    }
-    if (tabId === 'saved') {
-      loadUserProducts();
-    }
-  }
-
-  // Handle profile form submission
-  document.addEventListener("DOMContentLoaded", function() {
-    loadUserProfile();
-    loadUserDesigns(); // Load designs by default
-
-    const form = document.getElementById("profile-form");
-    form.addEventListener("submit", async function(event) {
-      event.preventDefault();
-      const formData = new FormData(form);
       try {
-        const response = await fetch("http://localhost:5000/auth/update_profile", {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("access_token")
-          },
-          body: formData
+        const response = await fetch("http://localhost:5000/auth/profile", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        const data = await response.json();
         if (!response.ok) {
-          alert("Error: " + (data.msg || "An error occurred."));
+          alert("Failed to load profile data");
           return;
         }
-        alert(data.msg || "Profile updated successfully!");
-        loadUserProfile();
+        const user = await response.json();
+        document.getElementById("profile-image").src = user.profile_image_url || "/static/images/default-profile.png";
+        document.getElementById("profile-name").textContent = user.name || "No Name";
+        document.getElementById("profile-role").textContent = user.role || "Designer";
+        document.getElementById("input-name").value = user.name || "";
+        document.getElementById("input-role").value = user.role || "";
+        document.getElementById("design-count").textContent = user.design_count || 0;
+        document.getElementById("saved-count").textContent = user.saved_count || 0;
+        document.getElementById("profile-bio").textContent = user.bio || "";
+        document.getElementById("input-bio").value = user.bio || "";
       } catch (error) {
-        console.error("Request failed:", error);
-        alert("An unexpected error occurred.");
+        console.error("Error loading profile:", error);
       }
-    });
-  });
-</script>
+    }
 
+    async function loadUserDesigns() {
+      const token = localStorage.getItem("access_token");
+      const grid = document.getElementById("design-grid");
+      if (!token) {
+        grid.innerHTML = "<p>Please log in.</p>";
+        return;
+      }
+      try {
+        const res = await fetch("http://localhost:5000/designs/my-designs", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch designs");
+        const designs = await res.json();
+        grid.innerHTML = "";
+        designs.forEach(design => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <img src="${design.image_data_url}" alt="${design.title}" />
+            <h3>${design.title}</h3>
+            <p>${design.description}</p>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = "<p>Error loading designs.</p>";
+      }
+    }
+
+    async function loadUserProducts() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        const response = await fetch('http://localhost:5000/product/my-products', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const products = await response.json();
+        displayProducts(products);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('product-grid').innerHTML = '<p>Error loading products.</p>';
+      }
+    }
+
+    function displayProducts(products) {
+      const container = document.getElementById('product-grid');
+      container.innerHTML = products.length ? '' : '<p>No products available.</p>';
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        const imgSrc = product.images && product.images.length > 0
+          ? product.images[0]
+          : 'https://via.placeholder.com/220x160?text=No+Image';
+        card.innerHTML = `
+          <img src="${imgSrc}" alt="${product.title}" />
+          <div class="product-title">${product.title}</div>
+          <div class="product-price">${product.sale_price ? '$'+product.sale_price : ''}</div>
+          <div class="product-description">${product.description || ''}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showTab(tabId, event) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+      if (tabId === 'designs') loadUserDesigns();
+      if (tabId === 'saved') loadUserProducts();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      loadUserProfile();
+      loadUserDesigns();
+      const form = document.getElementById("profile-form");
+      form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        try {
+          const response = await fetch("http://localhost:5000/auth/update_profile", {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("access_token")
+            },
+            body: formData
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            alert("Error: " + (data.msg || "An error occurred."));
+            return;
+          }
+          alert(data.msg || "Profile updated successfully!");
+          loadUserProfile();
+        } catch (error) {
+          console.error("Request failed:", error);
+          alert("An unexpected error occurred.");
+        }
+      });
+    });
+  </script>
 </body>
 </html>

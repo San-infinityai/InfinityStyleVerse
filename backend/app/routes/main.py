@@ -42,9 +42,9 @@ def creator_display():
 def admin_dashboard():
     return render_template('admin/admindashboard.html')
 
-@main_bp.route('/customer/home')
-def customer_home():
-    return render_template('')
+@main_bp.route('/customer/dashboard')
+def customer_dashboard():
+    return render_template('customer/customer_dashboard.html')
 
 @main_bp.route('/staff/dashboard')
 def staff_dashboard():
