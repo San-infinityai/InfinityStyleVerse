@@ -48,7 +48,7 @@ def customer_dashboard():
 
 @main_bp.route('/staff/dashboard')
 def staff_dashboard():
-    return render_template('staff_dashboard.html')
+    return render_template('staffdashboard.html')
 
 @main_bp.route('/index')
 def index():
