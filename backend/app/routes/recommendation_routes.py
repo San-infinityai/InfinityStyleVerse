@@ -14,7 +14,7 @@ import pandas as pd
 from ..models import Product, ProductImage
 from ..utils.esg_utils import generate_esg_columns, compute_esg_score
 
-esg_model_path = r'C:\Users\USER\OneDrive\Desktop\Infinity AI\ApparelWeb\InfinityStyleVerse\models\esg_model.pkl'
+esg_model_path = r'C:\Users\DELL\Desktop\htdocs\InfinityStyleVerse\models\esg_model.pkl'
 esg_model = joblib.load(esg_model_path)
 
 recommendation_bp = Blueprint('recommendation', __name__)
@@ -166,7 +166,7 @@ def recommend_full():
         if not user_input:
             return jsonify({"error": "No input provided"}), 400
 
-        
+         
         user_vector = tfidf.transform([user_input])
         text_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
 
