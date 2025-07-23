@@ -1,0 +1,8 @@
+<div class="content-section" id="recommendations">
+  <h3>Recommended For You</h3>
+  <div class="product-grid" id="recommendationGrid">
+    {% for product in recommendations %}
+      {% include 'customer/product_card.html' %}
+    {% endfor %}
+  </div>
+</div>

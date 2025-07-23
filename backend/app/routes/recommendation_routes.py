@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 import pickle
 import csv
@@ -58,8 +58,6 @@ def log_event(product_id, title, action, user_input):
         writer = csv.writer(f)
         writer.writerow([timestamp, product_id, title, action, user_input])
 
-import numpy as np
-import pandas as pd
 
 # Add ESG columns and compute ESG scores
 df = generate_esg_columns(df)
@@ -238,7 +236,9 @@ def recommend_full():
                 "sizes": p.sizes.split(",") if p.sizes else [],
                 "tags": p.tags.split(",") if p.tags else [],
                 "publish_date": p.publish_date.isoformat() if p.publish_date else None,
-                "score": score_map.get(p.id, 0.0)
+                "score": score_map.get(p.id, 0.0),
+                "esg_score": float(df_row['esg_score']),
+                "esg_badge": df_row['esg_badge']
             })
 
         if not results:

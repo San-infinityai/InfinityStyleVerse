@@ -1,0 +1,16 @@
+<form class="form-container" method="POST" action="/submit_feedback">
+  <label for="rating">Rate this product:</label>
+  <select name="rating" id="rating">
+    <option value="5">★★★★★</option>
+    <option value="4">★★★★</option>
+    <option value="3">★★★</option>
+    <option value="2">★★</option>
+    <option value="1">★</option>
+  </select>
+
+  <label for="comment">Your feedback:</label>
+  <textarea name="comment" id="comment" rows="3" placeholder="Write your thoughts..."></textarea>
+
+  <input type="hidden" name="product_id" value="{{ product.id }}" />
+  <button type="submit">Submit Feedback</button>
+</form>

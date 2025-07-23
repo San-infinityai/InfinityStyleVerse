@@ -33,6 +33,13 @@ def generate_esg_columns(df, seed=42):
     df[['water_use', 'carbon_emission', 'ethical_rating']] = df.apply(generate_values, axis=1)
     return df
 
+def get_esg_badge(score):
+    if score >= 80:
+        return '🟢'
+    elif score >= 50:
+        return '🟡'
+    return '🔴'
+
 def compute_esg_score(df, model):
     features = df[['water_use', 'carbon_emission', 'ethical_rating']].fillna(0)
     df['esg_score'] = model.predict(features)
@@ -61,6 +68,9 @@ def compute_esg_score(df, model):
     if (df['esg_score'] < 0).any() or (df['esg_score'] > 100).any():
         print("Warning: Some ESG scores fall outside the expected range (0–100). Clipping them.")
         df['esg_score'] = df['esg_score'].clip(lower=0, upper=100)
+    
+    # Add ESG badge column
+    df['esg_badge'] = df['esg_score'].apply(get_esg_badge)
 
     return df
 
