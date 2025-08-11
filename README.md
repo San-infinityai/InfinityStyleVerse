@@ -421,3 +421,59 @@ Ensure to provide at least 4 images when adding a product.
 
 Status fields (user status) are computed based on last login timestamp.
 
+**/api/visionaryai**
+1. Returns predicted tags and confidence score (mock implementation)
+Request Example:
+{
+  "image": "sample_image.jpg"
+}
+
+Response Example:
+{
+  "tags": ["cotton", "blue", "casual"],
+  "confidence_score": 0.85
+}
+
+# ESG Scoring API for Product Recommendation System
+
+This project enhances a product recommendation system by integrating an **ESG (Environmental, Social, and Governance)** scoring mechanism. The goal is to prioritize sustainable products in recommendations and provide ESG transparency for users.
+
+---
+
+## What is ESG?
+
+ESG stands for:
+
+- Environmental – How a product impacts the planet (e.g., water usage, carbon footprint).
+- Social – Ethical aspects like labor conditions, health/safety, etc.
+-Governance – Transparency and responsible sourcing or compliance in production.
+
+ESG model focuses mainly on Environmental and Ethical (Social) factors derived from product materials.
+
+---
+
+##  How ESG Scoring Works
+
+This simulates ESG-related features and predict an ESG score between 0–100 using a custom model. Here's how it works:
+
+1. **Input Features**   :
+   - `material` (e.g., cotton, leather, bamboo, polyester)
+   - `water_use` (litres)
+   - `carbon_emission` (kg CO₂)
+   - `ethical_rating` (scale 1–5)
+
+2. **Processing**:
+   - Features are generated using the function `generate_esg_columns(df)` from `esg_utils.py`
+   - A scoring model (in `esg_module.py`) calculates the ESG score based on weighted environmental and ethical metrics.
+
+3. **Output**:
+   - `score` (0–100)
+   - `badge` (Low, Medium, High)
+   - `sustainable_alternative` (suggested alternative materials)
+
+4. **Integration with Recommendation System**:
+   - Boosts similarity scores for high ESG products
+   - Filters out products with ESG score < 50 from top 3 recommendations
+
+---
+
