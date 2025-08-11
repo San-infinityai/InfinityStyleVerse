@@ -7,6 +7,7 @@ from datetime import datetime
 
 product_bp = Blueprint('product', __name__, url_prefix='/product')
 
+import requests
 
 @product_bp.route('', methods=['POST'])
 @jwt_required()
@@ -24,6 +25,12 @@ def add_product():
     publish_date_str = request.form.get('schedule_date')
     publish_date = datetime.strptime(publish_date_str, '%Y-%m-%d') if publish_date_str else None
 
+    # ESG input values
+    water_use = request.form.get('water_use')
+    carbon_emission = request.form.get('carbon_emission')
+    ethical_rating = request.form.get('ethical_rating')
+    material = request.form.get('material')
+
     if not all([title, category, description]):
         return jsonify({"error": "Missing required fields"}), 400
 
@@ -37,10 +44,29 @@ def add_product():
         if not image_data:
             return jsonify({"error": f"Empty image file: {img.filename}"}), 400
         image_records.append(ProductImage(
-            image_data=image_data  # Removed invalid filename argument here
+            image_data=image_data
         ))
 
     current_user_id = get_jwt_identity()
+
+    
+    esg_data = {
+        "water_use": float(water_use) if water_use else 0,
+        "carbon_emission": float(carbon_emission) if carbon_emission else 0,
+        "ethical_rating": float(ethical_rating) if ethical_rating else 0,
+        "material": material or ""
+    }
+
+    try:
+        esg_response = requests.post("http://127.0.0.1:5000/api/esg-score", json=esg_data)
+        if esg_response.status_code == 200:
+            esg_result = esg_response.json()
+            esg_score = esg_result.get("score", 0.0)
+        else:
+            esg_score = 0.0  
+    except Exception as e:
+        print("ESG API Error:", e)
+        esg_score = 0.0
 
     new_product = Product(
         title=title,
@@ -55,10 +81,10 @@ def add_product():
         visibility=visibility,
         publish_date=publish_date,
         user_id=current_user_id,
-        esg_score=0.0,
+        esg_score=esg_score,
         likes=0,
         views=0,
-        images=image_records 
+        images=image_records
     )
 
     db.session.add(new_product)
@@ -66,6 +92,7 @@ def add_product():
 
     return jsonify({
         "msg": "Product uploaded successfully",
+        "esg_score": esg_score,
         "product": new_product.to_dict()
     }), 201
 

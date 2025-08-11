@@ -29,6 +29,7 @@ def get_all_users():
     return jsonify(result)
 
 
+
 @admin_bp.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     data = request.get_json()

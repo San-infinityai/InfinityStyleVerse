@@ -40,7 +40,7 @@ def upload_design():
         title=title,
         description=description,
         category=category,
-        image_url=image_data,  # consider renaming to image_data in your model
+        image_url=image_data,  
         image_mime=image_file.mimetype,
         user_id=user.id
     )

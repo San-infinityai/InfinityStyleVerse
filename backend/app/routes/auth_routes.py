@@ -10,8 +10,38 @@ import base64
 from datetime import datetime, timedelta
 from ..models import User, Product, Design
 from ..database import get_db_session, db
+from flask_jwt_extended import (
+    jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
+)
+from ..models import Role
+from ..models import TokenBlocklist
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+from functools import wraps
+from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
+
+def role_required(*allowed_roles):
+    def outer(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            # ensure token present & valid
+            verify_jwt_in_request()
+            claims = get_jwt()
+            token_role = claims.get("role")
+            if token_role and token_role in allowed_roles:
+                return fn(*args, **kwargs)
+            # fallback: check DB for up-to-date role
+            user_id = get_jwt_identity()
+            user = User.query.get(int(user_id))
+
+            if user and user.role and user.role.role_name in allowed_roles:
+                return fn(*args, **kwargs)
+            return jsonify({"msg": "Forbidden - missing role"}), 403
+        return wrapper
+    return outer
+
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -19,30 +49,36 @@ logging.basicConfig(level=logging.INFO)
 @auth_bp.route('/register', methods=['POST'])
 def register():
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
-        role = data.get('role', 'user')
+        role_name = data.get('role', 'user')
 
         if not all([name, email, password]):
             return jsonify({"msg": "Missing required fields"}), 400
 
-        session = next(get_db_session())
-
-        existing_user = session.query(User).filter_by(email=email).first()
+        # use db.session consistently
+        existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return jsonify({"msg": "Email already registered"}), 409
+
+        # find or create role
+        role_obj = Role.query.filter_by(role_name=role_name).first()
+        if not role_obj:
+            role_obj = Role(role_name=role_name)
+            db.session.add(role_obj)
+            db.session.commit()   # commit to get id
 
         new_user = User(
             name=name,
             email=email,
-            role=role
+            role=role_obj   # assign the Role instance (relationship)
         )
         new_user.password = password
 
-        session.add(new_user)
-        session.commit()
+        db.session.add(new_user)
+        db.session.commit()
 
         return jsonify({"msg": "User registered successfully"}), 201
 
@@ -51,10 +87,17 @@ def register():
         return jsonify({"msg": "Internal server error"}), 500
 
 
+
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token,
+    get_jwt_identity, get_jwt
+)
+from datetime import datetime, timedelta
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         email = data.get('email')
         password = data.get('password')
 
@@ -67,7 +110,7 @@ def login():
         threshold = timedelta(days=30)
 
         # Update last login and status
-        if user.last_login and now - user.last_login <= threshold:
+        if user.last_login and (now - user.last_login) <= threshold:
             user.status = "Active"
         else:
             user.status = "Inactive"
@@ -75,15 +118,21 @@ def login():
         user.last_login = now
         db.session.commit()
 
-        access_token = create_access_token(identity=str(user.id))
+        # put role name in token claims
+        role_name = user.role.role_name if user.role else "user"
+        additional_claims = {"role": role_name}
+
+        access_token = create_access_token(identity=str(user.id), additional_claims=additional_claims, fresh=True)
+        refresh_token = create_refresh_token(identity=str(user.id), additional_claims=additional_claims)
 
         return jsonify({
             "access_token": access_token,
+            "refresh_token": refresh_token,
             "user": {
                 "id": user.id,
                 "email": user.email,
                 "name": user.name,
-                "role": user.role,
+                "role": role_name,
                 "last_login": user.last_login.strftime('%Y-%m-%d %H:%M:%S'),
                 "status": user.status
             }
@@ -117,7 +166,7 @@ def get_profile():
     return jsonify({
         "name": user.name,
         "email": user.email,
-        "role": user.role,
+        "role": user.role.role_name if user.role else None,
         "bio": user.bio or "",
         "profile_image_url": profile_image_url,
         "design_count": design_count,
@@ -142,7 +191,9 @@ def update_profile():
     if name:
         user.name = name
     if role:
-        user.role = role
+        role_obj = Role.query.filter_by(role_name=role).first()
+    if role_obj:
+        user.role = role_obj
     if bio is not None:
         user.bio = bio
 
@@ -167,3 +218,30 @@ def update_profile():
     db.session.commit()
 
     return jsonify({"msg": "Profile updated successfully"})
+
+@auth_bp.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+    role_name = user.role.role_name if user.role else "user"
+    new_access = create_access_token(identity=str(user.id), additional_claims={"role": role_name}, fresh=False)
+    return jsonify(access_token=new_access), 200
+
+@auth_bp.route('/logout_access', methods=['DELETE'])
+@jwt_required()
+def logout_access():
+    jti = get_jwt()["jti"]
+    db.session.add(TokenBlocklist(jti=jti, token_type="access", user_id=get_jwt_identity()))
+    db.session.commit()
+    return jsonify({"msg": "Access token revoked"}), 200
+
+@auth_bp.route('/logout_refresh', methods=['DELETE'])
+@jwt_required(refresh=True)
+def logout_refresh():
+    jti = get_jwt()["jti"]
+    db.session.add(TokenBlocklist(jti=jti, token_type="refresh", user_id=get_jwt_identity()))
+    db.session.commit()
+    return jsonify({"msg": "Refresh token revoked"}), 200

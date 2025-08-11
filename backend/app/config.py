@@ -15,3 +15,4 @@ class Config:
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # Recommended to disable, saves resources
     JWT_SECRET_KEY = 'super-secret-jwt-key'  # For JWT authentication
+

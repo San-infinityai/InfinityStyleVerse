@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template
+from backend.app.decorators import role_required 
+from flask_jwt_extended import jwt_required
 
 main_bp = Blueprint('main', __name__)
 
@@ -39,9 +41,12 @@ def creator_display():
     return render_template('creator/display.html')
 
 @main_bp.route('/admin/dashboard')
-def admin_dashboard():
+@jwt_required()
+@role_required('admin')
+def admin_area():
+    return jsonify({"msg": "Welcome, admin!"})
     return render_template('admin/admindashboard.html')
-
+ 
 @main_bp.route('/customer/dashboard')
 def customer_dashboard():
     return render_template('customer/customer_dashboard.html')
