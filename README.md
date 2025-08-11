@@ -421,6 +421,19 @@ Ensure to provide at least 4 images when adding a product.
 
 Status fields (user status) are computed based on last login timestamp.
 
+**/api/visionaryai**
+1. Returns predicted tags and confidence score (mock implementation)
+Request Example:
+{
+  "image": "sample_image.jpg"
+}
+
+Response Example:
+{
+  "tags": ["cotton", "blue", "casual"],
+  "confidence_score": 0.85
+}
+
 # ESG Scoring API for Product Recommendation System
 
 This project enhances a product recommendation system by integrating an **ESG (Environmental, Social, and Governance)** scoring mechanism. The goal is to prioritize sustainable products in recommendations and provide ESG transparency for users.
