@@ -90,6 +90,7 @@ def create_app():
     from .routes.recommendation_routes import recommendation_bp
     from .routes.admin_routes import admin_bp
     from .routes.design_routes import design_bp
+    from backend.app.routes.persona_mesh import persona_mesh_bp
 
     app.register_blueprint(design_bp, url_prefix='/designs')
     app.register_blueprint(admin_bp)
@@ -98,6 +99,7 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(feedback_bp)
     app.register_blueprint(recommendation_bp)
+    app.register_blueprint(persona_mesh_bp)
 
     with app.app_context():
         db.create_all()
