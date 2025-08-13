@@ -102,5 +102,15 @@ def recommend():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Placeholder health check endpoint    
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Placeholder health check for AI services (Day 4 task)."""
+    return jsonify({
+        "status": "healthy",
+        "message": "AI services are running (mock)",
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
