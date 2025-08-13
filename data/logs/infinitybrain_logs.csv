@@ -1,4 +1,6 @@
 user_id,timestamp,api_call,response_type,response_value,confidence
-user1,2025-08-13 11:14:10,predict,trend_forecast,Rise in sustainable jackets,0.89
-user2,2025-08-13 11:14:10,recommend,recommendation,Trendy leather jacket,0.85
-user3,2025-08-13 11:14:10,recommend,recommendation,Explore new styles,0.7
+unknown,2025-08-13 11:44:36,predict,trend_forecast,Rise in sustainable jackets,0.95
+user1,2025-08-13 11:44:58,recommend,recommendation,Casual blue t-shirt,0.9
+user1,2025-08-13 11:45:28,recommend,recommendation,Casual blue t-shirt,0.9
+user1,2025-08-13 11:45:42,recommend,recommendation,Casual blue t-shirt,0.9
+user1,2025-08-13 11:56:12,recommend,recommendation,Casual blue t-shirt,0.9
