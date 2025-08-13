@@ -1,0 +1,4 @@
+user_id,timestamp,api_call,response_type,response_value,confidence
+user1,2025-08-13 11:14:10,predict,trend_forecast,Rise in sustainable jackets,0.89
+user2,2025-08-13 11:14:10,recommend,recommendation,Trendy leather jacket,0.85
+user3,2025-08-13 11:14:10,recommend,recommendation,Explore new styles,0.7
