@@ -8,6 +8,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 from flask_login import LoginManager
+import logging
 
 load_dotenv()
 
@@ -82,6 +83,11 @@ def create_app():
         db.session.add(log)
         db.session.commit()
 
+    # set up orchestration logger
+    orch_logger = logging.getLogger("infinitybrain")
+    orch_logger.setLevel(app.config.get("ORCHESTRATOR_LOG_LEVEL", "INFO"))
+
+
     # Import and register blueprints
     from .routes.auth_routes import auth_bp
     from .routes.product_routes import product_bp
@@ -90,7 +96,9 @@ def create_app():
     from .routes.recommendation_routes import recommendation_bp
     from .routes.admin_routes import admin_bp
     from .routes.design_routes import design_bp
+    from .routes.infinitybrain_routes import ib_bp
 
+    app.register_blueprint(ib_bp)
     app.register_blueprint(design_bp, url_prefix='/designs')
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)

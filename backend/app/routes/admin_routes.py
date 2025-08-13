@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from ..models import User, Role, Permission
 from ..database import db
-from ..routes.auth_routes import role_required  # Adjust import path as needed
+from ..routes.auth_routes import role_required 
 from werkzeug.security import generate_password_hash
 from sqlalchemy.exc import IntegrityError
 

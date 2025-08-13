@@ -16,3 +16,5 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # Recommended to disable, saves resources
     JWT_SECRET_KEY = 'super-secret-jwt-key'  # For JWT authentication
 
+    ORCHESTRATOR_MOCK_MODE = True       
+    ORCHESTRATOR_LOG_LEVEL = "INFO"
