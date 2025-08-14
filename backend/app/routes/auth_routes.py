@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 import logging
 import os
 import base64
+from functools import wraps
 from datetime import datetime, timedelta
 from ..models import User, Product, Design
 from ..database import get_db_session, db
@@ -48,6 +49,49 @@ logging.basicConfig(level=logging.INFO)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
+    """
+    Register a new user
+    ---
+    tags:
+      - Auth
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [name, email, password]
+          properties:
+            name:
+              type: string
+              example: "Alice"
+            email:
+              type: string
+              example: "alice@example.com"
+            password:
+              type: string
+              example: "StrongPassword123"
+            role:
+              type: string
+              example: "user"
+    responses:
+      201:
+        description: User registered successfully
+        schema:
+          type: object
+          properties:
+            msg:
+              type: string
+              example: "User registered successfully"
+      400:
+        description: Missing required fields
+      409:
+        description: Email already registered
+      500:
+        description: Server error
+    """    
     try:
         data = request.get_json() or {}
         name = data.get('name')
@@ -96,6 +140,51 @@ from datetime import datetime, timedelta
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    """
+    Login and get tokens
+    ---
+    tags:
+      - Auth
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [email, password]
+          properties:
+            email:
+              type: string
+              example: "admin@example.com"
+            password:
+              type: string
+              example: "Admin123!"
+    responses:
+      200:
+        description: OK
+        schema:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+            user:
+              type: object
+              properties:
+                id: { type: integer, example: 1 }
+                email: { type: string, example: "admin@example.com" }
+                name: { type: string, example: "Admin" }
+                role: { type: string, example: "admin" }
+                last_login: { type: string, example: "2025-08-13 09:01:02" }
+                status: { type: string, example: "Active" }
+      401:
+        description: Bad email or password
+      500:
+        description: Server error
+    """    
     try:
         data = request.get_json() or {}
         email = data.get('email')
@@ -146,6 +235,21 @@ def login():
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
+    """
+    Get current user's profile
+    ---
+    tags:
+      - Auth
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: User profile
+      401:
+        description: Missing or invalid token
+      404:
+        description: User not found
+    """    
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
 
@@ -177,6 +281,42 @@ def get_profile():
 @auth_bp.route('/update_profile', methods=['POST'])
 @jwt_required()
 def update_profile():
+    """
+    Update user profile
+    ---
+    tags:
+      - Auth
+    consumes:
+      - multipart/form-data
+    parameters:
+      - in: formData
+        name: name
+        type: string
+        required: false
+      - in: formData
+        name: role
+        type: string
+        required: false
+      - in: formData
+        name: bio
+        type: string
+        required: false
+      - in: formData
+        name: profile_image
+        type: file
+        required: false
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: Profile updated successfully
+      400:
+        description: Invalid file type
+      401:
+        description: Unauthorized
+      404:
+        description: User not found
+    """    
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
 
@@ -222,6 +362,24 @@ def update_profile():
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
+    """
+    Refresh access token
+    ---
+    tags:
+      - Auth
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: New access token
+        schema:
+          type: object
+          properties:
+            access_token:
+              type: string
+      401:
+        description: Unauthorized / invalid refresh token
+    """    
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
     if not user:
@@ -233,6 +391,19 @@ def refresh():
 @auth_bp.route('/logout_access', methods=['DELETE'])
 @jwt_required()
 def logout_access():
+    """
+    Logout (revoke access token)
+    ---
+    tags:
+      - Auth
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: Access token revoked
+      401:
+        description: Unauthorized
+    """    
     jti = get_jwt()["jti"]
     db.session.add(TokenBlocklist(jti=jti, token_type="access", user_id=get_jwt_identity()))
     db.session.commit()
@@ -241,6 +412,19 @@ def logout_access():
 @auth_bp.route('/logout_refresh', methods=['DELETE'])
 @jwt_required(refresh=True)
 def logout_refresh():
+    """
+    Logout (revoke refresh token)
+    ---
+    tags:
+      - Auth
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: Refresh token revoked
+      401:
+        description: Unauthorized
+    """    
     jti = get_jwt()["jti"]
     db.session.add(TokenBlocklist(jti=jti, token_type="refresh", user_id=get_jwt_identity()))
     db.session.commit()

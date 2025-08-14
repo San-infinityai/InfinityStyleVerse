@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, send_from_directory, jsonify
 from .database import db
-from .models import RequestLog, TokenBlocklist  # Import models
+from .models import RequestLog, TokenBlocklist 
 from .config import Config
 from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
 from flask_cors import CORS
@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 from dotenv import load_dotenv
 from flask_login import LoginManager
 import logging
+from flasgger import Swagger
 
 load_dotenv()
 
@@ -87,7 +88,66 @@ def create_app():
     orch_logger = logging.getLogger("infinitybrain")
     orch_logger.setLevel(app.config.get("ORCHESTRATOR_LOG_LEVEL", "INFO"))
 
+    from .seeds.seed_data import run_seed
+    @app.cli.command("seed-db")
+    def seed_db():
+        """Seed database with default roles, permissions, and sample users."""
+        run_seed()
 
+
+    app.config['SWAGGER'] = {
+        'title': 'Infinity StyleVerse API',
+        'uiversion': 3
+    }
+   
+         # --- Swagger configuration (Swagger 2.0 / OpenAPI 2) ---
+    swagger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "InfinityStyleVerse API",
+            "description": "Auth, Admin, and InfinityBrain orchestration APIs.\n\n"
+                           "**Auth note:** Use the Authorize button and paste `Bearer <access_token>`.",
+            "version": "1.0.0"
+        },
+        "basePath": "/",
+        "securityDefinitions": {
+            "BearerAuth": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "JWT Authorization header using the Bearer scheme. Example: `Bearer eyJhbGciOi...`"
+            }
+        },
+        "security": [{"BearerAuth": []}],
+        "tags": [
+            {"name": "Auth", "description": "Authentication & profile"},
+            {"name": "Admin - Users", "description": "User management (admin only)"},
+            {"name": "Admin - Roles", "description": "Role & Permission management (admin only)"},
+            {"name": "InfinityBrain", "description": "Mock AI gateway/services"}
+        ],
+       
+        "x-rbac": "Routes with admin-only access require role: admin"
+    }
+
+    swagger_config = {
+        "headers": [],
+        "specs": [
+            {
+                "endpoint": "apispec",
+                "route": "/apispec.json",
+                "rule_filter": lambda rule: True,
+                "model_filter": lambda tag: True,
+            }
+        ],
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/apidocs/"
+    }
+    Swagger(app, template=swagger_template, config=swagger_config)
+    
+    # --- end Swagger config ---
+
+ 
     # Import and register blueprints
     from .routes.auth_routes import auth_bp
     from .routes.product_routes import product_bp
