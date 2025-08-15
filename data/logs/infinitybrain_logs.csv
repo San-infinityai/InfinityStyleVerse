@@ -4,3 +4,6 @@ user1,2025-08-13 11:44:58,recommend,recommendation,Casual blue t-shirt,0.9
 user1,2025-08-13 11:45:28,recommend,recommendation,Casual blue t-shirt,0.9
 user1,2025-08-13 11:45:42,recommend,recommendation,Casual blue t-shirt,0.9
 user1,2025-08-13 11:56:12,recommend,recommendation,Casual blue t-shirt,0.9
+unknown,2025-08-15 10:35:16,predict,trend_forecast,Popular neon tops,0.8
+user1,2025-08-15 10:35:25,recommend,recommendation,Casual blue t-shirt,0.9
+user2,2025-08-15 10:37:56,recommend,recommendation,Trendy leather jacket,0.85
