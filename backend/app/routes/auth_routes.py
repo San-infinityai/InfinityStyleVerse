@@ -16,6 +16,7 @@ from flask_jwt_extended import (
 )
 from ..models import Role
 from ..models import TokenBlocklist
+from ...app import csrf
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -102,7 +103,6 @@ def register():
         if not all([name, email, password]):
             return jsonify({"msg": "Missing required fields"}), 400
 
-        # use db.session consistently
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return jsonify({"msg": "Email already registered"}), 409
@@ -112,24 +112,34 @@ def register():
         if not role_obj:
             role_obj = Role(role_name=role_name)
             db.session.add(role_obj)
-            db.session.commit()   # commit to get id
+            db.session.commit()  # commit to get id
+
+        # hash the password
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
 
         new_user = User(
             name=name,
             email=email,
-            role=role_obj   # assign the Role instance (relationship)
+            password=hashed_password,  # store hashed password
+            role=role_obj
         )
-        new_user.password = password
 
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({"msg": "User registered successfully"}), 201
+        # create JWT tokens with expiry
+        access_token = create_access_token(identity=email, expires_delta=timedelta(minutes=15))
+        refresh_token = create_refresh_token(identity=email)
+
+        return jsonify({
+            "msg": "User registered successfully",
+            "access_token": access_token,
+            "refresh_token": refresh_token
+        }), 201
 
     except Exception as e:
         logging.error("Registration error: %s", str(e))
         return jsonify({"msg": "Internal server error"}), 500
-
 
 
 from flask_jwt_extended import (
@@ -139,6 +149,7 @@ from flask_jwt_extended import (
 from datetime import datetime, timedelta
 
 @auth_bp.route('/login', methods=['POST'])
+@csrf.exempt  # CSRF protection not needed for login
 def login():
     """
     Login and get tokens
@@ -234,6 +245,7 @@ def login():
 
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
+@csrf.exempt
 def get_profile():
     """
     Get current user's profile
@@ -280,6 +292,7 @@ def get_profile():
 
 @auth_bp.route('/update_profile', methods=['POST'])
 @jwt_required()
+@csrf.exempt
 def update_profile():
     """
     Update user profile
@@ -361,6 +374,7 @@ def update_profile():
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
+@csrf.exempt  # CSRF protection not needed for refresh
 def refresh():
     """
     Refresh access token
