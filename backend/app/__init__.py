@@ -10,13 +10,11 @@ from dotenv import load_dotenv
 from flask_login import LoginManager
 import logging
 from flasgger import Swagger
-from flask_seasurf import SeaSurf 
 
 load_dotenv()
 
 migrate = Migrate()
 login_manager = LoginManager()
-csrf = SeaSurf() 
 
 def create_app():
     base_dir = os.path.dirname(os.path.abspath(__file__))  # backend/app
@@ -31,21 +29,11 @@ def create_app():
 
     app.config.from_object(Config)
 
-    CORS(
-        app,
-        resources={r"/*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000"]}},
-        supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization", "X-CSRFToken", "X-CSRF-Token"],
-        expose_headers=["Authorization", "Content-Type"]
-    )
-
+    CORS(app)
     db.init_app(app)
     migrate.init_app(app, db)
     jwt = JWTManager(app)
     login_manager.init_app(app)
-
-    csrf.init_app(app)
-
 
     # Import models here to avoid circular imports
     from .models.user import User
@@ -79,11 +67,6 @@ def create_app():
         scripts_dir = os.path.join(base_dir, '..', '..', 'Frontend', 'scripts')
         return send_from_directory(scripts_dir, filename)
 
-    # Simple health endpoint (also seeds CSRF cookie)
-    @app.get("/health")
-    def health():
-        return {"ok": True}
-        
     # Log requests
     @app.before_request
     def log_request():
@@ -190,5 +173,3 @@ def create_app():
         db.create_all()
 
     return app
-    # expose csrf for route decorators
-    __all__ = ["create_app", "csrf"]
