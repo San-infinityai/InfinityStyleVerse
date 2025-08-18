@@ -112,5 +112,29 @@ def health_check():
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
 
+# Mock EcoSense endpoint
+@app.route('/api/ecosense', methods=['POST'])
+def ecosense():
+    try:
+        # Get JSON request
+        data = request.get_json()
+        product_id = data.get('product_id', 'unknown_product')
+
+        # Generate mock eco-scores
+        carbon_score = round(random.uniform(2.0, 10.0), 1)  # kg CO2e
+        water_usage = round(random.uniform(50.0, 200.0), 1)  # liters
+        recyclability = round(random.uniform(0.5, 0.9), 2)   # percentage (0-1)
+
+        # Return JSON response
+        response = {
+            "product_id": product_id,
+            "carbon_score": carbon_score,
+            "water_usage": water_usage,
+            "recyclability": recyclability
+        }
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
