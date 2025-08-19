@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - StyleVerse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 200px;
+            --header-height: 80px;
+            --dark-bg: #161616;
+            --light-bg: #f8f8f8;
+            --accent-color: #c19a6b;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --text-gray: #666666;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --active-status-color: #d4edda;
+            --inactive-status-color: #f8d7da;
+            --active-text-color: #155724;
+            --inactive-text-color: #721c24;
+            --edit-btn-color: #e0f2f7;
+            --edit-text-color: #0d7088;
+            --delete-btn-color: #fce4ec;
+            --delete-text-color: #b71c1c;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            height: 95%;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-var(--sidebar-width));
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--accent-color);
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 7px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .sidebar-nav a i {
+            margin-right: 30px;
+            font-size: 16px;
+        }
+
+        .sidebar-nav a.active,
+        .sidebar-nav a:hover {
+            background-color: var(--accent-color);
+            color: var(--card-bg);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 16px 20px;
+            background-color: transparent;
+            color: var(--text-light);
+            border: none;
+            border-radius: 7px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        .logout-btn i {
+            margin-right: 30px;
+            font-size: 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 7px;
+            border-radius: 7px;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin-top: 7px;
+            justify-content: space-between;
+        }
+
+        .user-profile img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid var(--accent-color);
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex-grow: 1;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+
+        .user-info .view-profile {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .user-profile .settings-icon {
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease-in-out;
+            padding: 20px 30px;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .header-left .date {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left .date i {
+            margin-right: 5px;
+            color: var(--accent-color);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .search-bar input {
+            padding: 6px 12px 6px 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            font-size: 12px;
+            width: 160px;
+            transition: width 0.3s ease;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            color: var(--text-gray);
+            font-size: 16px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .header-icon:hover {
+            color: var(--accent-color);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            border-color: var(--accent-color);
+        }
+
+        .users-content {
+            padding: 20px;
+            background-color: var(--light-bg);
+        }
+
+        .users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .users-header h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .add-user-btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-user-btn:hover {
+            background-color: #a57f56;
+        }
+
+        .add-user-btn i {
+            margin-right: 8px;
+            font-size: 15px;
+        }
+
+        .users-table-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            overflow-x: auto;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            min-width: 600px;
+        }
+
+        .users-table th,
+        .users-table td {
+            text-align: left;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .users-table th {
+            background-color: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text-gray);
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .users-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .users-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .users-table input[type="checkbox"] {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-active {
+            background-color: var(--active-status-color);
+            color: var(--active-text-color);
+        }
+
+        .status-inactive {
+            background-color: var(--inactive-status-color);
+            color: var(--inactive-text-color);
+        }
+
+
+        .user-action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .user-action-btn {
+            border: none;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .user-action-btn.edit-btn {
+            background-color: var(--edit-btn-color);
+            color: var(--edit-text-color);
+        }
+
+        .user-action-btn.delete-btn {
+            background-color: var(--delete-btn-color);
+            color: var(--delete-text-color);
+        }
+
+        .user-action-btn:hover {
+            opacity: 0.8;
+        }
+
+
+        .hamburger-menu {
+            display: none;
+            font-size: 20px;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-right: 15px;
+            z-index: 1001;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+                padding: 15px 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-var(--sidebar-width));
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+
+            .search-bar {
+                margin-right: 10px;
+            }
+
+            .search-bar input {
+                width: 120px;
+                padding: 6px 8px 6px 28px;
+                font-size: 11px;
+            }
+
+            .search-bar i {
+                left: 8px;
+                font-size: 13px;
+            }
+
+            .header-left .date {
+                display: none;
+            }
+
+            .header-left h2 {
+                font-size: 18px;
+            }
+
+            .header-icons {
+                gap: 8px;
+            }
+
+            .header-icon {
+                font-size: 14px;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+            }
+
+            .users-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .add-user-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 0;
+            }
+
+            .users-table {
+                font-size: 12px;
+                min-width: 500px;
+            }
+
+            .users-table th,
+            .users-table td {
+                padding: 12px 15px;
+            }
+
+            .status-badge {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .user-action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .user-action-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 180px;
+            }
+
+            .sidebar-header {
+                font-size: 18px;
+            }
+
+            .sidebar-nav a {
+                font-size: 13px;
+            }
+
+            .logout-btn {
+                font-size: 13px;
+            }
+
+            .user-info .name {
+                font-size: 12px;
+            }
+
+            .user-profile img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .user-info .view-profile {
+                font-size: 9px;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .header h2 {
+                font-size: 16px;
+            }
+
+            .search-bar input {
+                width: 70px;
+            }
+
+            .users-table {
+                font-size: 11px;
+                min-width: 400px;
+            }
+
+            .users-table th,
+            .users-table td {
+                padding: 10px 12px;
+            }
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">StyleVerse</div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="#" class="active"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="roles.html"><i class="fas fa-user-tag"></i> Roles</a></li>
+                <li><a href="permission.html"><i class="fa-solid fa-shield"></i> Permissions</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <div class="user-profile">
+                <img src="Image.png" alt="Jenifer Winget">
+                <div class="user-info">
+                    <div class="name">Jenifer Winget</div>
+                    <a href="#" class="view-profile">View profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" id="main-content">
+        <div class="header">
+            <div class="header-left">
+                <i class="fas fa-bars hamburger-menu" id="hamburger-menu"></i>
+                <h2>Hello Jenny</h2>
+                <span class="date"><i class="far fa-calendar-alt"></i> <span id="current-date"></span></span>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search here">
+                </div>
+                <div class="header-icons">
+                    <i class="far fa-bell header-icon"></i>
+                    <img src="Image.png" alt="User Avatar" class="user-avatar">
+                </div>
+            </div>
+        </div>
+
+        <div class="users-content">
+            <div class="users-header">
+                <h3>User List</h3>
+                <button class="add-user-btn" id="openAddUserModalBtn"><i class="fas fa-plus"></i> Add New User</button>
+            </div>
+
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeAddUserModalBtn">&times;</span>
+            <h3>Add New User</h3>
+            <div class="form-group">
+                <label for="newUserName">Name</label>
+                <input type="text" id="newUserName" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="newUserEmail">Email</label>
+                <input type="email" id="newUserEmail" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="newUserRole">Role</label>
+                <select id="newUserRole" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+                <label for="newUserStatus">Status</label>
+                <select id="newUserStatus" class="form-control" required></select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAddUserBtn">Cancel</button>
+                <button class="btn-primary" id="saveAddUserBtn">Add User</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeEditModalBtn">&times;</span>
+            <h3>Edit User Details</h3>
+            <input type="hidden" id="editUserId">
+            <div class="form-group">
+                <label for="editUserName">Name</label>
+                <input type="text" id="editUserName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editUserEmail">Email</label>
+                <input type="email" id="editUserEmail" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editUserRole">Role</label>
+                <select id="editUserRole" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label for="editUserStatus">Status</label>
+                <select id="editUserStatus" class="form-control"></select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelEditBtn">Cancel</button>
+                <button class="btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeDeleteModalBtn">&times;</span>
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this user?</p>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDeleteConfirmBtn">Cancel</button>
+                <button class="btn-primary delete-btn" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const sidebar = document.getElementById('sidebar');
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const mainContent = document.getElementById('main-content');
+            const currentDateElement = document.getElementById('current-date');
+            const searchInput = document.getElementById('searchInput');
+            const userTableBody = document.getElementById('userTableBody');
+
+
+            const addUserModal = document.getElementById('addUserModal');
+            const openAddUserModalBtn = document.getElementById('openAddUserModalBtn');
+            const closeAddUserModalBtn = document.getElementById('closeAddUserModalBtn');
+            const cancelAddUserBtn = document.getElementById('cancelAddUserBtn');
+            const saveAddUserBtn = document.getElementById('saveAddUserBtn');
+            const newUserName = document.getElementById('newUserName');
+            const newUserEmail = document.getElementById('newUserEmail');
+            const newUserRole = document.getElementById('newUserRole');
+            const newUserStatus = document.getElementById('newUserStatus');
+
+
+            const editUserModal = document.getElementById('editUserModal');
+            const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const saveEditBtn = document.getElementById('saveEditBtn');
+            const editUserId = document.getElementById('editUserId');
+            const editUserName = document.getElementById('editUserName');
+            const editUserEmail = document.getElementById('editUserEmail');
+            const editUserRole = document.getElementById('editUserRole');
+            const editUserStatus = document.getElementById('editUserStatus');
+
+
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+            const cancelDeleteConfirmBtn = document.getElementById('cancelDeleteConfirmBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            let userToDeleteId = null;
+
+            let users = [
+                { id: 'user001', name: 'Jenifer Winget', email: 'jenifer@gmail.com', role: 'Admin', status: 'Active' },
+                { id: 'user002', name: 'John Doe', email: 'john.doe@example.com', role: 'User', status: 'Inactive' },
+                { id: 'user003', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'Editor', status: 'Active' },
+                { id: 'user004', name: 'Alice Johnson', email: 'alice.j@example.com', role: 'User', status: 'Inactive' },
+                { id: 'user005', name: 'Bob Williams', email: 'bob.w@example.com', role: 'Admin', status: 'Active' },
+            ];
+
+            const availableRoles = ['Admin', 'Editor', 'User', 'Viewer', 'Contributor', 'Support'];
+            const availableStatuses = ['Active', 'Inactive', 'Pending', 'Suspended'];
+
+            const renderUsersTable = () => {
+                userTableBody.innerHTML = '';
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.dataset.userId = user.id;
+
+                    row.innerHTML = `
+                        <td><input type="checkbox"></td>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td><span class="status-badge status-${user.status.toLowerCase()}">${user.status}</span></td>
+                        <td>
+                            <div class="user-action-buttons">
+                                <button class="user-action-btn edit-btn" data-user-id="${user.id}">Edit</button>
+                                <button class="user-action-btn delete-btn" data-user-id="${user.id}">Delete</button>
+                            </div>
+                        </td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
+            };
+
+
+            const populateDropdown = (selectElement, optionsArray, selectedValue = '') => {
+                selectElement.innerHTML = '';
+                optionsArray.forEach(optionText => {
+                    const option = document.createElement('option');
+                    option.value = optionText;
+                    option.textContent = optionText;
+                    if (optionText === selectedValue) {
+                        option.selected = true;
+                    }
+                    selectElement.appendChild(option);
+                });
+            };
+
+
+            const openAddUserModal = () => {
+                newUserName.value = '';
+                newUserEmail.value = '';
+                populateDropdown(newUserRole, availableRoles, 'User');
+                populateDropdown(newUserStatus, availableStatuses, 'Active');
+                addUserModal.style.display = 'block';
+            };
+
+
+            const closeAddUserModal = () => {
+                addUserModal.style.display = 'none';
+            };
+
+
+            const handleAddUser = () => {
+                const name = newUserName.value.trim();
+                const email = newUserEmail.value.trim();
+                const role = newUserRole.value;
+                const status = newUserStatus.value;
+
+                if (!name || !email || !role || !status) {
+                    alert('All fields are required!');
+                    return;
+                }
+
+                const newUserId = 'user' + (users.length + 1).toString().padStart(3, '0');
+
+                console.log(`Adding new user:`, { id: newUserId, name, email, role, status });
+
+
+                setTimeout(() => {
+                    users.push({ id: newUserId, name, email, role, status });
+                    renderUsersTable();
+                    alert('User added successfully!');
+                    closeAddUserModal();
+                }, 700);
+            };
+
+
+            const openEditUserModal = (userId) => {
+                const user = users.find(u => u.id === userId);
+                if (user) {
+                    editUserId.value = user.id;
+                    editUserName.value = user.name;
+                    editUserEmail.value = user.email;
+                    populateDropdown(editUserRole, availableRoles, user.role);
+                    populateDropdown(editUserStatus, availableStatuses, user.status);
+                    editUserModal.style.display = 'block';
+                } else {
+                    alert('User not found!');
+                }
+            };
+
+
+            const closeEditUserModal = () => {
+                editUserModal.style.display = 'none';
+
+                editUserId.value = '';
+                editUserName.value = '';
+                editUserEmail.value = '';
+                editUserRole.innerHTML = '';
+                editUserStatus.innerHTML = '';
+            };
+
+            const handleSaveEdit = () => {
+                const userId = editUserId.value;
+                const newName = editUserName.value.trim();
+                const newEmail = editUserEmail.value.trim();
+                const newRole = editUserRole.value;
+                const newStatus = editUserStatus.value;
+
+                if (!newName || !newEmail || !newRole || !newStatus) {
+                    alert('All fields are required!');
+                    return;
+                }
+
+
+                console.log(`Updating user ${userId} with new data:`, { newName, newEmail, newRole, newStatus });
+
+
+                setTimeout(() => {
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    if (userIndex !== -1) {
+                        users[userIndex] = { ...users[userIndex], name: newName, email: newEmail, role: newRole, status: newStatus };
+                        renderUsersTable();
+                        alert('User updated successfully!');
+                        closeEditUserModal();
+                    } else {
+                        alert('Simulated update failed: User not found.');
+                    }
+                }, 700);
+            };
+
+
+            const openDeleteConfirmModal = (userId) => {
+                userToDeleteId = userId;
+                deleteConfirmModal.style.display = 'block';
+            };
+
+
+            const closeDeleteConfirmModal = () => {
+                deleteConfirmModal.style.display = 'none';
+                userToDeleteId = null;
+            };
+
+
+            const handleDeleteUser = () => {
+                if (!userToDeleteId) return;
+
+
+                console.log(`Deleting user with ID: ${userToDeleteId}`);
+
+
+                setTimeout(() => {
+                    const initialLength = users.length;
+                    users = users.filter(u => u.id !== userToDeleteId);
+                    if (users.length < initialLength) {
+                        renderUsersTable();
+                        alert('User deleted successfully!');
+                        closeDeleteConfirmModal();
+                    } else {
+                        alert('Simulated deletion failed: User not found.');
+                    }
+                }, 700);
+            };
+
+
+            hamburgerMenu.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+
+            mainContent.addEventListener('click', (event) => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(event.target) && !hamburgerMenu.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('active');
+                    sidebar.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('hidden');
+                }
+            });
+
+
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('hidden');
+            }
+
+
+            const today = new Date();
+            const options = { month: 'long', day: 'numeric', year: 'numeric' };
+            currentDateElement.textContent = today.toLocaleDateString('en-US', options);
+
+
+            renderUsersTable();
+
+
+            searchInput.addEventListener('keyup', (event) => {
+                const searchValue = event.target.value.toLowerCase();
+                const rows = userTableBody.getElementsByTagName('tr');
+
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.getElementsByTagName('td');
+                    let found = false;
+                    for (let j = 1; j < cells.length; j++) {
+                        const cellText = cells[j].textContent || cells[j].innerText;
+                        if (cellText.toLowerCase().includes(searchValue)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+
+
+            userTableBody.addEventListener('click', (event) => {
+                const target = event.target;
+                if (target.classList.contains('edit-btn')) {
+                    const userId = target.dataset.userId;
+                    openEditUserModal(userId);
+                } else if (target.classList.contains('delete-btn')) {
+                    const userId = target.dataset.userId;
+                    openDeleteConfirmModal(userId);
+                }
+            });
+
+
+            openAddUserModalBtn.addEventListener('click', openAddUserModal);
+            closeAddUserModalBtn.addEventListener('click', closeAddUserModal);
+            cancelAddUserBtn.addEventListener('click', closeAddUserModal);
+            saveAddUserBtn.addEventListener('click', handleAddUser);
+
+            window.addEventListener('click', (event) => {
+                if (event.target === addUserModal) {
+                    closeAddUserModal();
+                }
+            });
+
+
+
+            closeEditModalBtn.addEventListener('click', closeEditUserModal);
+            cancelEditBtn.addEventListener('click', closeEditUserModal);
+            saveEditBtn.addEventListener('click', handleSaveEdit);
+
+            window.addEventListener('click', (event) => {
+                if (event.target === editUserModal) {
+                    closeEditUserModal();
+                }
+            });
+
+            closeDeleteModalBtn.addEventListener('click', closeDeleteConfirmModal);
+            cancelDeleteConfirmBtn.addEventListener('click', closeDeleteConfirmModal);
+            confirmDeleteBtn.addEventListener('click', handleDeleteUser);
+
+            window.addEventListener('click', (event) => {
+                if (event.target === deleteConfirmModal) {
+                    closeDeleteConfirmModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
