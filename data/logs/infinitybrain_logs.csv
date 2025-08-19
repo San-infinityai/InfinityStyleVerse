@@ -4,3 +4,6 @@ unknown,2025-08-19 13:56:49,predict,trend_forecast,High demand for blue dresses,
 user1,2025-08-19 13:57:18,recommend,recommendation,Casual blue t-shirt,0.9,{'user_id': 'user1'}
 N/A,2025-08-19 13:57:37,ecosense,eco_score,"{'product_id': 'dress1', 'carbon_score': 9.9, 'water_usage': 184.7, 'recyclability': 0.56}",N/A,{'product_id': 'dress1'}
 unknown,2025-08-19 13:57:59,intentlogic,intent_scores,"{'buy_shoes': 0.75, 'buy_accessory': 0.72, 'explore_more': 0.52}",N/A,{'user_action': 'viewed_dress'}
+user1,2025-08-19 14:20:07,visionaryai_analyze,analysis,"cotton, red",0.86,"{'image': 'test_image.jpg', 'user_id': 'user1'}"
+user1,2025-08-19 14:20:18,visionaryai_infer,inference,"['https://example.com/images/dress1.jpg', 'https://example.com/images/dress2.jpg', 'https://example.com/images/dress3.jpg']",0.81,"{'image': 'test_image.jpg', 'user_id': 'user1'}"
+user1,2025-08-19 14:26:09,stylesense_suggest,style_suggestion,Try a leather jacket,0.85,"{'preference': 'casual look', 'user_id': 'user1'}"
