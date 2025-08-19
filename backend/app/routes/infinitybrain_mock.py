@@ -55,13 +55,14 @@ def predict():
             "api_call": "predict",
             "response_type": "trend_forecast",
             "response_value": prediction["trend_forecast"],
-            "confidence": str(prediction["confidence"])  # Convert to string to match CSV
+            "confidence": str(prediction["confidence"]),  # Convert to string to match CSV
+            "request_data": str(data)
         }
 
         # Appending a new log entry
         logs.append(log_entry)
 
-        fieldnames = ["user_id", "timestamp", "api_call", "response_type", "response_value", "confidence"]
+        fieldnames = ["user_id", "timestamp", "api_call", "response_type", "response_value", "confidence", "request_data"]
         with open(log_file, 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if os.stat(log_file).st_size == 0:
@@ -70,6 +71,19 @@ def predict():
 
         return jsonify(prediction)
     except Exception as e:
+        error_entry = {
+            "user_id": user_id,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "api_call": "predict",
+            "response_type": "error",
+            "response_value": str(e),
+            "confidence": "N/A",
+            "request_data": str(data)
+        }
+        logs.append(error_entry)
+        with open(log_file, 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow(error_entry)
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/personamesh/recommend', methods=['POST'])
@@ -86,12 +100,13 @@ def recommend():
             "api_call": "recommend",
             "response_type": "recommendation",
             "response_value": recommendation["recommendation"],
-            "confidence": str(recommendation["confidence"])  
+            "confidence": str(recommendation["confidence"]),
+            "request_data": str(data)  
         }
 
         logs.append(log_entry)
 
-        fieldnames = ["user_id", "timestamp", "api_call", "response_type", "response_value", "confidence"]
+        fieldnames = ["user_id", "timestamp", "api_call", "response_type", "response_value", "confidence", "request_data"]
         with open(log_file, 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if os.stat(log_file).st_size == 0:
@@ -100,6 +115,19 @@ def recommend():
 
         return jsonify(recommendation)
     except Exception as e:
+        error_entry = {
+            "user_id": user_id,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "api_call": "recommend",
+            "response_type": "error",
+            "response_value": str(e),
+            "confidence": "N/A",
+            "request_data": str(data)
+        }
+        logs.append(error_entry)
+        with open(log_file, 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow(error_entry)
         return jsonify({"error": str(e)}), 500
 
 # Placeholder health check endpoint    
@@ -132,8 +160,42 @@ def ecosense():
             "water_usage": water_usage,
             "recyclability": recyclability
         }
+
+        log_entry = {
+            "user_id": "N/A",  # EcoSense may not require user_id
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "api_call": "ecosense",
+            "response_type": "eco_score",
+            "response_value": str(response),
+            "confidence": "N/A",
+            "request_data": str(data)
+        }
+
+        logs.append(log_entry)
+
+        fieldnames = ["user_id", "timestamp", "api_call", "response_type", "response_value", "confidence", "request_data"]
+        with open(log_file, 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            if os.stat(log_file).st_size == 0:
+                writer.writeheader()
+            writer.writerow(log_entry)
+
         return jsonify(response)
     except Exception as e:
+        error_entry = {
+            "user_id": "N/A",
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "api_call": "ecosense",
+            "response_type": "error",
+            "response_value": str(e),
+            "confidence": "N/A",
+            "request_data": str(data)
+        }
+        logs.append(error_entry)
+        
+        with open(log_file, 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow(error_entry)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
