@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Styleverse</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;700&family=Nunito+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Nunito Sans', 'DM Sans', 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        p,
+        label,
+        input,
+        select,
+        button,
+        a {
+            font-family: 'DM Sans', 'Nunito Sans', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            height: 600px;
+        }
+
+        .form-section {
+            flex: 1 1 400px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-section h1 {
+            margin-bottom: 10px;
+            font-size: 26px;
+            color: #333;
+        }
+
+        .form-section p {
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input {
+            margin-right: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #c19a6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #a57f56;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #c19a6b;
+            text-decoration: none;
+        }
+
+        .image-section {
+            flex: 1 1 400px;
+            height: 100%;
+        }
+
+        .image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media(max-width: 768px) {
+            body {
+                height: auto;
+                align-items: flex-start;
+            }
+
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .image-section {
+                order: -1;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="form-section">
+            <h1>Welcome to styleverse</h1>
+            <p>Register your styleverse account</p>
+            <form>
+                <div class="form-group">
+                    <input type="text" placeholder="Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <select required>
+                        <option value="">User Role</option>
+                        <option value="customer">Creator</option>
+                        <option value="designer">Customer</option>
+                        <option value="seller">Admin</option>
+                    </select>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" required>
+                    <label>I accept the privacy policy</label>
+                </div>
+                <button type="submit">Create Account</button>
+                <div class="login-link">
+                    Already have an account? <a href="login.html">Log In</a>
+                </div>
+            </form>
+        </div>
+        <div class="image-section">
+            <img src="photo.png" alt="Fashion Model">
+        </div>
+    </div>
+
+</body>
+<script>
+
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const role = document.getElementById("role").value;
+
+        try {
+            const res = await fetch("https://api.example.com/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password, role })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+
+                localStorage.setItem("token", data.token);
+                alert("Registration successful!");
+                window.location.href = "dashboard.html";
+            } else {
+                alert(data.message || "Registration failed!");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Something went wrong!");
+        }
+    });
+</script>
+
+</html>
