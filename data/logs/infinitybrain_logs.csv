@@ -7,3 +7,5 @@ unknown,2025-08-19 13:57:59,intentlogic,intent_scores,"{'buy_shoes': 0.75, 'buy_
 user1,2025-08-19 14:20:07,visionaryai_analyze,analysis,"cotton, red",0.86,"{'image': 'test_image.jpg', 'user_id': 'user1'}"
 user1,2025-08-19 14:20:18,visionaryai_infer,inference,"['https://example.com/images/dress1.jpg', 'https://example.com/images/dress2.jpg', 'https://example.com/images/dress3.jpg']",0.81,"{'image': 'test_image.jpg', 'user_id': 'user1'}"
 user1,2025-08-19 14:26:09,stylesense_suggest,style_suggestion,Try a leather jacket,0.85,"{'preference': 'casual look', 'user_id': 'user1'}"
+user1,2025-08-20 10:51:15,recommend,recommendation,Casual blue t-shirt,0.89,{'user_id': 'user1'}
+admin1,2025-08-20 10:51:35,recommend,recommendation,Premium suit,0.95,{'user_id': 'admin1'}
