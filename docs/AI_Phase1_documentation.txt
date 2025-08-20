@@ -1,0 +1,47 @@
+InfinityStyleVerse - Data Science Tasks (Days 1-10)
+
+Day 1:
+- Set up the IPython notebook file for to create dummy AI logic
+- Created a dummy function for IntentLogic that will take input, look for a match in a dictionary and return the result with a fixed confidence score.
+- Created a dummy function for visionaryai that will take a sample image as input and determine its color, material and style with a randomly chosen confidence score.
+
+Day 2: 
+- Created a python file called infinitybrain_mock.py
+- Added a new endpoint called '/api/infinitybrain/predict' to the Flask app.
+- This endpoint takes a prompt (like "Predict trend for winter") and returns a fake trend forecast with a confidence score (Eg: {"trend_forecast": "Rise in sustainable jackets", "confidence": 0.91}).
+- Created visionaryai_mock.py with an '/api/visionaryai/analyze' endpoint.
+- Created stylesense_mock.py with an '/api/stylesense/suggest' endpoint that returns a random chosen style suggestion.
+
+Day 3:
+- Added another endpoint called '/api/personamesh/recommend' to suggest clothing based on a user ID.
+- It returns a recommendation like {"recommendation": "Casual blue t-shirt", "confidence": 0.9} for users like "user1".
+
+Day 4: 
+- Added logging of the responses and requests send to the API endpoints.
+- Added a health check endpoint ('/api/health') to check the health of the endpoints.
+
+Day 5:
+- Updated the visionaryai_mock.py with a new endpoint '/api/visionaryai/infer.
+- This endpoint takes an image input and returns fake similar image URLs with a confidence score (Eg: {"image_urls": ["https://example.com/images/dress1.jpg", ...], "confidence": 0.88}).
+- Created an intent_logic.py file with an endpoint '/api/intentlogic'.
+- This endpoint takes a user action as input and returns dummy intent scores.
+
+Day 6:
+- Manually tested the created endpoints whether they all work as expected.
+- Set up pytest for AI endpoint tests.
+
+Day 7: 
+- Updated the PersonaMesh recommendation endpoint '/api/personamesh/recommend'.
+- Added a function to randomly create dummy embeddings for each user role.
+- Created a list of dummy users with user IDs and their specific roles to give dummy recommendations.
+
+Day 8:
+- Added a new endpoint '/api/ecosense' to 'infinitybrain_mock.py'.
+- This endpoint takes a product ID (Eg: "dress1") and returns fake eco-scores like {"carbon_score": 5.2, "water_usage": 120.3, "recyclability": 0.75}.
+
+Day 9: 
+- Tested how well all endpoints (like '/api/infinitybrain/predict' and '/api/personamesh/recommend') work with lots of requests at once.
+- Added logging to all endpoints to save details (like requests and responses) in 'infinitybrain_logs.csv'.
+
+Day 10: 
+- Wrote this Text document explaining all the data science work from Days 1 to 10.
