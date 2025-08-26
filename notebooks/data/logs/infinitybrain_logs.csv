@@ -1,0 +1,4 @@
+user_id,timestamp,api_call,response_type,response_value,confidence
+user1,2025-08-19 09:33:41,predict,trend_forecast,Popular neon tops,0.9
+user2,2025-08-19 09:33:41,recommend,recommendation,Trendy leather jacket,0.85
+user3,2025-08-19 09:33:41,recommend,recommendation,Explore new styles,0.7
