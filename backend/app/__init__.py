@@ -16,7 +16,7 @@ load_dotenv()
 migrate = Migrate()
 login_manager = LoginManager()
 
-def create_app():
+def create_app(config_name=None):
     base_dir = os.path.dirname(os.path.abspath(__file__))  # backend/app
     template_folder = os.path.join(base_dir, '..', '..', 'Frontend', 'templates')
     static_folder = os.path.join(base_dir, '..', '..', 'Frontend', 'assets')
@@ -27,7 +27,11 @@ def create_app():
         static_folder=static_folder
     )
 
-    app.config.from_object(Config)
+    from .config import Config, TestingConfig
+    if config_name == "testing":
+        app.config.from_object(TestingConfig)
+    else:
+        app.config.from_object(Config)
 
     CORS(app)
     db.init_app(app)
@@ -38,6 +42,10 @@ def create_app():
     # Import models here to avoid circular imports
     from .models.user import User
     from .models.token_blocklist import TokenBlocklist
+
+    # import models to register with SQLAlchemy
+    from .models import WorkflowDef, User, Run, RunStep, RunVar, Signal, Lock, Compensation
+
 
     # Flask-Login user loader
     @login_manager.user_loader
@@ -158,7 +166,9 @@ def create_app():
     from .routes.design_routes import design_bp
     from backend.app.routes.persona_mesh import persona_mesh_bp
     from .routes.infinitybrain_routes import ib_bp
+    from .routes.workflow_routes import bp as workflow_bp
 
+    app.register_blueprint(workflow_bp)
     app.register_blueprint(ib_bp)
     app.register_blueprint(design_bp, url_prefix='/designs')
     app.register_blueprint(admin_bp)

@@ -18,3 +18,8 @@ class Config:
 
     ORCHESTRATOR_MOCK_MODE = True       
     ORCHESTRATOR_LOG_LEVEL = "INFO"
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"  # in-memory DB for tests
+    WTF_CSRF_ENABLED = False  # if using CSRF

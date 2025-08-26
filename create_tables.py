@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine
-from models import Base
-from server.config import DATABASE_URL
+from backend.app import create_app
+from backend.app.database import db
 
-engine = create_engine(DATABASE_URL, echo=True)
-Base.metadata.create_all(bind=engine)
-print("Tables created successfully!")
+app = create_app()
+
+with app.app_context():
+    db.create_all()
+    print("All tables created successfully!")

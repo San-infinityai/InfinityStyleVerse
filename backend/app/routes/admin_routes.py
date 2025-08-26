@@ -111,7 +111,7 @@ def create_user():
         return jsonify({"msg": f"Role '{role_name}' does not exist"}), 400
 
     new_user = User(name=name, email=email, role=role_obj)
-    new_user.password = password  # hashed automatically via setter
+    new_user.password = password  
 
     try:
         db.session.add(new_user)
