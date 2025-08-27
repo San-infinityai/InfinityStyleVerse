@@ -1,0 +1,55 @@
+version: 1
+name: design_to_shop_v1
+sla_ms: 5000
+variables:
+  region: "EU"
+  eco_required: true
+steps:
+  - id: style
+    type: python_fn
+    fn: "generate_style"   # we will map this to python_fn for demo
+    args: [5, 7]
+    kwargs:
+      operation: "add"
+    parallel_group: A
+
+  - id: eco
+    type: python_fn
+    fn: "eco_score"
+    args: [10, 3]
+    kwargs:
+      operation: "mul"
+    when: "{{variables.eco_required}}"
+    parallel_group: A
+
+  - id: trend
+    type: python_fn
+    fn: "trend_score"
+    args: [20, 2]
+    kwargs:
+      operation: "sub"
+    depends_on: ["A"]
+    timeout_ms: 800
+
+  - id: preview
+    type: http_call
+    service: HoloShopOS
+    endpoint: https://jsonplaceholder.typicode.com/posts
+    method: GET
+    depends_on: ["trend"]
+
+  - id: price
+    type: python_fn
+    fn: "calculate_price"
+    args: [100, 15]
+    kwargs:
+      operation: "add"
+    depends_on: ["preview"]
+    fallback:
+      type: python_fn
+      fn: "rules.simple_price"
+      args: [69]
+
+outputs:
+  preview_result: "{{steps.preview.output.content | default('n/a')}}"
+  price_result: "{{steps.price.output.result | default(0)}}"
