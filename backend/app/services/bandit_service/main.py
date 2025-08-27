@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from bandits import ThompsonThompsonSampling, LinUCB, LogisticUCB
+from bandits import ThompsonSampling, LinUCB, LogisticUCB
 import numpy as np
 
 app = FastAPI(title="Bandit Microservice")
@@ -13,8 +13,8 @@ logisticucb = LogisticUCB(n_arms=3, dim=5)
 async def select_arm(task: str, context: list[float] = None):
     """
     Select an option (arm) based on the task and optional context.
-    Task - 'outfit_ranking' or 'price_nudge'
-    Context - List of features, Eg: (age, region, event) if provided
+    Task is the 'outfit_ranking' or 'price_nudge' for now
+    Context is the list of features, Eg: (age, region, event) if provided
     """
     if context is None:
         context = np.zeros(5)  # Default context of zeroes if it is not provided
@@ -35,7 +35,7 @@ async def update(chosen_arm: int, reward: float, task: str, context: list[float]
     Updating the bandit model with the chosen arm, reward, and optional context.
     - chosen_arm is the index of the selected arm
     - reward is the reward value (Eg: 1.0 point for success)
-    - task is 'outfit_ranking' or 'price_nudge'
+    - task is 'outfit_ranking' or 'price_nudge' for now
     - context is a list of features if given
     """
     if context is None:
