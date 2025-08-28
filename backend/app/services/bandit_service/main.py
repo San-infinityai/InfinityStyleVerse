@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from pydantic import BaseModel, Field
+from typing import List, Optional
 from bandits import ThompsonSampling, LinUCB, LogisticUCB
 import numpy as np
 
@@ -9,42 +11,50 @@ thompson = ThompsonSampling(n_arms=3)
 linucb = LinUCB(n_arms=3, dim=5, alpha=1.0)
 logisticucb = LogisticUCB(n_arms=3, dim=5)
 
+# Request Models 
+class SelectArmRequest(BaseModel):
+    task: str
+    context: Optional[List[float]] = None
+
+class UpdateRequest(BaseModel):
+    chosen_arm: int = Field(ge=0)
+    reward: float
+    task: str
+    context: Optional[List[float]] = None
+
+
 @app.post("/select_arm")
-async def select_arm(task: str, context: list[float] = None):
-    """
-    Select an option (arm) based on the task and optional context.
-    Task is the 'outfit_ranking' or 'price_nudge' for now
-    Context is the list of features, Eg: (age, region, event) if provided
-    """
-    if context is None:
-        context = np.zeros(5)  # Default context of zeroes if it is not provided
+async def select_arm(req: SelectArmRequest):
+    task = req.task
+    context = np.array(req.context) if req.context else np.zeros(5)
 
     if task == "outfit_ranking":
         arm = thompson.select_arm()
         return {"task": task, "selected_arm": int(arm), "method": "ThompsonSampling"}
+
     elif task == "price_nudge":
-        arm = linucb.select_arm(np.array(context))
-        return {"task": task, "selected_arm": int(arm), "method": "LinUCB", "context_used": context}
+        arm = linucb.select_arm(context)
+        return {"task": task, "selected_arm": int(arm), "method": "LinUCB", "context_used": req.context}
+
     else:
-        arm = logisticucb.select_arm(np.array(context))
-        return {"task": task, "selected_arm": int(arm), "method": "LogisticUCB", "context_used": context}
+        arm = logisticucb.select_arm(context)
+        return {"task": task, "selected_arm": int(arm), "method": "LogisticUCB", "context_used": req.context}
+
 
 @app.post("/update")
-async def update(chosen_arm: int, reward: float, task: str, context: list[float] = None):
-    """
-    Updating the bandit model with the chosen arm, reward, and optional context.
-    - chosen_arm is the index of the selected arm
-    - reward is the reward value (Eg: 1.0 point for success)
-    - task is 'outfit_ranking' or 'price_nudge' for now
-    - context is a list of features if given
-    """
-    if context is None:
-        context = np.zeros(5) 
+async def update(req: UpdateRequest):
+    chosen_arm = req.chosen_arm
+    reward = req.reward
+    task = req.task
+    context = np.array(req.context) if req.context else np.zeros(5)
 
     if task == "outfit_ranking":
         thompson.update(chosen_arm, reward)
+
     elif task == "price_nudge":
-        linucb.update(chosen_arm, reward, np.array(context))
+        linucb.update(chosen_arm, reward, context)
+
     else:
-        logisticucb.update(chosen_arm, reward, np.array(context))
+        logisticucb.update(chosen_arm, reward, context)
+
     return {"status": "updated", "task": task, "chosen_arm": chosen_arm, "reward": reward}
