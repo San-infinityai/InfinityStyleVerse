@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./backend/app"
+        "./backend/app",
+        "./backend"
     ]
 }
