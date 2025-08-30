@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy & Attribution Explorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-8">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-center bg-custom-dark text-custom-light py-4 px-6 rounded-lg shadow-md">
+        Policy & Attribution Explorer
+      </h1>
+    </header>
+
+    <!-- KPI Metrics Live Tiles -->
+    <section id="kpi-metrics" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-lg font-semibold text-custom-dark">CTR</h3>
+        <p id="ctr-value" class="text-2xl font-bold mt-2">0%</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-lg font-semibold text-custom-dark">CVR</h3>
+        <p id="cvr-value" class="text-2xl font-bold mt-2">0%</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-lg font-semibold text-custom-dark">AOV</h3>
+        <p id="aov-value" class="text-2xl font-bold mt-2">$0</p>
+      </div>
+    </section>
+
+    <!-- Policy Dashboard -->
+    <section id="policy-dashboard" class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
+      <h2 class="text-2xl font-semibold mb-4">Policy Dashboard</h2>
+      <div id="policies-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- Attribution Viewer -->
+    <section id="attribution-viewer" class="p-6 border rounded-lg shadow-sm bg-gray-50">
+      <h2 class="text-2xl font-semibold mb-4">Attribution Viewer</h2>
+      <div class="flex flex-col md:flex-row gap-4 mb-6">
+        <input type="text" id="request-id-input" class="flex-grow rounded-md border-gray-300 shadow-sm focus:border-custom-dark focus:ring-custom-dark" placeholder="Enter request_id (e.g., req_123)">
+        <button id="search-btn" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-custom-dark hover:bg-opacity-90 transition">
+          Search Trace
+        </button>
+      </div>
+      <div id="attribution-results" class="space-y-6"></div>
+    </section>
+  </div>
+
+  <script src="assets/policy.js"></script>
+
+</body>
+</html>

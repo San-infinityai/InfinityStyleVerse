@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiments Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    .bg-custom-dark {
+      background-color: #033638;
+    }
+
+    .text-custom-light {
+      color: #f9fafb;
+    }
+
+    #upliftChart {
+      width: 100% !important;
+      height: 450px !important;
+    }
+  </style>
+</head>
+
+<body class="p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-8">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-center bg-custom-dark text-custom-light py-4 px-6 rounded-lg shadow-md">
+        Experiments Console
+      </h1>
+    </header>
+
+    <!-- Create Experiment -->
+    <section id="create-experiment" class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
+      <h2 class="text-2xl font-semibold mb-4">Create New Experiment</h2>
+      <form id="experiment-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="exp-name" class="block text-sm font-medium text-gray-700">Experiment Name</label>
+          <input type="text" id="exp-name"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-dark focus:ring-custom-dark">
+        </div>
+        <div>
+          <label for="task" class="block text-sm font-medium text-gray-700">Task</label>
+          <select id="task"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-dark focus:ring-custom-dark">
+            <option>outfit recommendation</option>
+            <option>price nudge</option>
+          </select>
+        </div>
+        <div>
+          <label for="split" class="block text-sm font-medium text-gray-700">Population Split</label>
+          <input type="text" id="split" value="50/50"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-dark focus:ring-custom-dark">
+        </div>
+        <div>
+          <label for="metric" class="block text-sm font-medium text-gray-700">Primary Metric</label>
+          <select id="metric"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-dark focus:ring-custom-dark">
+            <option>CTR</option>
+            <option>CVR</option>
+            <option>AOV</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <button type="submit"
+            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-custom-dark hover:bg-opacity-90 transition">
+            Launch Experiment
+          </button>
+        </div>
+      </form>
+      <div id="status-message" class="mt-4 text-center text-sm font-medium hidden"></div>
+    </section>
+
+    <!-- Active Experiments -->
+    <section id="active-experiments" class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Active Experiments</h2>
+      <div id="experiments-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- Uplift Visualization -->
+    <section id="uplift-chart" class="p-6 border rounded-lg shadow-sm bg-gray-50">
+      <h2 class="text-2xl font-semibold mb-4">Uplift Visualization</h2>
+      <canvas id="upliftChart"></canvas>
+      <div id="no-data-message" class="text-center text-gray-500 mt-4">Select an experiment to see data.</div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script src="assets/experiment.js"></script>
+</body>
+
+</html>
