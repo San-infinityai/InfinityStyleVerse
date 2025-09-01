@@ -58,14 +58,17 @@
             position: fixed;
             height: 100vh;
         }
-  .sidebar a.active {
-        background-color: #c19a6b;
-        color: #ffffff; /* text white */
-        font-weight: bold;
-    }
-    .sidebar a.active i {
-        color: #ffffff; /* icon white */
-    }
+
+        .sidebar a.active {
+            background-color: #c19a6b;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .sidebar a.active i {
+            color: #ffffff;
+        }
+
         .bg-custom-dark {
             background-color: var(--dark-bg);
         }
@@ -138,7 +141,7 @@
             font-size: 1rem;
         }
 
-        /* Uplift Visualization container style */
+
         .uplift-container {
             position: relative;
         }
@@ -149,7 +152,7 @@
             align-items: center;
             justify-content: center;
             padding-bottom: 20px;
-            /* Space for the message */
+
         }
 
         .uplift-message {
@@ -165,8 +168,8 @@
     <div
         class="sidebar w-64 h-screen bg-custom-dark text-custom-light p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
         <div>
-           
-<div class="text-[20px] font-bold mb-8 font-['Inter'] text-[#c19a6b] text-center">StyleVerse</div>
+
+            <div class="text-[20px] font-bold mb-8 font-['Inter'] text-[#c19a6b] text-center">StyleVerse</div>
 
 
             <nav class="space-y-3 text-sm font-['DM Sans']">
@@ -424,25 +427,25 @@
                     }
                 }
             };
-const setActiveLink = (activeId) => {
-    document.querySelectorAll('.sidebar a').forEach(link => {
-        link.classList.remove('active');
-    });
-    document.getElementById(activeId).classList.add('active');
-};
+            const setActiveLink = (activeId) => {
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById(activeId).classList.add('active');
+            };
 
-experimentsLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSection('experiments');
-    renderExperiments();
-    setActiveLink('experiments-link');
-});
+            experimentsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('experiments');
+                renderExperiments();
+                setActiveLink('experiments-link');
+            });
 
-policyLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSection('policy');
-    setActiveLink('policy-link');
-});
+            policyLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('policy');
+                setActiveLink('policy-link');
+            });
 
             const showSection = (sectionId) => {
                 if (sectionId === 'experiments') {
