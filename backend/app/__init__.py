@@ -1,8 +1,8 @@
 import os
-from flask import Flask, request, send_from_directory, jsonify
+from flask import Flask, Response, request, send_from_directory, jsonify
 from .database import db
 from .models import RequestLog, TokenBlocklist 
-from .config import Config
+from backend.app.config.settings import settings
 from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from flask_login import LoginManager
 import logging
 from flasgger import Swagger
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+
 
 load_dotenv()
 
@@ -27,17 +29,20 @@ def create_app(config_name=None):
         static_folder=static_folder
     )
 
-    from .config import Config, TestingConfig
-    if config_name == "testing":
-        app.config.from_object(TestingConfig)
-    else:
-        app.config.from_object(Config)
+    
+    @app.route("/metrics")
+    def metrics():
+      """Prometheus metrics endpoint"""
+      return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+    app.config.from_object(settings)
 
     CORS(app)
     db.init_app(app)
     migrate.init_app(app, db)
     jwt = JWTManager(app)
     login_manager.init_app(app)
+
 
     # Import models here to avoid circular imports
     from .models.user import User
@@ -179,7 +184,6 @@ def create_app(config_name=None):
     app.register_blueprint(recommendation_bp)
     app.register_blueprint(persona_mesh_bp)
 
-    with app.app_context():
-        db.create_all()
+    
 
     return app
