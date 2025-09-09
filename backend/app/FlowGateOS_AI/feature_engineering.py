@@ -17,7 +17,7 @@ app = create_app()
 with app.app_context():
     engine = db.engine
 
-    # Querying the data from run_steps
+    # Querying the data from run_steps column
     query = """
         SELECT run_id, step_id, type, status, started_at, ended_at
         FROM run_steps
