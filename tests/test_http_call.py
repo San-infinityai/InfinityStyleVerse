@@ -3,9 +3,8 @@ import requests
 from unittest.mock import patch, MagicMock
 from backend.app.tasks.http_call import http_call_task, http_call
 
-
+# Helper to create mock responses
 def mock_response(status=200, json_data=None, text_data=None, headers=None):
-    """Helper to create a mock response object"""
     mock_resp = MagicMock()
     mock_resp.status_code = status
     mock_resp.headers = headers or {"content-type": "application/json"}
@@ -15,46 +14,44 @@ def mock_response(status=200, json_data=None, text_data=None, headers=None):
         mock_resp.text = text_data
     return mock_resp
 
-
+# -------- SUCCESS TESTS --------
 @patch("backend.app.tasks.http_call.allow", return_value=True)
 @patch("backend.app.tasks.http_call.safe_request")
 def test_http_call_allowed(mock_safe_request, mock_allow):
-    """Test HTTP call allowed by rate limiter"""
     mock_safe_request.return_value = mock_response(json_data={"ok": True}, status=200)
-
-    # run Celery task synchronously
     res = http_call_task.run("https://httpbin.org/get", "GET")
-
     assert res["status"] == 200
-    assert isinstance(res["data"], dict)
     assert res["data"]["ok"] is True
+    assert res["error"] is None
 
-
+# -------- RATE LIMIT BLOCK --------
 @patch("backend.app.tasks.http_call.allow", return_value=False)
 def test_http_call_blocked(mock_allow):
-    """Test HTTP call blocked by rate limiter"""
-    with pytest.raises(RuntimeError) as exc_info:
-        http_call_task.run("https://httpbin.org/get", "GET")
-    assert "Rate limit exceeded" in str(exc_info.value)
+    res = http_call_task.run("https://httpbin.org/get", "GET")
+    assert res["status"] is None
+    assert res["data"] is None
+    assert "Rate limit exceeded" in res["error"]
 
-
+# -------- REQUEST EXCEPTION & RETRY --------
 @patch("backend.app.tasks.http_call.allow", return_value=True)
 @patch("backend.app.tasks.http_call.safe_request")
-def test_http_call_request_exception(mock_safe_request, mock_allow):
-    """Test HTTP call raises exception and triggers retry"""
+@patch("backend.app.tasks.http_call.http_call_task.retry")
+def test_http_call_request_exception(mock_retry, mock_safe_request, mock_allow):
     mock_safe_request.side_effect = requests.RequestException("fail")
+    # patch retry to raise MaxRetriesExceededError so task returns error dict
+    from celery.exceptions import MaxRetriesExceededError
+    mock_retry.side_effect = MaxRetriesExceededError()
 
-    with pytest.raises(Exception) as exc_info:
-        http_call_task.run("https://httpbin.org/get", "GET")
+    res = http_call_task.run("https://httpbin.org/get", "GET")
+    assert res["status"] is None
+    assert res["data"] is None
+    assert "fail" in res["error"]
 
-    assert "fail" in str(exc_info.value)
-
-
+# -------- HTTP WRAPPER TEST --------
 @patch("backend.app.utils.http_client.request")
-def test_http_call_success(mock_http_client):
-    """Test shared task wrapper for http_call"""
+def test_http_call_wrapper_success(mock_http_client):
     mock_http_client.return_value = mock_response(json_data={"ok": True}, status=200)
-
     res = http_call("https://httpbin.org/get")
     assert res["status"] == 200
     assert res["data"]["ok"] is True
+    assert res["error"] is None

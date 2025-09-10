@@ -1,6 +1,26 @@
-# backend/app/tasks/python_fn.py
 from backend.celery_app import celery_app
-import time
+import logging
+import traceback
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+
+logger = logging.getLogger(__name__)
+
+def safe_exec(user_func, args=None, kwargs=None, timeout=5):
+    args = args or []
+    kwargs = kwargs or {}
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(user_func, *args, **kwargs)
+        try:
+            result = future.result(timeout=timeout)
+            return {"success": True, "result": result, "error": None}
+        except TimeoutError:
+            logger.error("Function execution timed out")
+            return {"success": False, "result": None, "error": "Timeout"}
+        except Exception:
+            error_msg = traceback.format_exc()
+            logger.error(f"Function execution error: {error_msg}")
+            return {"success": False, "result": None, "error": error_msg}
 
 @celery_app.task(
     bind=True,
@@ -10,25 +30,21 @@ import time
     max_retries=2,
     time_limit=30,
     soft_time_limit=25,
-    queue="cpu",  # explicit CPU queue
+    queue="cpu",
 )
-def python_fn(self, x, y, operation="add", fn=None):
-    """Small CPU-bound example; simulates heavier compute with sleep."""
-    print(f"Running step '{fn}' with x={x}, y={y}, operation={operation}")
-    time.sleep(3)  # simulate compute
+def python_fn(self, func_code: str, func_args=None, func_kwargs=None):
+    func_args = func_args or []
+    func_kwargs = func_kwargs or {}
+    local_scope = {}
 
     try:
-        if operation == "add":
-            result = x + y
-        elif operation == "sub":
-            result = x - y
-        elif operation == "mul":
-            result = x * y
-        elif operation == "div":
-            result = x / y if y != 0 else None
-        else:
-            return {"fn": fn, "error": f"Unsupported operation '{operation}'"}
+        exec(func_code, {}, local_scope)
+        user_func = local_scope.get("user_func")
+        if not user_func:
+            return {"success": False, "result": None, "error": "No function named 'user_func' found"}
 
-        return {"fn": fn, "operation": operation, "x": x, "y": y, "result": result}
-    except Exception as e:
-        raise self.retry(exc=e)
+        return safe_exec(user_func, func_args, func_kwargs, timeout=5)
+    except Exception:
+        error_msg = traceback.format_exc()
+        logger.error(f"Error parsing function: {error_msg}")
+        return {"success": False, "result": None, "error": error_msg}
