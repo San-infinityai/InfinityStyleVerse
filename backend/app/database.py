@@ -1,9 +1,9 @@
-from .config import Config
+from .config.settings import settings
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-DATABASE_URL = Config.SQLALCHEMY_DATABASE_URI
+DATABASE_URL = settings.SQLALCHEMY_DATABASE_URI
 
 db = SQLAlchemy()
 
