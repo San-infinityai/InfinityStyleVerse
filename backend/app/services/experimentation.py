@@ -2,6 +2,52 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 from typing import Dict, Tuple, Optional
+from .mde_calculator import MDECalculator, quick_sample_size
+
+def estimate_cuped_correlation(
+    control_metric: np.ndarray,
+    control_covariate: np.ndarray,
+    treatment_metric: np.ndarray,  
+    treatment_covariate: np.ndarray
+) -> float:
+    """Estimate correlation for MDE planning from pilot data."""
+    X = np.concatenate([control_covariate, treatment_covariate])
+    Y = np.concatenate([control_metric, treatment_metric])
+    return np.corrcoef(X, Y)[0, 1]
+
+def plan_experiment_from_pilot(
+    pilot_results: dict,
+    target_uplift: float,
+    power: float = 0.8,
+    alpha: float = 0.05
+) -> dict:
+    """Plan experiment using pilot CUPED results."""
+    correlation = pilot_results.get('covariate_outcome_corr', 0)
+    baseline_mean = pilot_results.get('control_mean_raw', 0)
+    
+    # Estimate if binary or continuous
+    is_binary = 0 <= baseline_mean <= 1
+    
+    calc = MDECalculator()
+    
+    if is_binary:
+        return calc.calculate_sample_size_binary(
+            mde_relative=target_uplift,
+            baseline_rate=baseline_mean,
+            power=power,
+            alpha=alpha,
+            variance_reduction=correlation**2
+        )
+    else:
+        # For continuous, need to estimate std
+        pooled_std = np.sqrt(pilot_results.get('var_control_raw', 1))
+        return calc.calculate_sample_size_continuous(
+            mde=target_uplift * baseline_mean,  # Absolute effect
+            pooled_std=pooled_std,
+            power=power,
+            alpha=alpha,
+            variance_reduction=correlation**2
+        )
 
 def calculate_cuped_adjusted_metric(
     control_metric: np.ndarray,

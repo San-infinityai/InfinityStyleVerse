@@ -1,5 +1,3 @@
-# backend/app/config/reward_functions.yaml
-
 version: "1.0"
 tasks:
   outfit_recommendation:

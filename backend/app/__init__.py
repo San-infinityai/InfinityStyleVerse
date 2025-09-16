@@ -2,7 +2,7 @@ import os
 from flask import Flask, Response, request, send_from_directory, jsonify
 from .database import db
 from .models import RequestLog, TokenBlocklist 
-from backend.app.config.settings import settings
+from .config.settings import settings
 from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
 from flask_cors import CORS
 from flask_migrate import Migrate
