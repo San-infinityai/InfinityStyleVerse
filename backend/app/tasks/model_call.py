@@ -23,6 +23,7 @@ def model_call_task(self, model_url: str, payload: dict, headers: Optional[dict]
     """
     Celery task to call an external ML model endpoint with retries.
     Always returns a consistent dict with 'success', 'output', and 'error'.
+    Validates output is a dictionary.
     """
     headers = headers or {}
 
@@ -48,12 +49,22 @@ def model_call_task(self, model_url: str, payload: dict, headers: Optional[dict]
                 logger.error(f"Response is not JSON: {response.text}")
                 data = response.text
 
+            # Validate output is a dictionary
+            if not isinstance(data, dict):
+                error_msg = f"Invalid model output, expected dict but got {type(data).__name__}"
+                logger.error(error_msg)
+                return {"success": False, "output": None, "error": error_msg}
+
             return {"success": True, "output": data, "error": None}
 
     except requests.RequestException as e:
         logger.error(f"Model call failed: {e}")
-        # Optional: you can still retry using safe_retry(self, e)
-        # safe_retry(self, e)  # Uncomment if you want retries via Celery
+        # Optionally retry via Celery
+        # safe_retry(self, e)
 
-        # Always return a consistent dict for failures
+        return {"success": False, "output": None, "error": str(e)}
+
+    except Exception as e:
+        # Catch-all to ensure workflow doesn't crash on unexpected errors
+        logger.error(f"Unexpected error during model call: {e}", exc_info=True)
         return {"success": False, "output": None, "error": str(e)}
