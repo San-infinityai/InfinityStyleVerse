@@ -1,0 +1,10 @@
+{
+  "tenant_a": {
+    "ranking": "clicks",
+    "recommendation": "conversions"
+  },
+  "tenant_b": {
+    "ranking": "revenue",
+    "engagement": "engagement"
+  }
+}
