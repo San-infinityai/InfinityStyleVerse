@@ -2,7 +2,7 @@
 import logging
 import sys
 import json
-from typing import Any
+from typing import Any, Union
 
 class JsonFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
@@ -21,7 +21,7 @@ class JsonFormatter(logging.Formatter):
             base["exc"] = self.formatException(record.exc_info)
         return json.dumps(base)
 
-def configure_logging(level: int | str = logging.INFO) -> None:
+def configure_logging(level: Union[int, str] = logging.INFO) -> None:
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(JsonFormatter())
     root = logging.getLogger()
