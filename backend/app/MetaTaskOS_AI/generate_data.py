@@ -23,7 +23,10 @@ for i in range(num_runs):
     ended_at = started_at + timedelta(seconds=random.randint(100, 2000))
     cost_cents = round(random.uniform(1.0, 10.0), 2)
     latency_ms = random.randint(500, 2500)
-    reward = round(min(1.0, max(0.0, 0.5 + (random.random() - 0.3) + (cost_cents / -20) + (latency_ms / -5000))), 2)  # Synthetic reward, which is penalized by cost and latency
+    reward = round(min(1.0, max(0.0, 0.3 + (random.random() * 0.6) + (policy.get("eco_min_score", 0.7) / 2) - (cost_cents / 20) - (latency_ms / 5000))), 2)
+    # Base 0.3, adding random (0-0.6), boosting for high eco_score, penalizing cost/time
+    if status == "failed" or policy.get("culture_check", True) is False:
+        reward = min(reward, 0.4)  # Capping reward for failures or policy fails
     runs_data.append([run_id, task, tenant, status, mode, json.dumps(budget), json.dumps(policy), started_at, ended_at, cost_cents, latency_ms, reward])
 
 runs_df = pd.DataFrame(runs_data, columns=["id", "task", "tenant", "status", "mode", "budget_json", "policy_json", "started_at", "ended_at", "cost_cents", "latency_ms", "reward"])
