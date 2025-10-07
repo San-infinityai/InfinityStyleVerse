@@ -1,5 +1,31 @@
 import numpy as np
 import pandas as pd
+import joblib
+import os
+
+MODEL_PATH = os.path.join('models', 'esg_model.pkl')
+
+try:
+    model = joblib.load(MODEL_PATH)
+except Exception as e:
+    print(f"ESG model could not be loaded: {e}")
+    model = None
+
+def suggest_alternative(material):
+    if not material:
+        return None
+    material = material.lower().strip()
+    alternatives = {
+        'polyester': 'organic cotton',
+        'cotton': 'recycled cotton',
+        'nylon': 'recycled nylon',
+        'acrylic': 'bamboo fabric',
+        'leather': 'vegan leather'
+    }
+    sustainable_options = set(alternatives.values())
+    if material in sustainable_options:
+        return "The provided material is a sustainable material."
+    return alternatives.get(material, 'recycled nylon')
 
 def generate_esg_columns(df, seed=42):
     np.random.seed(seed)  
