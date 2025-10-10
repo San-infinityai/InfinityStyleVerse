@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroCoreOS Playground</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-width: 200px;
+      --dark-bg: #222222;
+      --light-bg: #f8f8f8;
+      --accent-color: #c19a6b;
+      --text-dark: #333333;
+      --text-light: #ffffff;
+      --card-bg: #ffffff;
+      --border-color: #e0e0e0;
+      --shadow-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--light-bg);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      position: fixed;
+      height: 100vh;
+    }
+
+    .sidebar h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .sidebar a {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      color: var(--text-light);
+      text-decoration: none;
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    .sidebar a.active,
+    .sidebar a:hover {
+      background-color: var(--accent-color);
+      color: #fff;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex-grow: 1;
+      padding: 1.5rem;
+      margin-left: var(--sidebar-width);
+      overflow-y: auto;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px var(--shadow-color);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: var(--text-dark);
+    }
+
+    select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+    }
+
+    button {
+      background-color: var(--accent-color);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #a97f55;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      background-color: #e0e0e0;
+      color: var(--text-dark);
+    }
+
+    .btn-secondary:hover {
+      background-color: #ccc;
+    }
+
+    pre {
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 6px;
+      max-height: 350px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <h2>NeuroCoreOS</h2>
+    <a href="#" class="active">Playground</a>
+    <a href="#">Trace Explorer</a>
+  </aside>
+
+  <main class="main-content">
+    <h1>NeuroCoreOS Playground</h1>
+
+    <div class="card">
+      <form id="apiForm">
+        <label for="endpoint">API Endpoint</label>
+        <select id="endpoint">
+          <option value="/predict">/predict</option>
+          <option value="/recommend">/recommend</option>
+          <option value="/plan">/plan</option>
+          <option value="/explain">/explain</option>
+        </select>
+
+        <label for="requestInput">Request JSON</label>
+        <textarea id="requestInput" rows="8">{
+  "user_id": "123",
+  "query": "Suggest me an outfit for summer"
+}</textarea>
+
+        <div class="btn-group">
+          <button type="submit">Send Request</button>
+          <button type="button" class="btn-secondary" onclick="loadExample('design')">Example: Design</button>
+          <button type="button" class="btn-secondary" onclick="loadExample('outfit')">Example: Outfit</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Response</h2>
+      <div id="responseBox">
+        <p style="color: gray;">Response will appear here...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE_URL = "http://127.0.0.1:8000"; 
+    const form = document.getElementById("apiForm");
+    const responseBox = document.getElementById("responseBox");
+    const requestInput = document.getElementById("requestInput");
+    const endpoint = document.getElementById("endpoint");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let payload;
+
+      try {
+        payload = JSON.parse(requestInput.value);
+      } catch (err) {
+        responseBox.innerHTML = `<p style="color:red;">❌Invalid JSON format</p>`;
+        return;
+      }
+
+      responseBox.innerHTML = `<p style="color:gray;">Sending request...</p>`;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}${endpoint.value}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Server returned ${res.status}`);
+        }
+
+        const data = await res.json();
+        responseBox.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+
+      } catch (error) {
+        responseBox.innerHTML = `<p style="color:red;">❌ Error: ${error.message}</p>`;
+      }
+    });
+
+    function loadExample(type) {
+      let example = {};
+      if (type === "design") {
+        example = {
+          "query": "Generate a new outfit design using pastel colors",
+          "style": "casual"
+        };
+      } else if (type === "outfit") {
+        example = {
+          "user_id": "456",
+          "query": "Recommend a formal outfit for office",
+          "preferences": ["blazer", "dark colors"]
+        };
+      }
+      requestInput.value = JSON.stringify(example, null, 2);
+    }
+  </script>
+
+</body>
+</html>
