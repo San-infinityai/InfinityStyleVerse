@@ -154,19 +154,6 @@ class SequentialMonitor:
         treatment_covariate: Optional[np.ndarray] = None,
         analysis_time: Optional[datetime] = None
     ) -> AnalysisResult:
-        """
-        Conduct an interim analysis with optional CUPED adjustment.
-        
-        Args:
-            control_data: Control group outcomes
-            treatment_data: Treatment group outcomes  
-            control_covariate: Control group covariates (for CUPED)
-            treatment_covariate: Treatment group covariates (for CUPED)
-            analysis_time: Time of analysis
-            
-        Returns:
-            AnalysisResult with stopping recommendation
-        """
         if self.experiment_stopped:
             raise ValueError("Experiment has already been stopped")
         
@@ -349,7 +336,6 @@ class SequentialMonitor:
         current_se: float,
         information_fraction: float
     ) -> float:
-        """Calculate conditional power given current results"""
         if information_fraction >= 1.0:
             return 1.0 if abs(current_effect) >= self.config.min_effect_size else 0.0
         

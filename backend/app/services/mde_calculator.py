@@ -4,12 +4,7 @@ from scipy import stats
 from typing import Dict, List, Tuple, Optional, Union
 import warnings
 
-class MDECalculator:
-    """
-    Minimum Detectable Effect Calculator with CUPED integration.
-    Supports both continuous and binary metrics.
-    """
-    
+class MDECalculator:   
     def __init__(self):
         self.default_alpha = 0.05
         self.default_power = 0.8
@@ -25,21 +20,6 @@ class MDECalculator:
         variance_reduction: float = 0.0,
         two_sided: bool = True
     ) -> Dict:
-        """
-        Calculate MDE for continuous metrics.
-        
-        Args:
-            sample_size_per_group: Sample size per group
-            pooled_std: Pooled standard deviation of the metric
-            alpha: Significance level (default 0.05)
-            power: Statistical power (default 0.8)
-            allocation_ratio: Treatment/Control allocation ratio (default 1.0)
-            variance_reduction: Variance reduction from CUPED (0-1)
-            two_sided: Whether to use two-sided test
-            
-        Returns:
-            Dictionary with MDE and related statistics
-        """
         alpha = alpha or self.default_alpha
         power = power or self.default_power
         allocation_ratio = allocation_ratio or self.default_ratio
@@ -104,21 +84,6 @@ class MDECalculator:
         variance_reduction: float = 0.0,
         two_sided: bool = True
     ) -> Dict:
-        """
-        Calculate MDE for binary metrics (conversion rates, etc.).
-        
-        Args:
-            sample_size_per_group: Sample size per group
-            baseline_rate: Baseline conversion rate (0-1)
-            alpha: Significance level
-            power: Statistical power
-            allocation_ratio: Treatment/Control allocation ratio
-            variance_reduction: Variance reduction from CUPED
-            two_sided: Whether to use two-sided test
-            
-        Returns:
-            Dictionary with MDE and related statistics
-        """
         alpha = alpha or self.default_alpha
         power = power or self.default_power
         allocation_ratio = allocation_ratio or self.default_ratio
@@ -167,21 +132,6 @@ class MDECalculator:
         variance_reduction: float = 0.0,
         two_sided: bool = True
     ) -> Dict:
-        """
-        Calculate required sample size for continuous metrics.
-        
-        Args:
-            mde: Minimum detectable effect (absolute)
-            pooled_std: Pooled standard deviation
-            alpha: Significance level
-            power: Statistical power
-            allocation_ratio: Treatment/Control allocation ratio
-            variance_reduction: Variance reduction from CUPED
-            two_sided: Whether to use two-sided test
-            
-        Returns:
-            Dictionary with sample size requirements
-        """
         alpha = alpha or self.default_alpha
         power = power or self.default_power
         allocation_ratio = allocation_ratio or self.default_ratio
@@ -240,21 +190,6 @@ class MDECalculator:
         variance_reduction: float = 0.0,
         two_sided: bool = True
     ) -> Dict:
-        """
-        Calculate required sample size for binary metrics.
-        
-        Args:
-            mde_relative: Minimum detectable effect as relative change (e.g., 0.1 for 10% relative increase)
-            baseline_rate: Baseline conversion rate (0-1)
-            alpha: Significance level
-            power: Statistical power
-            allocation_ratio: Treatment/Control allocation ratio
-            variance_reduction: Variance reduction from CUPED
-            two_sided: Whether to use two-sided test
-            
-        Returns:
-            Dictionary with sample size requirements
-        """
         # Convert relative MDE to absolute
         mde_absolute = baseline_rate * mde_relative
         
@@ -293,21 +228,6 @@ class MDECalculator:
         variance_reduction: float = 0.0,
         two_sided: bool = True
     ) -> pd.DataFrame:
-        """
-        Perform power analysis across different effect sizes and sample sizes.
-        
-        Args:
-            effect_sizes: List of effect sizes to test
-            sample_sizes: List of sample sizes to test
-            pooled_std: Pooled standard deviation
-            alpha: Significance level
-            allocation_ratio: Treatment/Control allocation ratio
-            variance_reduction: Variance reduction from CUPED
-            two_sided: Whether to use two-sided test
-            
-        Returns:
-            DataFrame with power analysis results
-        """
         alpha = alpha or self.default_alpha
         allocation_ratio = allocation_ratio or self.default_ratio
         
@@ -354,19 +274,6 @@ class MDECalculator:
         pooled_std: float,
         alpha: float = None
     ) -> pd.DataFrame:
-        """
-        Analyze the benefit of CUPED across different correlation levels.
-        
-        Args:
-            correlations: List of correlations between covariate and outcome
-            sample_size: Sample size per group
-            effect_size: True effect size
-            pooled_std: Pooled standard deviation
-            alpha: Significance level
-            
-        Returns:
-            DataFrame with CUPED benefit analysis
-        """
         alpha = alpha or self.default_alpha
         
         results = []
@@ -434,22 +341,6 @@ class MDECalculator:
         max_sample_size: int = None,
         is_binary: bool = True
     ) -> Dict:
-        """
-        Generate comprehensive experiment planning report.
-        
-        Args:
-            baseline_rate: Baseline conversion rate (for binary) or mean (for continuous)
-            target_uplift: Target relative uplift (e.g., 0.05 for 5% increase)
-            pooled_std: Pooled standard deviation (for continuous metrics)
-            covariate_correlation: Correlation between covariate and outcome
-            alpha: Significance level
-            power: Statistical power
-            max_sample_size: Maximum feasible sample size per group
-            is_binary: Whether metric is binary
-            
-        Returns:
-            Comprehensive planning report
-        """
         alpha = alpha or self.default_alpha
         power = power or self.default_power
         variance_reduction = covariate_correlation ** 2

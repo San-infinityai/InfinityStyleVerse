@@ -2,10 +2,6 @@ import numpy as np
 import pandas as pd
 
 def fetch_experiment_data(experiment_id: str, num_samples: int = 1000) -> pd.DataFrame:
-    """
-    Mock function to simulate experiment data.
-    In production, this will query Postgres for decisions + outcomes.
-    """
     np.random.seed(42)
 
     # Random assignment to control (0) or treatment (1)
