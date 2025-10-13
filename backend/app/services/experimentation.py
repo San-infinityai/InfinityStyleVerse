@@ -17,7 +17,6 @@ def estimate_cuped_correlation(
     treatment_metric: np.ndarray,  
     treatment_covariate: np.ndarray
 ) -> float:
-    """Estimate correlation for MDE planning from pilot data."""
     X = np.concatenate([control_covariate, treatment_covariate])
     Y = np.concatenate([control_metric, treatment_metric])
     return np.corrcoef(X, Y)[0, 1]
@@ -28,7 +27,6 @@ def plan_experiment_from_pilot(
     power: float = 0.8,
     alpha: float = 0.05
 ) -> dict:
-    """Plan experiment using pilot CUPED results."""
     correlation = pilot_results.get('covariate_outcome_corr', 0)
     baseline_mean = pilot_results.get('control_mean_raw', 0)
     
@@ -63,20 +61,6 @@ def calculate_cuped_adjusted_metric(
     treatment_covariate: np.ndarray,
     alpha: float = 0.05
 ) -> Dict:
-    """
-    Apply CUPED adjustment with proper statistical inference.
-    
-    Args:
-        control_metric: Array of observed outcomes for control group
-        control_covariate: Pre-experiment covariates for control group  
-        treatment_metric: Array of observed outcomes for treatment group
-        treatment_covariate: Pre-experiment covariates for treatment group
-        alpha: Significance level for confidence intervals
-        
-    Returns:
-        Dictionary with adjusted means, statistics, and confidence intervals
-    """
-    
     # Input validation
     if len(control_metric) != len(control_covariate):
         raise ValueError("Control metric and covariate arrays must have same length")
@@ -211,19 +195,6 @@ def validate_cuped_aa_test(
     alpha: float = 0.05,
     random_seed: Optional[int] = None
 ) -> Dict:
-    """
-    Validate CUPED implementation with A/A test simulation.
-    Should show no false positives (Type I error rate ≈ alpha).
-    
-    Args:
-        n_simulations: Number of A/A tests to simulate
-        sample_size: Sample size per group  
-        alpha: Significance level
-        random_seed: Random seed for reproducibility
-        
-    Returns:
-        Validation results with Type I error rates
-    """
     if random_seed is not None:
         np.random.seed(random_seed)
     
@@ -301,21 +272,6 @@ def create_sequential_cuped_experiment(
     power: float = 0.8,
     alpha: float = 0.05
 ) -> SequentialMonitor:
-    """
-    Create a sequential experiment using CUPED results from pilot data.
-    
-    Args:
-        experiment_id: Unique identifier for the experiment
-        pilot_cuped_results: Results from calculate_cuped_adjusted_metric on pilot data
-        target_effect_size: Minimum effect size you want to detect
-        max_sample_size: Maximum sample size per group
-        power: Statistical power (default 0.8)
-        alpha: Significance level (default 0.05)
-    
-    Returns:
-        Configured SequentialMonitor instance
-    """
-    
     # Estimate variance reduction from pilot CUPED results
     variance_reduction = pilot_cuped_results.get('var_reduction', 0.0)
     
@@ -347,21 +303,6 @@ def run_sequential_cuped_analysis(
     treatment_covariate: np.ndarray,
     analysis_time: Optional[datetime] = None
 ) -> Dict:
-    """
-    Run a sequential analysis with CUPED adjustment.
-    
-    Args:
-        monitor: SequentialMonitor instance
-        control_outcome: Control group outcomes
-        treatment_outcome: Treatment group outcomes
-        control_covariate: Control group covariates
-        treatment_covariate: Treatment group covariates
-        analysis_time: Time of analysis
-    
-    Returns:
-        Complete analysis results with recommendations
-    """
-    
     # Conduct the interim analysis with CUPED
     analysis_result = monitor.conduct_interim_analysis(
         control_data=control_outcome,
@@ -456,20 +397,6 @@ def validate_sequential_monitoring_aa(
     max_analyses: int = 5,
     alpha: float = 0.05
 ) -> Dict:
-    """
-    Validate sequential monitoring with A/A test simulation.
-    Should maintain Type I error rate despite multiple looks.
-    
-    Args:
-        n_simulations: Number of A/A simulations
-        sample_size_per_analysis: Sample size added at each analysis
-        max_analyses: Maximum number of interim analyses
-        alpha: Target significance level
-    
-    Returns:
-        Validation results showing Type I error control
-    """
-    
     false_positive_count = 0
     analysis_counts = []
     stopping_reasons = []
@@ -564,20 +491,6 @@ def compare_sequential_vs_fixed(
     power: float = 0.8,
     n_simulations: int = 50
 ) -> pd.DataFrame:
-    """
-    Compare sequential testing vs fixed sample size testing.
-    
-    Args:
-        true_effects: List of true effect sizes to test
-        sample_size_per_group: Fixed sample size for comparison
-        alpha: Significance level
-        power: Target power
-        n_simulations: Number of simulations per effect size
-    
-    Returns:
-        DataFrame comparing sequential vs fixed approaches
-    """
-    
     results = []
     
     for true_effect in true_effects:
@@ -657,22 +570,6 @@ def plan_sequential_experiment_with_mde(
     alpha: float = 0.05,
     power: float = 0.8
 ) -> Dict:
-    """
-    Plan a sequential experiment using MDE calculator integration.
-    
-    Args:
-        baseline_rate: Baseline conversion rate
-        target_uplift: Target relative uplift
-        covariate_correlation: Expected correlation with covariate
-        daily_traffic: Daily traffic available
-        max_duration_days: Maximum experiment duration
-        alpha: Significance level
-        power: Target statistical power
-    
-    Returns:
-        Complete experiment plan with sequential parameters
-    """
-    
     try:
         from .mde_calculator import MDECalculator
         calc = MDECalculator()
@@ -758,17 +655,12 @@ def plan_sequential_experiment_with_mde(
             """
         }
 
-# Add to the main test section at the bottom of experimentation.py
-if __name__ == "__main__":
-    # ... existing CUPED tests ...
-    
-    # Test sequential monitoring integration
-    print(f"\n Testing Sequential Monitoring Integration...")
-    
+#sequential monitoring test
+if __name__ == "__main__":   
     try:
         # Test A/A validation
         aa_validation = validate_sequential_monitoring_aa(
-            n_simulations=20,  # Reduced for demo
+            n_simulations=20, 
             sample_size_per_analysis=500
         )
         
