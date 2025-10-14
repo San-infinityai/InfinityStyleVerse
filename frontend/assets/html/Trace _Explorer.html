@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Dashboard</title>
+    <title>Trace Explorer & Cache Inspector</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -283,19 +283,14 @@
             }
         }
 
-        /* --- START: Trace Explorer & Cache Inspector Custom Styles (added) --- */
+
         :root {
-            /* Trace Explorer Dynamic Colors */
+
             --hit-text: #10b981;
-            /* Tailwind green-500 */
             --hit-bg: #ecfdf5;
-            /* Tailwind green-50 */
             --status-failure-text: #ef4444;
-            /* Tailwind red-500 */
             --status-failure-bg: #fef2f2;
-            /* Tailwind red-50 */
             --status-success-bg: #dcfce7;
-            /* Tailwind green-100 */
             --bg-card: var(--card-bg);
             --bg-main: var(--main-bg);
             --text-dark: var(--text-color);
@@ -306,15 +301,10 @@
 
         [data-theme="dark"] {
             --hit-text: #6ee7b7;
-            /* Tailwind green-300 */
             --hit-bg: #115e59;
-            /* Darker green */
             --status-failure-text: #fca5a5;
-            /* Tailwind red-300 */
             --status-failure-bg: #7f1d1d;
-            /* Darker red */
             --status-success-bg: #065f46;
-            /* Darker green */
         }
 
         .request-card:hover {
@@ -330,18 +320,15 @@
         .request-card.active-request {
             border-color: var(--accent-primary);
             background-color: var(--status-success-bg);
-            /* Use a light background to indicate active state */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
-        /* === Execution Timeline Background === */
         #trace-explorer-section .mt-8 {
             background-color: #F5F5F5 !important;
             border-radius: 10px;
             padding: 15px;
         }
 
-        /* --- END: Trace Explorer & Cache Inspector Custom Styles (added) --- */
 
 
         .thin-scroll::-webkit-scrollbar {
@@ -385,7 +372,6 @@
             color: #6FDA47;
         }
 
-        /* === Cache Inspector Background Styling === */
         #cache-inspector {
             background-color: #F5F5F5 !important;
             border-radius: 10px;
@@ -397,52 +383,47 @@
             background-color: #eeeeee !important;
         }
 
-        /* === Model Trace Details Background === */
 
-        /* === Adjust Recent Requests Vertical Position === */
         #trace-explorer-section h2.text-lg.font-semibold.text-text-dark.mb-4 {
             margin-top: -12px;
-            /* move upwards */
+
         }
 
         #request-list-container {
             margin-top: -8px;
-            /* reduce gap between title and cards */
+
         }
 
-        /* === StyleSense (1.4) text color === */
+
         #timeline-container>div:nth-child(1) p.font-semibold {
             color: #717378 !important;
         }
 
-        /* === Model Trace Details Label Color === */
+
         #trace-details-summary p.text-text-secondary.text-xs {
             color: #838487 !important;
             font-weight: 500;
         }
 
-        /* === Execution Timeline Styling === */
+
         #trace-explorer-section .mt-8 {
             background-color: #F5F5F5 !important;
             border-radius: 10px;
             padding: 15px;
         }
 
-        /* Titles like "StyleSense (1.4)", "EcoSense", "Aggregator" */
+
         #timeline-container p.font-semibold {
             color: #717378 !important;
             font-weight: 600;
         }
 
-        /* Subtext lines like "Latency: 410 ms | Starts at: 50 ms" */
         #timeline-container p.text-sm {
             color: #AAABAE !important;
             font-weight: 500;
         }
 
-        /* === Model Trace Details Status Color Customization === */
 
-        /* SUCCESS color */
         #trace-details-summary p.font-medium.text-accent-primary {
             color: #329D0B !important;
             font-weight: 700;
@@ -454,14 +435,12 @@
         }
 
 
-        /* fallback generic style for cache word color */
+
         #trace-details-summary p.font-medium {
             font-family: 'Inter', sans-serif !important;
         }
 
-        /* === Custom Colors Update (as per request) === */
 
-        /* Success and Failure color styles */
         .text-success {
             color: #329D0B !important;
             font-weight: 700;
@@ -472,13 +451,13 @@
             font-weight: 700;
         }
 
-        /* Latency gray tone */
+
         .text-latency {
             color: #838487 !important;
             font-weight: 600;
         }
 
-        /* Timestamp brown accent */
+
         .text-timestamp {
             color: #C19A6B !important;
             font-weight: 600;
@@ -1596,7 +1575,7 @@
                 'experiments-link': 'experiments-section',
                 'policy-link': 'policy-section',
                 'arbitration-link': 'arbitration-visualizer-section',
-                'trace-explorer-link': 'trace-explorer-section' // New section ID
+                'trace-explorer-link': 'trace-explorer-section'
             };
 
             const allLinks = document.querySelectorAll('.sidebar a[id$="-link"]');
@@ -1606,11 +1585,11 @@
                 const targetId = sections[linkId];
                 if (!targetId) return;
 
-                // Hide all sections and remove active class from all links
+
                 allSections.forEach(section => section.classList.add('hidden'));
                 allLinks.forEach(link => link.classList.remove('active', 'bg-white', 'bg-opacity-20', 'font-bold'));
 
-                // Show target section and set active class on link
+
                 const targetSection = document.getElementById(targetId);
                 const activeLink = document.getElementById(linkId);
 
@@ -1621,22 +1600,22 @@
                     activeLink.classList.add('active', 'bg-white', 'bg-opacity-20', 'font-bold');
                 }
 
-                // If the Trace Explorer section is activated, initialize its app
+
                 if (linkId === 'trace-explorer-link' && typeof initApp === 'function') {
                     initApp();
                 }
             }
 
-            // Set initial active state (Experiments is active by default in HTML)
+
             const initialActiveLink = document.querySelector('.sidebar a.active');
             if (initialActiveLink && sections[initialActiveLink.id]) {
                 showSection(initialActiveLink.id);
             } else {
-                // Default to experiments section if no link is active
+
                 showSection('experiments-link');
             }
 
-            // Add click listeners
+
             allLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1644,19 +1623,19 @@
                 });
             });
 
-            // Handle the dropdown toggle for the Dashboard link
+
             const dashboardLink = document.getElementById('dashboard-link');
             const dashboardSubmenu = document.getElementById('dashboard-submenu');
             const dashboardArrow = document.getElementById('dashboard-arrow');
 
             if (dashboardLink) {
                 dashboardLink.addEventListener('click', (e) => {
-                    // Only toggle if the main link is clicked, not children
+
                     if (e.target.id === 'dashboard-link' || e.target.closest('#dashboard-link')) {
                         e.preventDefault();
                         dashboardSubmenu.classList.toggle('hidden');
                         dashboardArrow.classList.toggle('rotate-90');
-                        showSection('experiments-link'); // Keep it on the dashboard view
+                        showSection('experiments-link');
                     }
                 });
             }
@@ -1668,47 +1647,40 @@
 
 
 
-        /* ===== START: Live API integration + rendering helpers ===== */
 
-        /* --- 1) API URLs — ඔයාගේ real endpoints මෙහි දාලා වෙනස් කරන්න --- */
-        const TRACE_API_URL = "./traces.json" // ← ඔබේ real API URL දාන්න
-        const CACHE_API_URL = "https://api.example.com/v1/cache";  // ← optional, cache metrics API
+        const TRACE_API_URL = "./traces.json"
+        const CACHE_API_URL = "https://api.example.com/v1/cache";
 
-        /* --- 2) Variables to hold fetched data --- */
+
         let traces = [];
         let cacheMetrics = [];
 
-        /* --- 3) Helper: renderRequestList --- 
-           - uses existing createRequestCard(trace) function to produce HTML for each trace
-           - appends into #request-list-container (this element exists in your HTML)
-        */
         function renderRequestList(traceArray) {
             const container = document.getElementById('request-list-container');
             if (!container) return;
-            container.innerHTML = ''; // clear previous
+            container.innerHTML = '';
 
             if (!traceArray || traceArray.length === 0) {
                 container.innerHTML = `<div class="p-4 bg-white rounded shadow-sm text-sm text-gray-500">No recent requests.</div>`;
                 return;
             }
 
-            // For each trace: use createRequestCard(trace) (must exist in file) and attach click handler
+
             traceArray.forEach(trace => {
-                // createRequestCard returns an HTML string in original file, so we convert it to element
-                // If createRequestCard is not returning string but element, adjust accordingly.
+
                 const wrapper = document.createElement('div');
-                wrapper.innerHTML = createRequestCard(trace); // createRequestCard defined earlier in file
+                wrapper.innerHTML = createRequestCard(trace);
                 const cardEl = wrapper.firstElementChild;
                 if (!cardEl) return;
 
-                // Attach click handler to load details on right pane
+
                 cardEl.addEventListener('click', () => {
-                    // call existing renderTraceDetails(trace) function (must exist)
+
                     renderTraceDetails(trace);
-                    // highlight selected card
+
                     document.querySelectorAll('#request-list-container .request-card').forEach(c => c.classList.remove('active-request'));
                     cardEl.classList.add('active-request');
-                    // scroll into view if needed
+
                     cardEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                 });
 
@@ -1716,10 +1688,10 @@
             });
         }
 
-        /* --- 4) Fetch Traces from API and render --- */
+
         async function loadTracesFromAPI() {
             try {
-                // show loading placeholder
+
                 const container = document.getElementById('request-list-container');
                 if (container) container.innerHTML = `<div class="p-4 text-sm text-gray-500">Loading traces...</div>`;
 
@@ -1728,8 +1700,7 @@
 
                 const data = await res.json();
 
-                /* --- Map API response to UI trace shape (adjust based on your API) --- */
-                // Expect API returns an array of traces; if not, adapt mapping
+
                 traces = (Array.isArray(data) ? data : data.traces || []).map(item => ({
                     id: item.id || item.request_id || 'unknown_id',
                     status: (item.status || item.state || 'FAILURE').toString().toUpperCase(),
@@ -1739,17 +1710,17 @@
                     executionSteps: item.executionSteps || item.steps || item.execution_steps || [],
                     cacheStatus: item.cacheStatus || (item.cache && item.cache.status) || 'MISS',
                     cacheKey: item.cacheKey || (item.cache && item.cache.key) || '',
-                    // copy full original item for deep inspection
+
                     raw: item
                 }));
 
-                // Render left list
+
                 renderRequestList(traces);
 
-                // Optionally pre-select first trace
+
                 if (traces.length > 0) {
                     renderTraceDetails(traces[0]);
-                    // highlight first
+
                     const firstCard = document.querySelector('#request-list-container .request-card');
                     if (firstCard) firstCard.classList.add('active-request');
                 }
@@ -1761,18 +1732,18 @@
             }
         }
 
-        /* --- 5) Fetch Cache metrics (if available) and render --- */
+
         async function loadCacheFromAPI() {
             try {
                 const res = await fetch(CACHE_API_URL, { method: 'GET', credentials: 'same-origin' });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 cacheMetrics = data;
-                // renderCacheInspector should exist in file (there is a #cache-inspector element)
+
                 if (typeof renderCacheInspector === 'function') {
                     renderCacheInspector(cacheMetrics);
                 } else {
-                    // fallback: show JSON
+
                     const cacheContainer = document.getElementById('cache-inspector');
                     if (cacheContainer) cacheContainer.innerHTML = `<pre class="text-xs">${JSON.stringify(cacheMetrics, null, 2)}</pre>`;
                 }
@@ -1783,22 +1754,14 @@
             }
         }
 
-        /* --- 6) Initialize on page load --- */
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Call both (if you only have traces API, comment loadCacheFromAPI())
+
             loadTracesFromAPI();
-            // loadCacheFromAPI(); // uncomment if CACHE_API_URL is configured
+
         });
 
-        /* ===== END: Live API integration + rendering helpers ===== */
 
-        // --- Utility Functions ---
-
-        /**
-         * Generates the HTML for a single request card on the left sidebar.
-         * @param {Object} trace - The trace object.
-         * @returns {string} HTML string.
-         */
         function createRequestCard(trace) {
             const isSuccess = trace.status === 'SUCCESS';
 
@@ -1812,7 +1775,7 @@
             }
 
 
-            const borderColor = 'border-accent-primary'; // All cards use the accent-primary border
+            const borderColor = 'border-accent-primary';
 
             return `
                 <div 
@@ -1834,17 +1797,14 @@
         }
 
 
-        /**
-         * Renders the details on the right panel for the selected trace.
-         * @param {Object} trace - The selected trace object.
-         */
+
         function renderTraceDetails(trace) {
             const summaryContainer = document.getElementById('trace-details-summary');
             const timelineContainer = document.getElementById('timeline-container');
             const plannerDagViewer = document.getElementById('planner-dag-viewer');
             const cacheInspector = document.getElementById('cache-inspector');
 
-            // --- 1. Model Trace Details Summary ---
+
             summaryContainer.innerHTML = `
                 <div class="col-span-1">
                     <p class="text-text-secondary text-xs">Request ID</p>
@@ -1876,7 +1836,7 @@
                 </div>
             `;
 
-            // --- 2. Execution Timeline ---
+
             if (trace.executionSteps.length === 0) {
                 timelineContainer.innerHTML = `<p class="text-text-secondary text-sm pt-2">Execution trace is empty (served from cache).</p>`;
             } else {
@@ -1898,7 +1858,7 @@
             }
 
 
-            // --- 3. Planner DAG Viewer ---
+
             let dagContent = '';
             let dagPanelClasses = 'border-2 transition-all duration-300 ';
 
@@ -1912,7 +1872,6 @@
                     </div>
                 `;
             } else {
-                // MISS: Show simplified DAG structure
                 dagPanelClasses += 'border-text-muted/30';
                 dagContent = `
                     <div class="flex items-center justify-around h-full bg-bg-main rounded-lg p-4">
@@ -1936,7 +1895,7 @@
             plannerDagViewer.innerHTML = dagContent;
 
 
-            // --- 4. Cache Inspector ---
+
             cacheInspector.innerHTML = `
                 <div class="text-sm">
                     <p class="text-text-secondary text-xs">Cache Status</p>
@@ -1960,15 +1919,12 @@
             `;
         }
 
-        /**
-         * Initializes the application: renders cards and sets up event listeners.
-         * Note: This function is called by the new general navigation handler when the 'Trace Explorer' link is clicked.
-         */
+
         function initApp() {
             const listContainer = document.getElementById('request-list-container');
             let initialTraceId = null;
 
-            // 1. Render all request cards
+
             listContainer.innerHTML = mockTraces.map((trace, index) => {
                 if (index === 0) {
                     initialTraceId = trace.id;
@@ -1976,18 +1932,18 @@
                 return createRequestCard(trace);
             }).join('');
 
-            // 2. Add click handlers to cards
+
             const cards = document.querySelectorAll('#trace-explorer-section .request-card');
             cards.forEach(card => {
                 card.addEventListener('click', (event) => {
-                    // Remove active state from all cards
+
                     cards.forEach(c => c.classList.remove('active-request'));
 
-                    // Add active state to clicked card
+
                     const clickedCard = event.currentTarget;
                     clickedCard.classList.add('active-request');
 
-                    // Find and render the selected trace details
+
                     const traceId = clickedCard.getAttribute('data-trace-id');
                     const selectedTrace = mockTraces.find(t => t.id === traceId);
                     if (selectedTrace) {
@@ -1996,7 +1952,7 @@
                 });
             });
 
-            // 3. Load the first trace by default, only if the list is populated
+
             if (initialTraceId && mockTraces.length > 0) {
                 const firstCard = document.querySelector(`#trace-explorer-section .request-card[data-trace-id="${initialTraceId}"]`);
                 if (firstCard) {
