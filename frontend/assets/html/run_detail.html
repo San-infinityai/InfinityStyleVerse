@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Detail - DAG & Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+
+                        primary: "#C19A6B",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#1d1915",
+                        "sidebar-light": "#FFFFFF",
+                        "sidebar-dark": "#161616",
+                        "text-light": "#0F172A",
+                        "text-dark": "#E2E8F0",
+                        "subtext-light": "#64748B",
+
+                        "subtext-dark": "#F5F8FE",
+                        "border-light": "#E2E8F0",
+                        "border-dark": "#334155",
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#1E293B",
+                        "success-light": "#22C55E",
+                        "success-dark": "#22C55E",
+                        "success-bg-light": "#F0FDF4",
+                        "success-bg-dark": "#162A19",
+                        "failure-light": "#EF4444",
+                        "failure-dark": "#EF4444",
+                        "failure-bg-light": "#FEF2F2",
+                        "failure-bg-dark": "#2B1717",
+                        "warning-light": "#F59E0B",
+                        "warning-dark": "#F59E0B",
+                        "info-light": "#3B82F6",
+                        "info-dark": "#3B82F6"
+                    },
+                    fontFamily: {
+                        display: "Inter"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+
+                        primary: "#C19A6B",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#1d1915",
+                        "sidebar-light": "#FFFFFF",
+                        "sidebar-dark": "#161616",
+                        "text-light": "#0F172A",
+                        "text-dark": "#E2E8F0",
+                        "subtext-light": "#64748B",
+
+                        "subtext-dark": "#F5F8FE",
+                        "border-light": "#E2E8F0",
+                        "border-dark": "#334155",
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#1E293B",
+                        "success-light": "#22C55E",
+                        "success-dark": "#22C55E",
+                        "success-bg-light": "#F0FDF4",
+                        "success-bg-dark": "#162A19",
+                        "failure-light": "#EF4444",
+                        "failure-dark": "#EF4444",
+                        "failure-bg-light": "#FEF2F2",
+                        "failure-bg-dark": "#2B1717",
+                        "warning-light": "#F59E0B",
+                        "warning-dark": "#F59E0B",
+                        "info-light": "#3B82F6",
+                        "info-dark": "#3B82F6"
+                    },
+                    fontFamily: {
+                        display: "Inter"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 200px;
+            --dark-bg: #161616;
+            --header-height: 70px;
+            --dark-bg: #222222;
+            --light-bg: #f8f8f8;
+            --accent-color: #c19a6b;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --text-gray: #666666;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --edit-btn-color: #e0f2f7;
+            --edit-text-color: #0d7088;
+            --delete-btn-color: #fce4ec;
+            --delete-text-color: #b71c24;
+            --assign-btn-color: #ffffff;
+            --assign-text-color: #155724;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+
+
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 0.875rem;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .sidebar a.active {
+            background-color: #c19a6b;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .sidebar a.active i {
+            color: #ffffff;
+        }
+
+        .bg-custom-dark {
+            background-color: var(--dark-bg);
+        }
+
+        .text-custom-light {
+            color: var(--text-light);
+        }
+
+        .bg-custom-accent {
+            background-color: var(--accent-color);
+        }
+
+        .text-custom-accent {
+            color: var(--accent-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            font-size: 0.75rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.5rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 0.85rem;
+            top: 1.5rem;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .rotate-90 {
+            transform: rotate(90deg);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: var(--sidebar-width);
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+        }
+
+        .text-xl {
+            font-size: 1rem;
+        }
+
+
+        .uplift-container {
+            position: relative;
+        }
+
+        .uplift-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 20px;
+
+        }
+
+        .uplift-message {
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        :root {
+            --accent: #c79252;
+            --accent-dark: #b27e49;
+            --sidebar: #111018;
+            --main-bg: #ffffff;
+            --text-color: #333333;
+            --trace-bg: linear-gradient(180deg, rgba(246, 242, 250, 1) 0%, rgba(252, 248, 251, 1) 100%);
+            --trace-border: 6px solid rgba(238, 226, 245, 0.6);
+            --card-bg: #ffffff;
+            --card-border: 1px solid rgba(221, 214, 210, 0.25);
+            --pill-bg: rgba(194, 146, 97, 0.12);
+            --pill-color: var(--accent-dark);
+        }
+
+        [data-theme="dark"] {
+            --main-bg: #1a1a2e;
+            --text-color: #e0e0e0;
+            --sidebar: #0f0e20;
+            --trace-bg: linear-gradient(180deg, rgba(26, 26, 46, 1) 0%, rgba(30, 30, 50, 1) 100%);
+            --trace-border: 6px solid rgba(40, 40, 60, 0.6);
+            --card-bg: #2a2a44;
+            --card-border: 1px solid rgba(60, 60, 80, 0.25);
+            --pill-bg: rgba(200, 150, 80, 0.2);
+            --pill-color: var(--accent);
+        }
+
+        [data-theme="light"] body {
+            transition: background-color 0.3s, color 0.3s;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        [data-theme="dark"] body {
+            transition: background-color 0.3s, color 0.3s;
+            background-color: var(--main-bg);
+            color: var(--text-color);
+        }
+
+        .trace-wrap {
+            background: var(--trace-bg);
+            border: var(--trace-border);
+            transition: all 0.3s;
+        }
+
+        .agent-card {
+            background: var(--card-bg);
+            border: var(--card-border);
+            transition: all 0.3s;
+        }
+
+        .pill {
+            background: var(--pill-bg);
+            color: var(--pill-color);
+            transition: all 0.3s;
+        }
+
+        .sidebar a.active {
+            background: linear-gradient(90deg, #c19a6b 0%, #b47f4a 100%);
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            font-size: 1.05rem;
+            color: white;
+        }
+
+        .main-content-meta.expanded {
+            margin-left: 288px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .collapsible-tree {
+            cursor: pointer;
+        }
+
+        .collapsible-tree:before {
+            content: '▶';
+            display: inline-block;
+            margin-right: 6px;
+            transition: transform 0.2s;
+        }
+
+        .collapsible-tree.open:before {
+            transform: rotate(90deg);
+        }
+
+        .nested {
+            display: none;
+            margin-left: 1.5rem;
+            border-left: 1px dashed #ccc;
+            padding-left: 0.5rem;
+        }
+
+        .active-final-pick {
+            box-shadow: 0 0 0 4px var(--accent-dark);
+        }
+
+        .thin-scroll::-webkit-scrollbar {
+            height: 10px;
+            width: 8px
+        }
+
+        .thin-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 8px
+        }
+
+        @media (max-width:900px) {
+            .trace-wrap {
+                padding: 12px
+            }
+
+            .main-content-meta {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+
+        :root {
+
+            --hit-text: #10b981;
+            --hit-bg: #ecfdf5;
+            --status-failure-text: #ef4444;
+            --status-failure-bg: #fef2f2;
+            --status-success-bg: #dcfce7;
+            --bg-card: var(--card-bg);
+            --bg-main: var(--main-bg);
+            --text-dark: var(--text-color);
+            --text-secondary: var(--text-gray);
+            --text-muted: var(--border-color);
+            --accent-primary: var(--accent-color);
+        }
+
+        [data-theme="dark"] {
+            --hit-text: #6ee7b7;
+            --hit-bg: #115e59;
+            --status-failure-text: #fca5a5;
+            --status-failure-bg: #7f1d1d;
+            --status-success-bg: #065f46;
+        }
+
+        .request-card:hover {
+            background-color: #EDE9E5 !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .request-card {
+            border: 1px solid transparent;
+            background-color: #F6F3FF !important;
+        }
+
+        .request-card.active-request {
+            border-color: var(--accent-primary);
+            background-color: var(--status-success-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        #trace-explorer-section .mt-8 {
+            background-color: #F5F5F5 !important;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+
+
+        .thin-scroll::-webkit-scrollbar {
+            height: 10px;
+            width: 8px
+        }
+
+        .thin-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 8px
+        }
+
+        @media (max-width:900px) {
+            .trace-wrap {
+                padding: 12px
+            }
+
+            .main-content-meta {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        #timeline-container>div:nth-child(1) span,
+        #timeline-container>div:nth-child(1) .font-bold {
+            color: #6FDA47;
+        }
+
+        #timeline-container>div:nth-child(2) span,
+        #timeline-container>div:nth-child(2) .font-bold {
+            color: #6FDA47;
+        }
+
+        #timeline-container>div:nth-child(3) span,
+        #timeline-container>div:nth-child(3) .font-bold {
+            color: #6FDA47;
+        }
+
+        #timeline-container>div:nth-child(4) span,
+        #timeline-container>div:nth-child(4) .font-bold {
+            color: #6FDA47;
+        }
+
+        #cache-inspector {
+            background-color: #F5F5F5 !important;
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #cache-inspector:hover {
+            background-color: #eeeeee !important;
+        }
+
+
+        #trace-explorer-section h2.text-lg.font-semibold.text-text-dark.mb-4 {
+            margin-top: -12px;
+
+        }
+
+        #request-list-container {
+            margin-top: -8px;
+
+        }
+
+
+        #timeline-container>div:nth-child(1) p.font-semibold {
+            color: #717378 !important;
+        }
+
+
+        #trace-details-summary p.text-text-secondary.text-xs {
+            color: #838487 !important;
+            font-weight: 500;
+        }
+
+
+        #trace-explorer-section .mt-8 {
+            background-color: #F5F5F5 !important;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+
+        #timeline-container p.font-semibold {
+            color: #717378 !important;
+            font-weight: 600;
+        }
+
+        #timeline-container p.text-sm {
+            color: #AAABAE !important;
+            font-weight: 500;
+        }
+
+
+        #trace-details-summary p.font-medium.text-accent-primary {
+            color: #329D0B !important;
+            font-weight: 700;
+        }
+
+        #trace-details-summary>div:nth-child(4) p.font-medium {
+            color: #FBBC05 !important;
+            font-weight: 700;
+        }
+
+
+
+        #trace-details-summary p.font-medium {
+            font-family: 'Inter', sans-serif !important;
+        }
+
+
+        .text-success {
+            color: #329D0B !important;
+            font-weight: 700;
+        }
+
+        .text-failure {
+            color: #B71C24 !important;
+            font-weight: 700;
+        }
+
+
+        .text-latency {
+            color: #838487 !important;
+            font-weight: 600;
+        }
+
+
+        .text-timestamp {
+            color: #C19A6B !important;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="flex h-screen" data-theme="light">
+    <div
+        class="sidebar w-64 h-screen bg-custom-dark text-custom-light p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
+        <div>
+
+            <div class="text-[20px] font-bold mb-8 font-['Inter'] text-[#c19a6b] text-center">StyleVerse</div>
+
+
+            <nav class="space-y-3 text-sm font-['DM Sans']">
+                <a href="#" id="dashboard-link"
+                    class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fas fa-th-large text-lg w-5"></i>
+                    <span>Dashboard</span>
+                    <i id="dashboard-arrow"
+                        class="fa-solid fa-angle-right w-3 h-3 ml-auto transform transition-transform duration-200"></i>
+                </a>
+                <div id="dashboard-submenu" class="ml-6 space-y-3 hidden text-xs">
+                    <a href="user.html"
+                        class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                        <i class="fa-solid fa-users text-lg w-5"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="roles.html"
+                        class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                        <i class="fa-solid fa-user-shield text-lg w-5"></i>
+                        <span>Roles</span>
+                    </a>
+                    <a href="permission.html"
+                        class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                        <i class="fa-solid fa-unlock text-lg w-5"></i>
+                        <span>Permissions</span>
+                    </a>
+                </div>
+
+                <a href="#" id="experiments-link" data-target="experiments-section"
+                    class="nav-link-switch flex items-center space-x-4 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10 active bg-white bg-opacity-20 font-bold">
+                    <i class="fa-solid fa-flask text-lg w-5"></i>
+                    <span>Experiments</span>
+                </a>
+
+                <a href="#" id="policy-link" data-target="policy-section"
+                    class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-scroll text-lg w-5"></i>
+                    <span>Policy & Attribution</span>
+                </a>
+
+                <a href="#" id="arbitration-visualizer-link" data-target="arbitration-visualizer-section"
+                    class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-gavel text-lg w-5"></i>
+                    <span>Arbitration Visualizer</span>
+                </a>
+
+                <a href="#" id="trace-explorer-link" data-target="trace-explorer-section"
+                    class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-chart-line text-lg w-5"></i>
+                    <span>Trace Explorer & Cache Inspector </span>
+                </a>
+
+                <a href="Runs_&_Alerts_Console.html" id="runs-alerts-link" data-target="runs-alerts-console"
+                    class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-chart-line text-lg w-5"></i>
+                    <span>Runs & Alerts Console </span>
+                </a>
+
+                <a href="run_detail.html" class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-chart-line text-lg w-5"></i>
+                    <span>Run Detail</span>
+                </a>
+            </nav>
+        </div>
+    </div>    
+    <div id="run-detail-section"
+     class="content-section max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 hidden">
+    <main class="flex-1 p-8 overflow-y-auto">
+        <h2 class="text-3xl font-bold mb-6 text-primary dark:text-primary">Run Detail</h2>
+
+        <section id="dag-section" class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">DAG Graph</h3>
+            <p>Here we’ll show the DAG diagram later.</p>
+        </section>
+
+        <section id="timeline-section" class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">Timeline</h3>
+            <p>Here we’ll show the timeline later.</p>
+        </section>
+
+        <section id="actions-section">
+            <h3 class="text-xl font-semibold mb-4">Operator Actions</h3>
+            <button class="bg-blue-500 text-white px-3 py-2 rounded">Pause</button>
+            <button class="bg-green-500 text-white px-3 py-2 rounded">Resume</button>
+            <button class="bg-red-500 text-white px-3 py-2 rounded">Cancel</button>
+            <button class="bg-yellow-500 text-white px-3 py-2 rounded">Retry</button>
+        </section>
+    </main>
+</div>
+<script>
+    // Handle navigation link clicks
+    document.querySelectorAll('.nav-link-switch').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link-switch').forEach(l => {
+                l.classList.remove('active', 'bg-white', 'bg-opacity-20', 'font-bold');
+            });
+            
+            // Add active class to clicked link
+            this.classList.add('active', 'bg-white', 'bg-opacity-20', 'font-bold');
+            
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show the target section
+            const targetId = this.getAttribute('data-target') || this.getAttribute('id').replace('-link', '-section');
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+        });
+    });
+    
+    // Show run detail section by default or when link is clicked
+    const runDetailLink = document.querySelector('a[href="run_detail.html"]');
+    if (runDetailLink && window.location.pathname.includes('run_detail.html')) {
+        document.getElementById('run-detail-section')?.classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
