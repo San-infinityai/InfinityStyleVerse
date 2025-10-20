@@ -52,54 +52,6 @@
             }
         };
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-
-                        primary: "#C19A6B",
-                        "background-light": "#f7f7f6",
-                        "background-dark": "#1d1915",
-                        "sidebar-light": "#FFFFFF",
-                        "sidebar-dark": "#161616",
-                        "text-light": "#0F172A",
-                        "text-dark": "#E2E8F0",
-                        "subtext-light": "#64748B",
-
-                        "subtext-dark": "#F5F8FE",
-                        "border-light": "#E2E8F0",
-                        "border-dark": "#334155",
-                        "card-light": "#FFFFFF",
-                        "card-dark": "#1E293B",
-                        "success-light": "#22C55E",
-                        "success-dark": "#22C55E",
-                        "success-bg-light": "#F0FDF4",
-                        "success-bg-dark": "#162A19",
-                        "failure-light": "#EF4444",
-                        "failure-dark": "#EF4444",
-                        "failure-bg-light": "#FEF2F2",
-                        "failure-bg-dark": "#2B1717",
-                        "warning-light": "#F59E0B",
-                        "warning-dark": "#F59E0B",
-                        "info-light": "#3B82F6",
-                        "info-dark": "#3B82F6"
-                    },
-                    fontFamily: {
-                        display: "Inter"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.25rem",
-                        lg: "0.5rem",
-                        xl: "0.75rem",
-                        full: "9999px"
-                    }
-                }
-            }
-        };
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -558,6 +510,28 @@
             color: #C19A6B !important;
             font-weight: 600;
         }
+
+        /* DAG Node Styles */
+        .node-rect {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .node-rect:hover {
+            fill: #f8fafc !important;
+            stroke: #c19a6b !important;
+            stroke-width: 2px !important;
+        }
+
+        g[data-id]:hover .node-text {
+            fill: #1f2937 !important;
+            font-weight: 600;
+        }
+
+        g[data-id]:hover .status-badge {
+            r: 8 !important;
+            transition: r 0.2s ease;
+        }
     </style>
 </head>
 <body class="flex h-screen" data-theme="light">
@@ -595,7 +569,7 @@
                 </div>
 
                 <a href="#" id="experiments-link" data-target="experiments-section"
-                    class="nav-link-switch flex items-center space-x-4 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10 active bg-white bg-opacity-20 font-bold">
+                    class="nav-link-switch flex items-center space-x-4 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10 ">
                     <i class="fa-solid fa-flask text-lg w-5"></i>
                     <span>Experiments</span>
                 </a>
@@ -624,37 +598,102 @@
                     <span>Runs & Alerts Console </span>
                 </a>
 
-                <a href="run_detail.html" class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
-                    <i class="fa-solid fa-chart-line text-lg w-5"></i>
+                <a href="run_detail.html" class="nav-link-switch flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10
+                active bg-white bg-opacity-20 font-bold">
+                    <i class="fa-solid fa-code-branch text-lg w-5"></i>
                     <span>Run Detail</span>
                 </a>
             </nav>
         </div>
     </div>    
-    <div id="run-detail-section"
-     class="content-section max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 hidden">
-    <main class="flex-1 p-8 overflow-y-auto">
-        <h2 class="text-3xl font-bold mb-6 text-primary dark:text-primary">Run Detail</h2>
+    <div class="main-content flex-1 ml-64 overflow-y-auto bg-gray-100">
+        <div id="run-detail-section"
+         class="content-section max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <main class="flex-1 p-8 overflow-y-auto" aria-labelledby="run-detail-title">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h2 id="run-detail-title" class="text-2xl font-bold mb-1">Run Detail</h2>
+        <div class="mb-2">
+          <span class="text-sm text-gray-500">Workflow:</span>
+          <span id="run-workflow" class="text-xl font-bold text-green-600 ml-2">—</span>
+        </div>
+        <div id="run-meta" class="text-sm text-gray-600">run: <span id="run-id" class="font-semibold text-blue-600">—</span></div>
+      </div>
 
-        <section id="dag-section" class="mb-8">
-            <h3 class="text-xl font-semibold mb-4">DAG Graph</h3>
-            <p>Here we’ll show the DAG diagram later.</p>
+      <div class="flex items-center gap-2">
+        <button id="action-pause" class="px-3 py-1 rounded bg-gray-100">Pause</button>
+        <button id="action-resume" class="px-3 py-1 rounded bg-gray-100">Resume</button>
+        <button id="action-cancel" class="px-3 py-1 rounded bg-gray-100">Cancel</button>
+        <button id="action-retry" class="px-3 py-1 rounded bg-gray-100">Retry</button>
+      </div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- DAG (left / big) -->
+      <section id="dag-wrapper" class="col-span-2 bg-gray-50 p-3 rounded-lg">
+        <div class="mb-3">
+          <h3 class="text-xl font-bold text-gray-800 mb-1">DAG Diagram</h3>
+          <p class="text-sm text-gray-600 mb-2">A Directed Acyclic Graph showing your workflow steps and their dependencies. Each box is a step, arrows show the flow.</p>
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-500">Steps: <span id="node-count" class="font-semibold text-blue-600">0</span></div>
+            <div class="text-xs text-gray-500">Click any step to see details</div>
+          </div>
+        </div>
+
+        <div id="dag-canvas-container" class="relative border rounded" style="height:520px; touch-action:none;">
+          <!-- controls -->
+          <div class="absolute z-10 right-2 top-2 space-x-1">
+            <button id="zoom-in" title="Zoom in" class="px-2 py-1 rounded bg-white shadow">+</button>
+            <button id="zoom-out" title="Zoom out" class="px-2 py-1 rounded bg-white shadow">−</button>
+            <button id="fit-view" title="Fit" class="px-2 py-1 rounded bg-white shadow">fit</button>
+          </div>
+
+          <!-- SVG for nodes & edges -->
+          <svg id="dag-svg" viewBox="0 0 1200 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
+               role="img" aria-label="DAG graph">
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 z" fill="rgba(34,34,34,0.6)"></path>
+              </marker>
+            </defs>
+            <g id="edges"></g>
+            <g id="nodes"></g>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Sidebar (right) with timeline + step details -->
+      <aside class="col-span-1 space-y-4">
+        <section id="timeline-panel" class="bg-gray-50 p-3 rounded-lg">
+          <h3 class="text-lg font-semibold mb-2">Timeline (Waterfall Chart)</h3>
+          <p class="text-xs text-gray-600 mb-2">Shows when each step runs and how long it takes. Green = success, Red = failed, Orange = running.</p>
+          <canvas id="timeline-canvas" width="800" height="220" class="w-full h-56 border rounded"></canvas>
+          <div class="text-xs text-gray-500 mt-2">Thicker bars = critical path (most important steps)</div>
         </section>
 
-        <section id="timeline-section" class="mb-8">
-            <h3 class="text-xl font-semibold mb-4">Timeline</h3>
-            <p>Here we’ll show the timeline later.</p>
+        <section id="step-detail" class="bg-gray-50 p-3 rounded-lg">
+          <h3 class="text-lg font-semibold mb-2">Step Details</h3>
+          <p class="text-xs text-gray-600 mb-2">Click any step in the DAG to see its details and control it individually.</p>
+          <div id="selected-step" class="text-sm text-gray-700 mt-2">
+            <div class="text-gray-500 italic">No step selected — click a box in the DAG diagram above.</div>
+          </div>
+          <div id="step-actions" class="mt-3 hidden space-x-2">
+            <button id="step-pause" class="px-2 py-1 rounded bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Pause</button>
+            <button id="step-resume" class="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200">Resume</button>
+            <button id="step-cancel" class="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200">Cancel</button>
+            <button id="step-retry" class="px-2 py-1 rounded bg-blue-100 text-blue-800 hover:bg-blue-200">Retry</button>
+          </div>
         </section>
 
-        <section id="actions-section">
-            <h3 class="text-xl font-semibold mb-4">Operator Actions</h3>
-            <button class="bg-blue-500 text-white px-3 py-2 rounded">Pause</button>
-            <button class="bg-green-500 text-white px-3 py-2 rounded">Resume</button>
-            <button class="bg-red-500 text-white px-3 py-2 rounded">Cancel</button>
-            <button class="bg-yellow-500 text-white px-3 py-2 rounded">Retry</button>
+        <section id="logs-panel" class="bg-gray-50 p-3 rounded-lg">
+          <h3 class="text-lg font-semibold">Latest logs</h3>
+          <pre id="logs" class="text-xs max-h-40 overflow-auto text-gray-700 p-2 bg-white rounded mt-2">No logs yet.</pre>
         </section>
-    </main>
-</div>
+      </aside>
+    </div>
+  </main>
+        </div>
+    </div>
 <script>
     // Handle navigation link clicks
     document.querySelectorAll('.nav-link-switch').forEach(link => {
@@ -683,11 +722,518 @@
         });
     });
     
-    // Show run detail section by default or when link is clicked
-    const runDetailLink = document.querySelector('a[href="run_detail.html"]');
-    if (runDetailLink && window.location.pathname.includes('run_detail.html')) {
-        document.getElementById('run-detail-section')?.classList.remove('hidden');
+    // Show run detail section by default since this is the run detail page
+    document.getElementById('run-detail-section')?.classList.remove('hidden');
+    /*
+   FE-2 Run Detail implementation:
+  - Render DAG (SVG) with statuses
+  - Draw timeline on canvas
+  - Operator actions (global + per-step) POST to /pulse/runs/{id}/actions
+  - SSE live updates (if available) or demo mode if not
+  - Performance: layered layout + reuse DOM nodes on updates
+  */
+
+  /* ---------------------------
+   CONFIG & MOCK / VARIABLES
+   --------------------------- */
+  const RUN_ID = (new URLSearchParams(location.search)).get('run') || 'run-123'; // optionally pass ?run=...
+  const API_BASE = ''; // if your API is at same origin, leave ''. If different put full base url.
+  const ACTIONS_URL = (id) => `${API_BASE}/pulse/runs/${id}/actions`;
+  const RUN_URL = (id) => `${API_BASE}/pulse/runs/${id}`; // GET run details
+
+// state
+let run = null;
+let nodeMap = new Map(); // id -> node data
+let svgNodes = new Map(); // id -> DOM group
+let layoutState = { nodes: [], edges: [] };
+
+// references
+const dagSvg = document.getElementById('dag-svg');
+const nodesG = dagSvg.querySelector('#nodes');
+const edgesG = dagSvg.querySelector('#edges');
+const nodeCountEl = document.getElementById('node-count');
+const runIdEl = document.getElementById('run-id');
+const runWorkflowEl = document.getElementById('run-workflow');
+const timelineCanvas = document.getElementById('timeline-canvas');
+const logsEl = document.getElementById('logs');
+const selectedStepEl = document.getElementById('selected-step');
+const stepActionsEl = document.getElementById('step-actions');
+
+/* ---------------------------
+   TOAST helper
+   --------------------------- */
+function toast(msg, type='info', ms=2500){
+  const t = document.createElement('div');
+  t.className = 'fixed right-4 bottom-4 z-50 px-3 py-2 rounded shadow text-sm';
+  t.style.background = type==='error' ? '#fee2e2' : '#e6f4ff';
+  t.style.color = type==='error' ? '#991b1b' : '#0369a1';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=> t.remove(), ms);
+}
+
+/* ---------------------------
+   FETCH run (replace with real endpoint)
+   - Example returned shape used by this script:
+   {
+     id: 'run-123',
+     tenant: 'acme',
+     workflow: 'daily-job',
+     status: 'running',
+     start_time: '2025-10-17T08:00:00Z',
+     steps: [
+       { id:'s1', name:'extract', status:'success', start_time:'..', end_time:'..', attempts:[{attempt:1,start_time,end_time,status}], dependencies:[] },
+       ...
+     ],
+     critical_path: ['s1','s3']
+   }
+*/
+async function fetchRun(id){
+  try{
+    const res = await fetch(RUN_URL(id));
+    if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+    return await res.json();
+  }catch(err){
+    // fallback demo data if real API missing — remove or replace in production
+    console.warn('Using mock run because fetch failed', err);
+    return mockRun(id);
+  }
+}
+
+/* ---------------------------
+   Mock run generator (for local testing)
+   --------------------------- */
+function mockRun(id, n=20){
+  // generate realistic DAG: layered structure with proper dependencies
+  const steps = [];
+  const now = Date.now();
+  
+  // Create layers of steps
+  const layers = [
+    ['extract-data', 'validate-input', 'load-config'],
+    ['process-records', 'transform-data', 'clean-data'],
+    ['aggregate-metrics', 'calculate-scores', 'generate-reports'],
+    ['send-notifications', 'update-database', 'archive-results']
+  ];
+  
+  let stepId = 1;
+  const stepMap = new Map();
+  
+  layers.forEach((layer, layerIndex) => {
+    layer.forEach((stepName, stepIndex) => {
+      const id = `s${stepId}`;
+      const statuses = ['queued', 'running', 'success', 'failed'];
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      
+      // Calculate dependencies (steps from previous layer)
+      const dependencies = [];
+      if (layerIndex > 0) {
+        const prevLayer = layers[layerIndex - 1];
+        // Each step depends on 1-2 steps from previous layer
+        const depCount = Math.floor(Math.random() * 2) + 1;
+        for (let i = 0; i < depCount && i < prevLayer.length; i++) {
+          const depStep = prevLayer[i];
+          const depId = Array.from(stepMap.keys()).find(key => stepMap.get(key) === depStep);
+          if (depId) dependencies.push(depId);
+        }
+      }
+      
+      const startTime = new Date(now + stepId * 2000);
+      const duration = Math.random() * 30000 + 5000; // 5-35 seconds
+      const endTime = new Date(startTime.getTime() + duration);
+      
+      const step = {
+        id,
+        name: stepName,
+        status,
+        start_time: startTime.toISOString(),
+        end_time: endTime.toISOString(),
+        attempts: [{
+          attempt: 1,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          status: status
+        }],
+        dependencies
+      };
+      
+      steps.push(step);
+      stepMap.set(id, stepName);
+      stepId++;
+    });
+  });
+  
+  return { 
+    id, 
+    tenant: 'acme', 
+    workflow: 'data-pipeline', 
+    status: 'running', 
+    start_time: new Date(now).toISOString(), 
+    steps, 
+    critical_path: ['s1', 's4', 's7', 's10'] 
+  };
+}
+
+/* ---------------------------
+   LAYOUT: simple layered layout
+   - compute depth (longest path) and group into column layers
+   --------------------------- */
+function computeLayout(steps){
+  const map = new Map(steps.map(s => [s.id, s]));
+  const depth = {};
+  function d(id){
+    if (depth[id] !== undefined) return depth[id];
+    const node = map.get(id);
+    if (!node || !node.dependencies || node.dependencies.length===0) return depth[id]=0;
+    let best = 0;
+    for (const p of node.dependencies){
+      best = Math.max(best, d(p)+1);
     }
+    return depth[id] = best;
+  }
+  steps.forEach(s => d(s.id));
+  // group into layers
+  const layers = [];
+  for (const s of steps){
+    const dep = depth[s.id] || 0;
+    if (!layers[dep]) layers[dep] = [];
+    layers[dep].push(s);
+  }
+  // compute coordinates
+  const width = 1200, height = 600;
+  const padX = 80, padY = 50;
+  const layerCount = layers.length;
+  const colW = layerCount > 1 ? (width - padX*2) / (layerCount-1) : width;
+  const nodes = [];
+  const edges = [];
+  
+  layers.forEach((layer, li) => {
+    const yStep = layer.length > 1 ? (height - padY*2) / (layer.length-1) : height/2;
+    layer.forEach((node, ni) => {
+      const x = padX + li * colW;
+      const y = padY + ni * yStep;
+      nodes.push({ id: node.id, x, y, data: node });
+      (node.dependencies||[]).forEach(dep => edges.push({ from: dep, to: node.id }));
+    });
+  });
+  return { nodes, edges, width, height };
+}
+
+/* ---------------------------
+   RENDER DAG (reuses DOM items for updates)
+   --------------------------- */
+function renderDag(runData){
+  // compute layout
+  const layout = computeLayout(runData.steps);
+  layoutState = layout;
+  nodeCountEl.textContent = layout.nodes.length;
+
+  // update svg viewBox to layout width/height so zoom/fit works
+  dagSvg.setAttribute('viewBox', `0 0 ${layout.width} ${layout.height}`);
+
+  // Update edges (clear and recreate)
+  edgesG.innerHTML = '';
+  for (const e of layout.edges){
+    const from = layout.nodes.find(n => n.id === e.from);
+    const to = layout.nodes.find(n => n.id === e.to);
+    if (!from || !to) continue;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    const mx = (from.x + to.x) / 2;
+    const d = `M ${from.x+70},${from.y} C ${mx},${from.y} ${mx},${to.y} ${to.x-70},${to.y}`;
+    path.setAttribute('d', d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','rgba(75,85,99,0.35)');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('marker-end','url(#arrow)');
+    edgesG.appendChild(path);
+  }
+
+  // Update nodes reusing existing groups where possible
+  // nodesG contains groups positioned at (x,y)
+  // We'll clear and recreate for simplicity; for >500 nodes you'd keep and diff.
+  nodesG.innerHTML = '';
+  for (const n of layout.nodes){
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('transform', `translate(${n.x-70},${n.y-20})`); // position group
+    g.setAttribute('data-id', n.id);
+    g.setAttribute('tabindex','0');
+    g.setAttribute('role','button');
+    g.setAttribute('aria-label', `${n.data.name} — ${n.data.status || 'queued'}`);
+
+    // rectangle node body
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('width','140'); rect.setAttribute('height','40'); rect.setAttribute('rx','8');
+    rect.setAttribute('fill', 'white'); rect.setAttribute('stroke','rgba(0,0,0,0.1)'); rect.setAttribute('stroke-width','1');
+    rect.setAttribute('class','node-rect');
+
+    // step name
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x','12'); text.setAttribute('y','26'); text.setAttribute('class','node-text');
+    text.setAttribute('fill','#1f2937'); text.setAttribute('font-size','13'); text.setAttribute('font-family','Inter, sans-serif');
+    text.setAttribute('font-weight','500');
+    text.textContent = n.data.name;
+
+    // status badge (small circle)
+    const badge = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    badge.setAttribute('cx','120'); badge.setAttribute('cy','20'); badge.setAttribute('r','6');
+    badge.setAttribute('class','status-badge');
+    const color = statusColor(n.data.status);
+    badge.setAttribute('fill', color);
+
+    // attach listeners
+    g.addEventListener('click', () => onSelectStep(n.data));
+    g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectStep(n.data); } });
+
+    g.appendChild(rect); g.appendChild(text); g.appendChild(badge);
+    nodesG.appendChild(g);
+
+    svgNodes.set(n.id, g);
+  }
+}
+
+/* helper to map status -> color */
+function statusColor(status){
+  switch((status||'queued').toLowerCase()){
+    case 'running': return '#f59e0b'; // amber
+    case 'failed': return '#ef4444'; // red
+    case 'success': return '#16a34a'; // green
+    case 'queued': return '#60a5fa'; // blue
+    default: return '#94a3b8';
+  }
+}
+
+/* ---------------------------
+   TIMELINE: draw bars for steps attempts
+   --------------------------- */
+function renderTimeline(runData){
+  const ctx = timelineCanvas.getContext('2d');
+  // logical width/height
+  const w = timelineCanvas.clientWidth;
+  const h = timelineCanvas.clientHeight;
+  timelineCanvas.width = Math.floor(w * devicePixelRatio);
+  timelineCanvas.height = Math.floor(h * devicePixelRatio);
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  ctx.clearRect(0,0,w,h);
+
+  // collect steps with timings
+  const steps = runData.steps.filter(s => s.attempts && s.attempts.length>0);
+  if (steps.length === 0){
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('No timing data', 8, 20);
+    return;
+  }
+
+  const startTimes = steps.flatMap(s => s.attempts.map(a => new Date(a.start_time||a.start || Date.now()).getTime()));
+  const endTimes = steps.flatMap(s => s.attempts.map(a => new Date(a.end_time||a.end || Date.now()).getTime()));
+  const minStart = Math.min(...startTimes);
+  const maxEnd = Math.max(...endTimes);
+  const total = Math.max(1, maxEnd - minStart);
+
+  const rowH = Math.max(12, Math.floor((h - 20) / Math.min(12, steps.length)));
+  const left = 8;
+  ctx.font = '12px sans-serif';
+
+  // draw each step
+  steps.forEach((s, i) => {
+    const y = 8 + i * (rowH + 6);
+    // label
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(s.name, left, y + rowH - 2);
+
+    // attempts stacked starting right of label area
+    const timelineLeft = 120;
+    for (const a of s.attempts){
+      const as = new Date(a.start_time||a.start||minStart).getTime();
+      const ae = new Date(a.end_time||a.end||as+1000).getTime();
+      const x = timelineLeft + ((as - minStart) / total) * (w - timelineLeft - 12);
+      const width = Math.max(3, ((ae - as) / total) * (w - timelineLeft - 12));
+      ctx.fillStyle = (a.status === 'success') ? '#16a34a' : (a.status === 'failed') ? '#ef4444' : '#f59e0b';
+      ctx.fillRect(x, y, width, rowH);
+    }
+  });
+}
+
+/* ---------------------------
+   Selection handlers & operator actions
+   --------------------------- */
+let selectedStep = null;
+function onSelectStep(step){
+  selectedStep = step;
+  selectedStepEl.innerHTML = `
+    <div class="font-semibold">${step.name} <span class="text-xs text-gray-500">(${step.id})</span></div>
+    <div class="text-xs text-gray-600 mt-1">Status: <strong style="color:${statusColor(step.status)}">${step.status || 'queued'}</strong></div>
+  `;
+  stepActionsEl.classList.remove('hidden');
+}
+
+/* global action helper (POST action) */
+async function postAction(runId, payload){
+  try{
+    const res = await fetch(ACTIONS_URL(runId), {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error('Action failed: ' + res.status + ' ' + text);
+    }
+    const json = await res.json().catch(()=>({ok:true}));
+    toast('Action succeeded', 'info', 1800);
+    // optimistic: apply changes if action changes status
+    // later we rely on SSE to reflect authoritative state
+    return json;
+  }catch(err){
+    console.error(err);
+    toast('Action failed: ' + err.message, 'error', 3500);
+    throw err;
+  }
+}
+
+// Action buttons
+['pause', 'resume', 'cancel', 'retry'].forEach(action => {
+  document.getElementById(`action-${action}`).addEventListener('click', () => {
+    postAction(RUN_ID, {action}).catch(()=>{});
+  });
+});
+
+// Step action buttons
+['pause', 'resume', 'cancel', 'retry'].forEach(action => {
+  document.getElementById(`step-${action}`).addEventListener('click', () => {
+    if (!selectedStep) return toast('No step selected', 'error');
+    postAction(RUN_ID, {action: `${action}_step`, step_id: selectedStep.id}).catch(()=>{});
+  });
+});
+
+/* ---------------------------
+   SSE (live updates)
+   - If /pulse/stream exists use EventSource; otherwise demo timer to mutate state
+   --------------------------- */
+let es = null;
+function setupStream(){
+  // Prefer real SSE:
+  try{
+    const url = `${API_BASE}/pulse/stream?tenant=acme&workflow=demo`;
+    if (window.EventSource){
+      es = new EventSource(url);
+      es.onmessage = (ev) => {
+        try{
+          const msg = JSON.parse(ev.data);
+          applyStreamMessage(msg);
+        }catch(e){ console.warn('bad sse message', e); }
+      };
+      es.onerror = (e) => { console.warn('SSE error', e); es.close(); es = null; startDemoUpdates(); };
+      return;
+    }
+  }catch(e){ console.warn('SSE setup failed', e); }
+  // fallback demo
+  startDemoUpdates();
+}
+let demoInterval = null;
+function startDemoUpdates(){
+  if (demoInterval) return;
+  demoInterval = setInterval(() => {
+    if (!run) return;
+    // Pick random step and update status
+    const step = run.steps[Math.floor(Math.random()*run.steps.length)];
+    step.status = ['queued','running','success','failed'][Math.floor(Math.random()*4)];
+    // Update display
+    renderDag(run); 
+    renderTimeline(run);
+    // Add log entry
+    logsEl.textContent = `${new Date().toLocaleTimeString()}: ${step.name} -> ${step.status}\n` + logsEl.textContent;
+  }, 2000);
+}
+
+/* apply SSE message (structure depends on backend) */
+function applyStreamMessage(msg){
+  // example: {type:'step_update', run_id:'run-123', step:{id:'s2', status:'running', start_time:'..', attempts:[...]}}
+  if (msg.type === 'step_update' && run && msg.step && msg.step.id){
+    const existing = run.steps.find(x => x.id === msg.step.id);
+    if (existing){
+      Object.assign(existing, msg.step);
+    } else run.steps.push(msg.step);
+    requestAnimationFrame(()=>{ renderDag(run); renderTimeline(run); });
+    logsEl.textContent = `SSE: ${JSON.stringify(msg)}\n` + logsEl.textContent;
+  }
+}
+
+/* ---------------------------
+   Zoom / Pan (simplified)
+   --------------------------- */
+let currentScale = 1;
+let panX = 0, panY = 0;
+
+function updateTransform(){
+  const transform = `translate(${panX},${panY}) scale(${currentScale})`;
+  nodesG.setAttribute('transform', transform);
+  edgesG.setAttribute('transform', transform);
+}
+
+// Zoom controls
+document.getElementById('zoom-in').addEventListener('click', ()=> { 
+  currentScale = Math.min(2.5, currentScale + 0.3); 
+  updateTransform(); 
+});
+
+document.getElementById('zoom-out').addEventListener('click', ()=> { 
+  currentScale = Math.max(0.5, currentScale - 0.3); 
+  updateTransform(); 
+});
+
+document.getElementById('fit-view').addEventListener('click', ()=> { 
+  currentScale = 1; 
+  panX = 0; 
+  panY = 0; 
+  updateTransform(); 
+});
+
+// Simple drag to pan
+let dragging = false, lastX = 0, lastY = 0;
+const container = document.getElementById('dag-canvas-container');
+
+container.addEventListener('mousedown', (e) => { 
+  dragging = true; 
+  lastX = e.clientX; 
+  lastY = e.clientY; 
+});
+
+container.addEventListener('mousemove', (e) => {
+  if (!dragging) return;
+  panX += (e.clientX - lastX) / currentScale;
+  panY += (e.clientY - lastY) / currentScale;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  updateTransform();
+});
+
+container.addEventListener('mouseup', () => { dragging = false; });
+container.addEventListener('mouseleave', () => { dragging = false; });
+
+/* ---------------------------
+   INIT: fetch run, render and connect stream
+   --------------------------- */
+async function init(){
+  run = await fetchRun(RUN_ID);
+  runIdEl.textContent = run.id;
+  runWorkflowEl.textContent = run.workflow || '—';
+  console.log('Workflow name:', run.workflow); // Debug log
+  run.steps = run.steps || [];
+  run.steps.forEach(s => nodeMap.set(s.id, s));
+  // render initial
+  renderDag(run);
+  renderTimeline(run);
+
+  // Keyboard navigation removed for simplicity
+
+  // setup SSE (or demo)
+  setupStream();
+
+  toast('Run detail loaded (demo mode if API missing)', 'info', 1800);
+}
+
+init();
 </script>
 </body>
 </html>
