@@ -1,22 +1,12 @@
 from fastapi import FastAPI, HTTPException
 import pandas as pd
-import numpy as np
 import joblib
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 import uvicorn
 from pathlib import Path
+from typing import List, Optional
 
 app = FastAPI(title="TaskPulseOS SLA Risk Prediction")
-
-# Definining the input data model
-class SLAPredictionRequest(BaseModel):
-    sla_ms: float
-    critical_path_ms: float
-    attempts: int
-    latency_ms: float
-    queue_wait_ms: float
-    step_attempts: int
-    parallel_tasks_count: int
 
 # Loading the model
 try:
@@ -26,41 +16,100 @@ try:
 except FileNotFoundError:
     raise HTTPException(status_code=500, detail="Model not found.")
 
-# Define the prediction endpoint
-@app.post("/predict/sla_risk")
-async def predict_sla_risk(request: SLAPredictionRequest):
-    # Prepare input data as a DataFrame
-    input_data = {
-        'sla_ms': [request.sla_ms],
-        'critical_path_ms': [request.critical_path_ms],
-        'attempts': [request.attempts],
-        'latency_ms': [request.latency_ms],
-        'queue_wait_ms': [request.queue_wait_ms],
-        'step_attempts': [request.step_attempts],
-        'parallel_tasks_count': [request.parallel_tasks_count]
-    }
-    input_df = pd.DataFrame(input_data)
+# Definining the input data model
+class SLARiskInput(BaseModel):
+    latency_ms: int
+    queue_time: int
+    attempt: int
+    parallel_group_id: Optional[int] = None
+    workflow: str
+    tenant: str
+    version: str
+    risk: str
+    sla_ms: int
+    critical_path_ms: int
+    hour_of_day: int
 
-    # Predict risk score
-    risk_score = model.predict_proba(input_df)[:, 1][0]
+    @validator('latency_ms', 'queue_time', 'sla_ms', 'critical_path_ms', 'hour_of_day')
+    def positive_values(cls, v):
+        if v < 0:
+            raise ValueError("Values must be non-negative")
+        return v
 
-    # Determine reasons (top contributing features based on coefficients)
-    feature_importance = pd.DataFrame({
-        'feature': input_df.columns,
-        'value': input_df.iloc[0],
-        'coefficient': model.coef_[0]
-    })
-    feature_importance['contribution'] = feature_importance['value'] * feature_importance['coefficient']
-    reasons = feature_importance.sort_values(by='contribution', ascending=False).head(3).to_dict('records')
+    @validator('attempt')
+    def valid_attempts(cls, v):
+        if v < 0 or v > 5:
+            raise ValueError("Attempt must be between 0 and 5")
+        return v
 
-    # Prepare response
-    response = {
-        "risk_score": float(risk_score),  # Ensure float for JSON serialization
-        "reasons": reasons
-    }
+    @validator('hour_of_day')
+    def valid_hour(cls, v):
+        if v < 0 or v > 23:
+            raise ValueError("Hour must be between 0 and 23")
+        return v
 
-    return response
+    @validator('workflow')
+    def valid_workflow(cls, v):
+        valid_workflows = ["designer_collection", "production_forecast", "retail_storefront", "sustainability_audit"]
+        if v not in valid_workflows:
+            raise ValueError(f"Workflow must be one of {valid_workflows}")
+        return v
 
-# Run the app (for development; use uvicorn command for production)
+    @validator('tenant')
+    def valid_tenant(cls, v):
+        valid_tenants = ["AcmeFashion", "GlobalFactory", "TrendyRetail", "EcoWear", "LuxDesign"]
+        if v not in valid_tenants:
+            raise ValueError(f"Tenant must be one of {valid_tenants}")
+        return v
+
+    @validator('version')
+    def valid_version(cls, v):
+        valid_versions = ["v1.0", "v2.0", "v3.0"]
+        if v not in valid_versions:
+            raise ValueError(f"Version must be one of {valid_versions}")
+        return v
+
+    @validator('risk')
+    def valid_risk(cls, v):
+        valid_risks = ["ok", "watch", "at_risk", "breach"]
+        if v not in valid_risks:
+            raise ValueError(f"Risk must be one of {valid_risks}")
+        return v
+
+# Output data model
+class SLARiskOutput(BaseModel):
+    risk: float
+    reasons: List[str]
+
+
+@app.post("/predict/sla_risk", response_model=SLARiskOutput)
+async def predict_sla_risk(input_data: SLARiskInput):
+    try:
+        # Converting the input to a DataFrame for model prediction
+        data = pd.DataFrame([input_data.dict()])
+        
+        # Predicting risk score
+        risk_score = model.predict_proba(data)[:, 1][0]
+        
+        optimal_threshold = 0.4883 
+
+        # Generating reasons based on the feature thresholds
+        reasons = []
+        if data['latency_ms'][0] > 2000:
+            reasons.append(f"High latency ({data['latency_ms'][0]}ms)")
+        if data['queue_time'][0] > 1000:
+            reasons.append(f"Long queue time ({data['queue_time'][0]}ms)")
+        if data['attempt'][0] > 1:
+            reasons.append(f"Multiple retries ({data['attempt'][0]})")
+
+        # Response
+        return {
+            "risk": risk_score,
+            "reasons": reasons if risk_score > optimal_threshold else []
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)

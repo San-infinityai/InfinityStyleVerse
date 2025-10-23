@@ -1,35 +1,5 @@
 {
-    "safe": {
-        "range": [
-            0,
-            0.3
-        ],
-        "actions": [
-            "No action required",
-            "Continue with normal processing"
-        ]
-    },
-    "watch": {
-        "range": [
-            0.3,
-            0.7
-        ],
-        "actions": [
-            "Monitor closely",
-            "Consider switching to fast mode if latency increases",
-            "Raise timeout cap by 10% as a precaution"
-        ]
-    },
-    "high_risk": {
-        "range": [
-            0.7,
-            1.0
-        ],
-        "actions": [
-            "Switch to fast processing mode immediately",
-            "Skip non-critical steps (Eg: secondary fabric simulations)",
-            "Raise timeout cap by 20% and notify operator",
-            "Trigger alert for manual review"
-        ]
-    }
+  "0.0-0.4883": ["raise_timeout_cap"],
+  "0.4883-0.75": ["switch_to_fast_route", "raise_timeout_cap"],
+  "0.75-1.0": ["skip_noncritical_step", "switch_to_fast_route", "raise_timeout_cap"]
 }
