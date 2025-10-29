@@ -9,30 +9,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: infinitydb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -49,16 +25,32 @@ jobs:
           pip install -r requirements.txt
 
       - name: Clean up any previous Docker containers
-        run: |
-          docker compose down -v || true
+        run: docker compose down -v || true
 
       - name: Build Docker images
         run: docker compose build --pull
 
-      - name: Start Docker containers
+      - name: Start Docker containers with random host ports
         run: |
+          # Start containers without binding to fixed ports to avoid conflicts
           docker compose up -d
-          echo "Waiting for API to be ready..."
+
+          # Wait for Postgres
+          echo "Waiting for Postgres..."
+          for i in {1..30}; do
+            docker exec infinitystyleverse-postgres-1 pg_isready -U postgres && break
+            sleep 2
+          done
+
+          # Wait for Redis
+          echo "Waiting for Redis..."
+          for i in {1..30}; do
+            docker exec infinitystyleverse-redis-1 redis-cli ping | grep PONG && break
+            sleep 2
+          done
+
+          # Wait for API
+          echo "Waiting for API..."
           for i in {1..30}; do
             if curl -s http://localhost:5000/health; then
               echo "API is up!"
@@ -69,16 +61,14 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest tests/ \
-            --maxfail=1 \
-            --disable-warnings \
-            -v
+          pytest tests/ --maxfail=1 --disable-warnings -v
         env:
           PYTHONPATH: ${{ github.workspace }}
 
   push-docker:
     needs: build-and-test
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
