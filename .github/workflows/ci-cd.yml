@@ -18,7 +18,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: infinitydb
         ports:
-          - 5433:5432  # host port changed to avoid conflicts
+          - 5432:5432
         options: >-
           --health-cmd="pg_isready -U postgres"
           --health-interval=10s
@@ -28,7 +28,7 @@ jobs:
       redis:
         image: redis:7
         ports:
-          - 6380:6379  # host port changed to avoid conflicts
+          - 6379:6379
         options: >-
           --health-cmd="redis-cli ping"
           --health-interval=10s
@@ -49,13 +49,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build Docker images
-        run: docker-compose build --pull
+      - name: Build all Docker images
+        run: docker compose build --pull
 
       - name: Start Docker containers
         run: |
-          docker-compose up -d
-          sleep 20
+          docker compose up -d
+          sleep 20  # wait for API & DB to be ready
           docker ps
 
       - name: Run unit tests
@@ -66,8 +66,6 @@ jobs:
             -v
         env:
           PYTHONPATH: ${{ github.workspace }}
-          DATABASE_URL: postgres://postgres:postgres@localhost:5433/infinitydb
-          REDIS_URL: redis://localhost:6380
 
   push-docker:
     needs: build-and-test
@@ -84,21 +82,21 @@ jobs:
 
       - name: Build and Push API image
         run: |
-          docker-compose build api
+          docker compose build api
           docker tag infinitystyleverse-main-api \
             ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
 
       - name: Build and Push Worker image
         run: |
-          docker-compose build worker
+          docker compose build worker
           docker tag infinitystyleverse-main-worker \
             ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
 
       - name: Build and Push Flower image
         run: |
-          docker-compose build flower
+          docker compose build flower
           docker tag infinitystyleverse-main-flower \
             ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
