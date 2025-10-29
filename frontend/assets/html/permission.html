@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1014,4 +1015,1022 @@
 
 </body>
 
+=======
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permissions - StyleVerse</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 200px;
+            --dark-bg: #161616;
+            --header-height: 70px;
+            --dark-bg: #222222;
+            --light-bg: #f8f8f8;
+            --accent-color: #c19a6b;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --text-gray: #666666;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --edit-btn-color: #e0f2f7;
+            --edit-text-color: #0d7088;
+            --delete-btn-color: #fce4ec;
+            --delete-text-color: #b71c24;
+            --assign-btn-color: #ffffff;
+            --assign-text-color: #155724;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            height: 95%;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-var(--sidebar-width));
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--accent-color);
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 7px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 7px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .sidebar-nav a i {
+            margin-right: 25px;
+            font-size: 16px;
+        }
+
+        .sidebar-nav a.active,
+        .sidebar-nav a:hover {
+            background-color: var(--accent-color);
+            color: var(--card-bg);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 16px 20px;
+            background-color: transparent;
+            color: var(--text-light);
+            border: none;
+            border-radius: 7px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        .logout-btn i {
+            margin-right: 30px;
+            font-size: 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 7px;
+            border-radius: 7px;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin-top: 7px;
+            justify-content: space-between;
+        }
+
+        .user-profile img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid var(--accent-color);
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex-grow: 1;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+
+        .user-info .view-profile {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .user-profile .settings-icon {
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease-in-out;
+            padding: 20px 30px;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .header-left .date {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left .date i {
+            margin-right: 5px;
+            color: var(--accent-color);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .search-bar input {
+            padding: 6px 12px 6px 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            font-size: 12px;
+            width: 160px;
+            transition: width 0.3s ease;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            color: var(--text-gray);
+            font-size: 16px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .header-icon:hover {
+            color: var(--accent-color);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            border-color: var(--accent-color);
+        }
+
+        .permissions-content {
+            padding: 20px;
+            background-color: var(--light-bg);
+        }
+
+        .permissions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .permissions-header h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .action-button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-permission-btn,
+        .manage-roles-btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .manage-roles-btn {
+            background-color: var(--assign-btn-color);
+            color: var(--accent-color);
+
+        }
+
+        .manage-roles-btn:hover {
+            background-color: #d9e6da;
+
+        }
+
+
+        .add-permission-btn:hover {
+            background-color: #a57f56;
+        }
+
+        .add-permission-btn i,
+        .manage-roles-btn i {
+            margin-right: 8px;
+            font-size: 15px;
+        }
+
+        .permissions-table-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            overflow-x: auto;
+        }
+
+        .permissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            min-width: 700px;
+
+        }
+
+        .permissions-table th,
+        .permissions-table td {
+            text-align: left;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .permissions-table th {
+            background-color: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text-gray);
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .permissions-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .permissions-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .permission-action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .permission-action-btn {
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .permission-action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .permission-action-btn.edit {
+            background-color: var(--edit-btn-color);
+            color: var(--edit-text-color);
+        }
+
+        .permission-action-btn.delete {
+            background-color: var(--delete-btn-color);
+            color: var(--delete-text-color);
+        }
+
+
+        .access-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .access-badge.read-only {
+            background-color: #e6f7ff;
+            color: #007bff;
+        }
+
+        .access-badge.full-access {
+            background-color: #d4edda;
+            color: #28a745;
+        }
+
+        .access-badge.restricted {
+            background-color: #fff3cd;
+            color: #ffc107;
+        }
+
+        .hamburger-menu {
+            display: none;
+            font-size: 20px;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-right: 15px;
+            z-index: 1001;
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #a57f56;
+        }
+
+
+        .permissions-list {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+
+        .permission-item label {
+            flex-grow: 1;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 0;
+        }
+
+        .permission-item input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .custom-alert-modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding-top: 150px;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .custom-alert-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideIn 0.3s forwards;
+        }
+
+        .custom-alert-content h4 {
+            margin-top: 0;
+            color: var(--text-dark);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .custom-alert-content .message {
+            margin-bottom: 25px;
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .custom-alert-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .custom-alert-buttons button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .custom-alert-buttons .btn-ok {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+        }
+
+        .custom-alert-buttons .btn-ok:hover {
+            background-color: #a57f56;
+        }
+
+        .custom-alert-buttons .btn-cancel {
+            background-color: #ccc;
+            color: var(--text-dark);
+        }
+
+        .custom-alert-buttons .btn-cancel:hover {
+            background-color: #bbb;
+        }
+
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+                padding: 15px 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-var(--sidebar-width));
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+
+            .search-bar {
+                margin-right: 10px;
+            }
+
+            .search-bar input {
+                width: 120px;
+                padding: 6px 8px 6px 28px;
+                font-size: 11px;
+            }
+
+            .search-bar i {
+                left: 8px;
+                font-size: 13px;
+            }
+
+            .header-left .date {
+                display: none;
+            }
+
+            .header-left h2 {
+                font-size: 18px;
+            }
+
+            .header-icons {
+                gap: 8px;
+            }
+
+            .header-icon {
+                font-size: 14px;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+            }
+
+            .permissions-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .action-button-group {
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .add-permission-btn,
+            .manage-roles-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 0;
+            }
+
+            .permissions-table {
+                font-size: 12px;
+                min-width: 500px;
+            }
+
+            .permissions-table th,
+            .permissions-table td {
+                padding: 12px 15px;
+            }
+
+            .permission-action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .permission-action-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+
+            .form-control {
+                width: 93%;
+            }
+
+            .custom-alert-content {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 180px;
+            }
+
+            .sidebar-header {
+                font-size: 18px;
+            }
+
+            .sidebar-nav a {
+                font-size: 13px;
+            }
+
+            .logout-btn {
+                font-size: 13px;
+            }
+
+            .user-info .name {
+                font-size: 12px;
+            }
+
+            .user-profile img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .user-info .view-profile {
+                font-size: 9px;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .header h2 {
+                font-size: 16px;
+            }
+
+            .search-bar input {
+                width: 70px;
+            }
+
+            .permissions-table {
+                font-size: 11px;
+                min-width: 400px;
+            }
+
+            .permissions-table th,
+            .permissions-table td {
+                padding: 10px 12px;
+            }
+
+            .form-control {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">StyleVerse</div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="admin_dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="user.html"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="roles.html"><i class="fas fa-user-tag"></i> Roles</a></li>
+                <li><a href="#" class="active"><i class="fa-solid fa-shield"></i> Permissions</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <div class="user-profile">
+                <img src="Image.png" alt="Jenifer Winget">
+                <div class="user-info">
+                    <div class="name">Jenifer Winget</div>
+                    <a href="#" class="view-profile">View profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" id="main-content">
+        <div class="header">
+            <div class="header-left">
+                <i class="fas fa-bars hamburger-menu" id="hamburger-menu"></i>
+                <h2>Hello Jenny</h2>
+                <span class="date"><i class="far fa-calendar-alt"></i> <span id="current-date"></span></span>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search here">
+                </div>
+                <div class="header-icons">
+                    <i class="far fa-bell header-icon"></i>
+                    <img src="Image.png" alt="User Avatar" class="user-avatar">
+                </div>
+            </div>
+        </div>
+
+        <div class="permissions-content">
+            <div class="permissions-header">
+                <h3>Permission Management</h3>
+                <div class="action-button-group">
+                    <button class="add-permission-btn" id="openAddEditPermissionModalBtn"><i class="fas fa-plus"></i>
+                        Add New Permission</button>
+                    <button class="manage-roles-btn" id="openManagePermissionsModalBtn"><i class="fas fa-user-cog"></i>
+                        Manage Role Permissions</button>
+                </div>
+            </div>
+
+            <div class="permissions-table-container">
+                <table class="permissions-table">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>Permission Name</th>
+                            <th>Description</th>
+                            <th>Default Access</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="permissionsTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="managePermissionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeManageModalBtn">&times;</span>
+            <h3>Manage Permissions for Role</h3>
+            <div class="form-group">
+                <label for="roleSelectModal">Select Role</label>
+                <select id="roleSelectModal" class="form-control"></select>
+            </div>
+            <div class="permissions-list" id="permissionsList">
+                <h4>Available Permissions:</h4>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelManageBtn">Cancel</button>
+                <button class="btn-primary" id="savePermissionsBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="permissionDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closePermissionDetailsModalBtn">&times;</span>
+            <h3 id="permissionDetailsModalTitle">Add New Permission</h3>
+            <div class="form-group">
+                <label for="permissionModule">Module</label>
+                <input type="text" id="permissionModule" class="form-control" placeholder="e.g., Users, Products">
+            </div>
+            <div class="form-group">
+                <label for="permissionName">Permission Name</label>
+                <input type="text" id="permissionName" class="form-control"
+                    placeholder="e.g., View Users, Create Product">
+            </div>
+            <div class="form-group">
+                <label for="permissionDescription">Description</label>
+                <textarea id="permissionDescription" class="form-control" rows="3"
+                    placeholder="A brief description of this permission"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="defaultAccess">Default Access</label>
+                <select id="defaultAccess" class="form-control">
+                    <option value="read-only">Read-Only</option>
+                    <option value="full-access">Full Access</option>
+                    <option value="restricted">Restricted</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelPermissionDetailsBtn">Cancel</button>
+                <button class="btn-primary" id="savePermissionDetailsBtn">Save Permission</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="customAlertModal" class="custom-alert-modal">
+        <div class="custom-alert-content">
+            <h4 id="customAlertTitle"></h4>
+            <p class="message" id="customAlertMessage"></p>
+            <div class="custom-alert-buttons" id="customAlertButtons">
+
+            </div>
+        </div>
+    </div>
+
+  <script src="script.js"></script>
+    
+
+</body>
+
+>>>>>>> bea11e5788aecc70f7901d78c8def434955aa7d5
 </html>
