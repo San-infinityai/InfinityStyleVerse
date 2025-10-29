@@ -49,6 +49,20 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Build all Docker images
+        run: docker-compose build --pull
+
+      - name: Start Docker containers
+        run: |
+          docker-compose up -d
+          echo "Waiting for API to be ready..."
+          # Wait until API is up
+          until curl -s http://localhost:5000/health | grep "OK"; do
+            echo "API not ready yet, waiting..."
+            sleep 5
+          done
+          docker ps
+
       - name: Run unit tests
         run: |
           pytest tests/ \
@@ -57,15 +71,6 @@ jobs:
             -v
         env:
           PYTHONPATH: ${{ github.workspace }}
-
-      - name: Build all Docker images
-        run: docker-compose build --pull
-
-      - name: Start Docker containers for smoke test
-        run: |
-          docker-compose up -d
-          sleep 20
-          docker ps
 
   push-docker:
     needs: build-and-test
