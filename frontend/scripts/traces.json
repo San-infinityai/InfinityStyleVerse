@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [
   {
     "id": "req_c1d2",
@@ -64,70 +63,3 @@
     ]
   }
 ]
-=======
-[
-  {
-    "id": "req_c1d2",
-    "status": "SUCCESS",
-    "endpoint": "/recommend",
-    "timestamp": "03:32:10 PM",
-    "totalLatency": "1.21 s",
-    "cacheStatus": "MISS",
-    "cacheKey": "hash_of_task_and_inputs_12345",
-    "cacheTtl": "23h 45m",
-    "cacheSize": "4.5 KB",
-    "isMultiModel": true,
-    "executionSteps": [
-      { "name": "StyleSense (1.4)", "latency": "410 ms", "startsAt": "50 ms" },
-      { "name": "EcoSense (0.9)", "latency": "120 ms", "startsAt": "50 ms" },
-      { "name": "TrendQuanta (P) (2.2)", "latency": "530 ms", "startsAt": "50 ms" },
-      { "name": "Aggregator (1.0)", "latency": "120 ms", "startsAt": "580 ms" }
-    ]
-  },
-  {
-    "id": "req_7a3e",
-    "status": "SUCCESS",
-    "endpoint": "/api/brain/predict",
-    "timestamp": "03:33:05 PM",
-    "totalLatency": "50 ms",
-    "cacheStatus": "HIT",
-    "cacheKey": "hash_of_task_and_inputs_98765",
-    "cacheTtl": "1h 15m",
-    "cacheSize": "0.9 KB",
-    "isMultiModel": false,
-    "executionSteps": []
-  },
-  {
-    "id": "req_b2f9",
-    "status": "FAILURE",
-    "endpoint": "/plan",
-    "timestamp": "03:34:15 PM",
-    "totalLatency": "2.55 s",
-    "cacheStatus": "MISS",
-    "cacheKey": "hash_of_task_and_inputs_65432",
-    "cacheTtl": "24h",
-    "cacheSize": "6.2 KB",
-    "isMultiModel": true,
-    "executionSteps": [
-      { "name": "IntentLogic (3.0)", "latency": "1.1 s", "startsAt": "10 ms" },
-      { "name": "StyleSense (1.4)", "latency": "1.4 s", "startsAt": "1.2 s" },
-      { "name": "Circuit Breaker", "latency": "0 ms", "startsAt": "2.5 s", "error": true }
-    ]
-  },
-  {
-    "id": "req_89ab",
-    "status": "SUCCESS",
-    "endpoint": "/explain",
-    "timestamp": "03:35:01 PM",
-    "totalLatency": "780 ms",
-    "cacheStatus": "MISS",
-    "cacheKey": "hash_of_task_and_inputs_11223",
-    "cacheTtl": "24h",
-    "cacheSize": "2.1 KB",
-    "isMultiModel": false,
-    "executionSteps": [
-      { "name": "IntentLogic (3.0)", "latency": "750 ms", "startsAt": "10 ms" }
-    ]
-  }
-]
->>>>>>> bea11e5788aecc70f7901d78c8def434955aa7d5

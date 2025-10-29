@@ -1,10 +1,11 @@
+---
 name: Full CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
@@ -50,7 +51,12 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest tests/ --maxfail=1 --disable-warnings -v
+          pytest tests/ \
+            --maxfail=1 \
+            --disable-warnings \
+            -v
+        env:
+          PYTHONPATH: ${{ github.workspace }}
 
       - name: Build all Docker images
         run: docker-compose build --pull
@@ -77,17 +83,20 @@ jobs:
       - name: Build and Push API image
         run: |
           docker-compose build api
-          docker tag infinitystyleverse-main-api ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
+          docker tag infinitystyleverse-main-api \
+            ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
 
       - name: Build and Push Worker image
         run: |
           docker-compose build worker
-          docker tag infinitystyleverse-main-worker ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
+          docker tag infinitystyleverse-main-worker \
+            ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
 
       - name: Build and Push Flower image
         run: |
           docker-compose build flower
-          docker tag infinitystyleverse-main-flower ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
+          docker tag infinitystyleverse-main-flower \
+            ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
