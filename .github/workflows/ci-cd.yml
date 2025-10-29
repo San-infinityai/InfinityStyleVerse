@@ -1,4 +1,3 @@
----
 name: Full CI/CD Pipeline
 
 on:
@@ -17,8 +16,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: infinitydb
-        ports:
-          - 5432:5432
+        # No ports mapping needed for CI runner
         options: >-
           --health-cmd="pg_isready -U postgres"
           --health-interval=10s
@@ -27,8 +25,6 @@ jobs:
 
       redis:
         image: redis:7
-        ports:
-          - 6379:6379
         options: >-
           --health-cmd="redis-cli ping"
           --health-interval=10s
@@ -49,7 +45,10 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build all Docker images
+      - name: Stop any existing containers
+        run: docker-compose down -v --remove-orphans || true
+
+      - name: Build Docker images
         run: docker compose build --pull
 
       - name: Start Docker containers
@@ -67,6 +66,9 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
 
+      - name: Stop containers after tests
+        run: docker compose down -v --remove-orphans
+
   push-docker:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -80,23 +82,20 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push API image
+      - name: Build and push API image
         run: |
           docker compose build api
-          docker tag infinitystyleverse-main-api \
-            ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
+          docker tag infinitystyleverse-main-api ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-api:latest
 
-      - name: Build and Push Worker image
+      - name: Build and push Worker image
         run: |
           docker compose build worker
-          docker tag infinitystyleverse-main-worker \
-            ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
+          docker tag infinitystyleverse-main-worker ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-worker:latest
 
-      - name: Build and Push Flower image
+      - name: Build and push Flower image
         run: |
           docker compose build flower
-          docker tag infinitystyleverse-main-flower \
-            ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
+          docker tag infinitystyleverse-main-flower ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/infinitystyleverse-flower:latest
