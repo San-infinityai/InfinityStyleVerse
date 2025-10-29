@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - StyleVerse</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --sidebar-width: 200px;
+            --header-height: 80px;
+            --dark-bg: #161616;
+            --light-bg: #f8f8f8;
+            --accent-color: #c19a6b;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --text-gray: #666666;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(25, 25, 25, 100);
+            position: fixed;
+            height: 95%;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-var(--sidebar-width));
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            font-family: 'Inter', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--accent-color);
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 15px;
+        }
+
+        .sidebar-nav a i {
+            margin-right: 25px;
+            font-size: 17px;
+        }
+
+        .sidebar-nav a.active,
+        .sidebar-nav a:hover {
+            background-color: var(--accent-color);
+            color: var(--card-bg);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 16px 20px;
+            background-color: transparent;
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        .logout-btn i {
+            margin-right: 30px;
+            font-size: 17px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin-top: 8px;
+            justify-content: space-between;
+        }
+
+        .user-profile img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid var(--accent-color);
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex-grow: 1;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        .user-info .view-profile {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .user-profile .settings-icon {
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease-in-out;
+            padding: 20px 30px 20px 50px;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .header-left .date {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left .date i {
+            margin-right: 6px;
+            color: var(--accent-color);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .search-bar input {
+            padding: 7px 15px 7px 35px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+            width: 180px;
+            transition: width 0.3s ease;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 15px;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            color: var(--text-gray);
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .header-icon:hover {
+            color: var(--accent-color);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            border-color: var(--accent-color);
+        }
+
+
+        .dashboard-content {
+            padding: 20px;
+            background-color: var(--light-bg);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-family: 'Inter', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .card-details {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .card-details .change-icon {
+            margin-right: 4px;
+            color: #28a745;
+            font-size: 15px;
+        }
+
+        .card-details .change-icon.down {
+            color: #dc3545;
+        }
+
+        .card-details .percentage {
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(193, 154, 107, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: var(--accent-color);
+            margin-bottom: 12px;
+        }
+
+        .chart-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background-color: var(--card-bg);
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px var(--shadow-color);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .chart-header h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 17px;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .chart-header .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-header .actions button {
+            font-family: 'DM Sans', sans-serif;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            color: var(--text-gray);
+            font-size: 13px;
+        }
+
+        .chart-header .actions button.active,
+        .chart-header .actions button:hover {
+            background-color: var(--accent-color);
+            color: var(--text-dark);
+            border-color: var(--accent-color);
+        }
+
+
+        .chart-container {
+            position: relative;
+            height: 220px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+
+        .user-distribution-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .donut-chart-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            flex-shrink: 0;
+        }
+
+        .user-legend ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .user-legend li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .user-legend .color-box {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+
+        .color-box.admin {
+            background-color: #3a3a3a;
+        }
+
+        .color-box.executive {
+            background-color: #707070;
+        }
+
+        .color-box.user {
+            background-color: #a0a0a0;
+        }
+
+        .color-box.guest {
+            background-color: #d0d0d0;
+        }
+
+
+        .hamburger-menu {
+            display: none;
+            font-size: 22px;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-right: 15px;
+            z-index: 1001;
+        }
+
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+
+            .chart-section {
+                grid-template-columns: 1fr;
+            }
+
+            .donut-chart-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .user-distribution-content {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-var(--sidebar-width));
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+
+            .search-bar {
+                margin-right: 8px;
+            }
+
+            .search-bar input {
+                width: 120px;
+                padding: 6px 8px 6px 30px;
+                font-size: 12px;
+            }
+
+            .search-bar i {
+                left: 10px;
+                font-size: 14px;
+            }
+
+            .header-left .date {
+                display: none;
+            }
+
+            .header-left h2 {
+                font-size: 18px;
+            }
+
+            .header-icons {
+                gap: 8px;
+            }
+
+            .header-icon {
+                font-size: 16px;
+            }
+
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+            }
+
+            .stats-cards {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .card-value {
+                font-size: 22px;
+            }
+
+            .card-title {
+                font-size: 14px;
+            }
+
+            .card-details {
+                font-size: 12px;
+            }
+
+            .chart-card {
+                padding: 18px;
+            }
+
+            .chart-header h3 {
+                font-size: 15px;
+            }
+
+            .chart-header .actions button {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .chart-container {
+                height: 180px;
+            }
+
+            .donut-chart-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .user-distribution-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 180px;
+            }
+
+            .sidebar-header {
+                font-size: 18px;
+            }
+
+            .sidebar-nav a {
+                font-size: 14px;
+            }
+
+            .logout-btn {
+                font-size: 14px;
+            }
+
+            .user-info .name {
+                font-size: 13px;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .header h2 {
+                font-size: 16px;
+            }
+
+            .search-bar input {
+                width: 80px;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 160px;
+            }
+
+            .donut-chart-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .user-distribution-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">StyleVerse</div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="user.html"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="roles.html"><i class="fas fa-user-tag"></i> Roles</a></li>
+                <li><a href="permission.html"><i class="fa-solid fa-shield"></i> Permissions</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <div class="user-profile">
+                <img src="Image.png" alt="Jenifer Winget">
+                <div class="user-info">
+                    <div class="name">Jenifer Winget</div>
+                    <a href="#" class="view-profile">View profile</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" id="main-content">
+        <div class="header">
+            <div class="header-left">
+                <i class="fas fa-bars hamburger-menu" id="hamburger-menu"></i>
+                <h2>Hello Jenny</h2>
+                <span class="date"><i class="far fa-calendar-alt"></i> <span id="current-date">August 11,
+                        2025</span></span>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search here">
+                </div>
+                <div class="header-icons">
+                    <i class="far fa-bell header-icon"></i>
+                    <img src="Image.png" alt="User Avatar" class="user-avatar">
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="stats-cards">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-users"></i></div>
+                    <div class="card-title">Total Users</div>
+                    <div class="card-value">1250</div>
+                    <div class="card-details">
+                        <i class="fas fa-caret-up change-icon"></i>
+                        <span class="percentage">15%</span>
+                        <span>since last month</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="card-title">Active Sessions</div>
+                    <div class="card-value">345</div>
+                    <div class="card-details">
+                        <i class="fas fa-caret-up change-icon"></i>
+                        <span class="percentage">5%</span>
+                        <span>since yesterday</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="card-title">Pending Approval</div>
+                    <div class="card-value">12</div>
+                    <div class="card-details">
+                        <span>New requests</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="card-title">Error Rate</div>
+                    <div class="card-value">0.5%</div>
+                    <div class="card-details">
+                        <i class="fas fa-caret-down change-icon down"></i>
+                        <span class="percentage">0.5%</span>
+                        <span>Target: <1% </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-card user-growth-chart">
+                    <div class="chart-header">
+                        <h3>User Growth</h3>
+                        <div class="actions">
+                            <button id="weeklyBtn">WEEKLY</button>
+                            <button class="active" id="monthlyBtn">MONTHLY</button>
+                            <button id="yearlyBtn">YEARLY</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card user-distribution-chart">
+                    <div class="chart-header">
+                        <h3>User Distribution</h3>
+                        <i class="fas fa-ellipsis-h chart-settings-icon"></i>
+                    </div>
+                    <div class="user-distribution-content">
+                        <div class="donut-chart-container">
+                            <canvas id="userDistributionChart"></canvas>
+                        </div>
+                        <div class="user-legend">
+                            <ul>
+                                <li><span class="color-box admin"></span> Admin - <span class="percentage">52.1%</span>
+                                </li>
+                                <li><span class="color-box executive"></span> Executive -<span
+                                        class="percentage">22.8%</span></li>
+                                <li><span class="color-box user"></span> User - <span class="percentage">13.9%</span>
+                                </li>
+                                <li><span class="color-box guest"></span> Guest - <span class="percentage">11.2%</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       
+<script src="script.js"></script>
+</body>
+
+</html>

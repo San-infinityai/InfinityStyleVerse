@@ -1,0 +1,275 @@
+:root {
+  --primary-color: #2d6363;
+  --accent-color: #244f4f;
+  --background-color: #f5f7fa;
+  --text-light: #ffffff;
+  --text-dark: #1f2937;
+  --card-background: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.06);
+  --hover-accent: #244f4f;
+  --input-border: #d1d5db;
+  --input-bg: #f9fafb;
+  --highlight: #ff9900;
+  --highlight-text: #111111;
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* General */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* Container layout */
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap; /* NEW */
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  padding: 30px 20px;
+  border-radius: 12px;
+}
+
+.sidebar h2 {
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+   padding: 10px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.3s;
+}
+
+.sidebar li a {
+  display: block;
+  width: 100%;
+}
+
+.sidebar li:hover {
+  background-color: var(--accent-color);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+
+/* Sections */
+.content-section {
+  background-color: var(--card-background);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 20px var(--card-shadow);
+  margin-bottom: 40px;
+}
+
+/* Form */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-container label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  transition: border 0.3s;
+}
+
+.form-container input:focus,
+.form-container textarea:focus,
+.form-container select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.form-container button {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  color: var(--text-light);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+  background-color: var(--hover-accent);
+}
+
+/* Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.product-card {
+  background: var(--card-background);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 6px var(--card-shadow);
+  transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Filter Buttons */
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-buttons button {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.filter-buttons button:hover {
+  background: #e5e7eb;
+}
+
+/* Recommendations */
+#recommendations {
+  border-top: 2px solid #e5e7eb;
+  margin-top: 40px;
+  padding-top: 20px;
+}
+
+/* Notification Bar */
+.notification-bar {
+  background-color: var(--highlight);
+  color: var(--highlight-text);
+  padding: 12px 20px;
+  text-align: center;
+  font-weight: bold;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  animation: fadeOut 0.5s ease-in-out forwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    top: -50px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    top: -50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-wrap: wrap;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  .main-content {
+    width: 100%;
+    margin: 20px 0 40px 0;
+    padding: 20px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .filter-buttons {
+    flex-direction: column;
+  }
+
+  .filter-buttons button {
+    width: 100%;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  h3 {
+    font-size: 20px;
+  }
+}

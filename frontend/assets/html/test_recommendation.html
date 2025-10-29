@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InfinityStyleVerse Recommender</title>
+  <link rel="stylesheet" href="../css/test_recommendation_styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>InfinityStyleVerse Product Recommender</h1>
+    <div class="input-section">
+      <input type="text" id="userInput" placeholder="Enter a product type (e.g., dress)" />
+      <button onclick="getRecommendations()">Get Recommendations</button>
+    </div>
+
+    <div class="recommendations" id="recommendations"></div>
+
+    <div class="product-details" id="productDetails"></div>
+  </div>
+
+  <script>
+    async function getRecommendations() {
+      const input = document.getElementById("userInput").value;
+      if (!input.trim()) return;
+
+      const res = await fetch("http://127.0.0.1:5000/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: input })
+      });
+      const data = await res.json();
+
+      const recDiv = document.getElementById("recommendations");
+      const detailDiv = document.getElementById("productDetails");
+      recDiv.innerHTML = '';
+      detailDiv.innerHTML = '';
+
+      data.results.forEach(product => {
+        const box = document.createElement("div");
+        box.className = "product-box";
+        box.innerHTML = `
+          <img src="${product.image_url}" alt="${product.title}" />
+          <p><strong>${product.title}</strong></p>
+          <p>ID: ${product.product_id}</p>
+        `;
+        box.onclick = () => showDetails(product, input);
+        recDiv.appendChild(box);
+      });
+    }
+
+    async function showDetails(product, inputText) {
+      const detailDiv = document.getElementById("productDetails");
+      detailDiv.innerHTML = `
+        <h2>Selected Product</h2>
+        <img src="${product.image_url}" alt="${product.title}" />
+        <p><strong>Title:</strong> ${product.title}</p>
+        <p><strong>ID:</strong> ${product.product_id}</p>
+        <p><strong>Category:</strong> ${product.category}</p>
+        <p><strong>Color:</strong> ${product.color}</p>
+        <p><strong>Description:</strong> ${product.description}</p>
+      `;
+
+      await fetch("http://127.0.0.1:5000/api/log-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_id: product.product_id,
+          title: product.title,
+          input: inputText
+        })
+      });
+    }
+  </script>
+</body>
+</html>

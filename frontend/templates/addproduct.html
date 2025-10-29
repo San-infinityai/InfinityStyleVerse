@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create a New Product</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 40px auto;
+      padding: 40px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .btn-primary {
+      background-color: #2d6363;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #244f4f;
+    }
+
+    .main {
+      display: flex;
+      gap: 40px;
+    }
+
+    .left-panel,
+    .right-panel {
+      flex: 1;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="file"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 15px;
+      transition: border 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #2d6363;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .sizes span,
+    .colors span {
+      display: inline-block;
+      padding: 8px 14px;
+      margin: 4px 6px 0 0;
+      border-radius: 6px;
+      background: #e5e7eb;
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sizes span:hover {
+      background-color: #d1d5db;
+    }
+
+    .colors span {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 50%;
+      border: 2px solid #e5e7eb;
+    }
+
+    .colors span:hover {
+      border-color: #2d6363;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .upload-box {
+      border: 2px dashed #d1d5db;
+      padding: 30px;
+      border-radius: 10px;
+      background: #f9fafb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .upload-box input[type="file"] {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .image-list img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .visibility-options {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .visibility-options label {
+      font-size: 14px;
+      color: #4b5563;
+    }
+       .sizes span.selected,
+    .colors span.selected {
+      border: 2px solid black;
+      cursor: pointer;
+    }
+    .sizes span,
+    .colors span {
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head><body>
+  <div class="container">
+    <header class="header">
+      <h2>Create a New Product</h2>
+      <button type="button" class="btn-primary">+ New Product</button>
+    </header>
+
+    <main class="main">
+      <section class="left-panel">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" name="product_name" placeholder="Green colour jacket" required />
+        </div>
+
+        <div class="form-group">
+          <label>Brand</label>
+          <input type="text" name="brand" placeholder="Moose" required />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" rows="5" placeholder="We have been doing cloth business..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sale Price</label>
+            <input type="text" name="sale_price" placeholder="$100.00" required />
+          </div>
+          <div class="form-group">
+            <label>Discount</label>
+            <input type="text" name="discount" placeholder="$20" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Select Your Size</label>
+          <div class="sizes">
+            <span data-size="S">S</span>
+            <span data-size="M">M</span>
+            <span data-size="L">L</span>
+            <span data-size="XL">XL</span>
+            <span data-size="XXL">XXL</span>
+          </div>
+          <input type="hidden" name="size" id="selected-size" required />
+        </div>
+
+        <div class="form-group">
+          <label for="colorPicker">Choose Color:</label>
+<input type="color" id="colorPicker" name="color" value="#000000" />
+
+          <input type="hidden" name="color" id="selected-color" required />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary">Back</button>
+          <button type="button" class="btn-secondary">Cancel</button>
+          <button type="button" class="btn-primary">Publish</button>
+        </div>
+      </section>
+
+      <section class="right-panel">
+        <div class="form-group">
+          <label>Tag</label>
+          <input type="text" name="tag" placeholder="Type and enter" />
+        </div>
+
+        <div class="form-group">
+          <label>Product Image</label>
+          <div class="upload-box">
+            <p>Drop your image here or</p>
+            <input type="file" name="product_images[]" id="product-images" accept="image/*" multiple required />
+          </div>
+          <div class="image-list" id="preview-container"></div>
+          <small>You need at least 4 images. Pay attention to image quality.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Visibility</label>
+          <div class="visibility-options">
+            <label><input type="radio" name="visibility" value="published" checked /> Published</label>
+            <label><input type="radio" name="visibility" value="schedule" /> Schedule</label>
+            <label><input type="radio" name="visibility" value="hidden" /> Hidden</label>
+          </div>
+          <input type="date" name="schedule_date" />
+        </div>
+
+        <div class="form-group">
+          <label>Publish Category</label>
+          <select name="category">
+            <option value="clothing">Clothing</option>
+            <option value="shoes">Shoes</option>
+            <option value="accessories">Accessories</option>
+          </select>
+        </div>
+
+        <!-- ESG Fields -->
+        <div class="form-group">
+          <label>Material Used</label>
+          <input type="text" name="material" placeholder="e.g. Polyester" required />
+        </div>
+
+        <div class="form-group">
+          <label>Water Use (liters)</label>
+          <input type="number" name="water_use" step="0.01" placeholder="e.g. 50" required />
+        </div>
+
+        <div class="form-group">
+          <label>Carbon Emission (kg CO₂)</label>
+          <input type="number" name="carbon_emission" step="0.01" placeholder="e.g. 1.5" required />
+        </div>
+
+        <div class="form-group">
+          <label>Ethical Rating (1 to 5)</label>
+          <input type="number" name="ethical_rating" min="1" max="5" step="0.1" placeholder="e.g. 4.2" required />
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("product-images");
+    const previewContainer = document.getElementById("preview-container");
+
+    fileInput.addEventListener("change", function () {
+      previewContainer.innerHTML = "";
+      Array.from(this.files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // Size selection
+    const sizeSpans = document.querySelectorAll(".sizes span");
+    const selectedSizeInput = document.getElementById("selected-size");
+
+    sizeSpans.forEach((span) => {
+      span.addEventListener("click", () => {
+        sizeSpans.forEach((s) => s.classList.remove("selected"));
+        span.classList.add("selected");
+        selectedSizeInput.value = span.getAttribute("data-size");
+      });
+    });
+
+    // Color selection
+    const colorSpans = document.querySelectorAll(".colors span");
+    const selectedColorInput = document.getElementById("selected-color");
+
+    colorSpans.forEach((span) => {
+      span.addEventListener("click", () => {
+        colorSpans.forEach((c) => c.classList.remove("selected"));
+        span.classList.add("selected");
+        selectedColorInput.value = span.getAttribute("data-color");
+      });
+    });
+
+    // Publish button click
+    document.querySelector(".btn-primary").addEventListener("click", () => {
+      const productName = document.querySelector('input[name="product_name"]').value.trim();
+      const brand = document.querySelector('input[name="brand"]').value.trim();
+      const description = document.querySelector('textarea[name="description"]').value.trim();
+      const salePrice = document.querySelector('input[name="sale_price"]').value.trim();
+      const discount = document.querySelector('input[name="discount"]').value.trim();
+      const size = selectedSizeInput.value;
+      const color = selectedColorInput.value;
+      const tag = document.querySelector('input[name="tag"]').value.trim();
+      const visibility = document.querySelector('input[name="visibility"]:checked').value;
+      const scheduleDate = document.querySelector('input[name="schedule_date"]').value;
+      const category = document.querySelector('select[name="category"]').value;
+      const files = fileInput.files;
+
+      const material = document.querySelector('input[name="material"]').value.trim();
+      const waterUse = document.querySelector('input[name="water_use"]').value.trim();
+      const carbonEmission = document.querySelector('input[name="carbon_emission"]').value.trim();
+      const ethicalRating = document.querySelector('input[name="ethical_rating"]').value.trim();
+
+      if (!productName || !brand || !description || !salePrice || !size || !color || files.length < 4 || !material || !waterUse || !carbonEmission || !ethicalRating) {
+        alert("Please fill all required fields and upload at least 4 images.");
+        return;
+      }
+
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        alert("You must be logged in to publish a product.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("product_name", productName);
+      formData.append("brand", brand);
+      formData.append("description", description);
+      formData.append("sale_price", salePrice);
+      formData.append("discount", discount);
+      formData.append("size", size);
+      formData.append("color", color);
+      formData.append("tag", tag);
+      formData.append("visibility", visibility);
+      formData.append("schedule_date", scheduleDate);
+      formData.append("category", category);
+      formData.append("material", material);
+      formData.append("water_use", waterUse);
+      formData.append("carbon_emission", carbonEmission);
+      formData.append("ethical_rating", ethicalRating);
+
+      for (let i = 0; i < files.length; i++) {
+        formData.append("product_images[]", files[i]);
+      }
+
+      fetch("http://127.0.0.1:5000/product", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          alert(data.msg || "Product created successfully!");
+          document.querySelectorAll('input[type="text"], textarea, input[type="number"]').forEach(input => input.value = "");
+          selectedSizeInput.value = "";
+          selectedColorInput.value = "";
+          fileInput.value = "";
+          previewContainer.innerHTML = "";
+          document.querySelectorAll(".sizes span.selected").forEach(s => s.classList.remove("selected"));
+          document.querySelectorAll(".colors span.selected").forEach(c => c.classList.remove("selected"));
+        })
+        .catch((error) => {
+          console.error("Product creation error:", error);
+          alert("Product creation failed. Please try again.");
+        });
+    });
+  </script>
+</body> </html>

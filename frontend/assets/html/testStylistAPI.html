@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Stylist</title>
+    <link rel="stylesheet" href="../css/testAPIstyles.css">
+
+</head>
+<body>
+    <div class="container">
+        <h1>AI Fashion Stylist</h1>
+        <input type="text" id="prompt" placeholder="Ask a question...">
+        <button onclick="getAdvice()">Send</button>
+        <div id="response-box"><span id="response" class=""></span></div>
+    </div>
+
+    <script>
+        async function getAdvice() {
+            const prompt = document.getElementById("prompt").value;
+            const responseEl = document.getElementById("response");
+
+            if (!prompt.trim()) {
+                responseEl.innerText = "Enter a question.";
+                return;
+            }
+
+            responseEl.innerText = "Thinking...";
+            responseEl.classList.add("loading");
+
+            try {
+                const res = await fetch("http://127.0.0.1:5000/api/style-advice", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question: prompt })
+                });
+
+                const data = await res.json();
+
+                if (data.advice) {
+                    responseEl.innerText = data.advice.trim();
+                } else if (data.error) {
+                    responseEl.innerText = `Error: ${data.error}`;
+                } else {
+                    responseEl.innerText = "Unexpected response.";
+                }
+
+            } catch (err) {
+                responseEl.innerText = "Failed to connect to the server.";
+            }
+
+            responseEl.classList.remove("loading");
+        }
+    </script>
+</body>
+</html>

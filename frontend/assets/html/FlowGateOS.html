@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowGateOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 200px;
+            --dark-bg: #161616;
+            --header-height: 70px;
+            --dark-bg: #222222;
+            --light-bg: #f8f8f8;
+            --accent-color: #c19a6b;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --text-gray: #666666;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --edit-btn-color: #e0f2f7;
+            --edit-text-color: #0d7088;
+            --delete-btn-color: #fce4ec;
+            --delete-text-color: #b71c24;
+            --assign-btn-color: #ffffff;
+            --assign-text-color: #155724;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 0.875rem;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar a.active {
+            background-color: #c19a6b;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .sidebar a.active i {
+            color: #ffffff;
+        }
+
+        .bg-custom-dark {
+            background-color: var(--dark-bg);
+        }
+
+        .text-custom-light {
+            color: var(--text-light);
+        }
+
+        .bg-custom-accent {
+            background-color: var(--accent-color);
+        }
+
+        .text-custom-accent {
+            color: var(--accent-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            font-size: 0.75rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.5rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 0.85rem;
+            top: 1.5rem;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .rotate-90 {
+            transform: rotate(90deg);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: var(--sidebar-width);
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+        }
+
+        .text-xl {
+            font-size: 1rem;
+        }
+
+
+        .uplift-container {
+            position: relative;
+        }
+
+        .uplift-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 20px;
+
+        }
+
+        .uplift-message {
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .dag-node {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen">
+    <div
+        class="sidebar w-64 h-screen bg-custom-dark text-custom-light p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
+        <div>
+
+            <div class="text-[20px] font-bold mb-8 font-['Inter'] text-[#c19a6b] text-center">StyleVerse</div>
+
+
+            <nav class="space-y-3 text-sm font-['DM Sans']">
+                <a href="#" id="dashboard-link"
+                    class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fas fa-th-large text-lg w-5"></i>
+                    <span>Dashboard</span>
+                    <i id="dashboard-arrow"
+                        class="fa-solid fa-angle-right w-3 h-3 ml-auto transform transition-transform duration-200"></i>
+                </a>
+                <div id="dashboard-submenu" class="ml-6 space-y-3 hidden text-xs">
+                    <a href="user.html"
+                        class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                        <i class="fa-solid fa-users text-lg w-5"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="roles.html"
+                        class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                        <i class="fa-solid fa-user-shield text-lg w-5"></i>
+                        <span>Roles</span>
+                    </a>
+                    <a href="permission.html"
+                        class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                        <i class="fa-solid fa-unlock text-lg w-5"></i>
+                        <span>Permissions</span>
+                    </a>
+                </div>
+                <a href="#" id="experiments-link"
+                    class="flex items-center space-x-4 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10 active">
+                    <i class="fa-solid fa-flask text-lg w-5"></i>
+                    <span>Experiments</span>
+                </a>
+                <a href="#" id="policy-link"
+                    class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-scroll text-lg w-5"></i>
+                    <span>Policy & Attribution</span>
+                </a>
+                <a href="#" id="workflows-link"
+                    class="flex items-center space-x-4 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-list-check text-lg w-5"></i>
+                    <span>Workflows</span>
+                </a>
+                <a href="#" id="runs-link"
+                    class="flex items-center space-x-4 p-2 rounded-lg transition duration-200 hover:bg-white hover:bg-opacity-10">
+                    <i class="fa-solid fa-play text-lg w-5"></i>
+                    <span>Runs</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="mt-8 text-xs font-['DM Sans']">
+            <a href="#"
+                class="flex items-center space-x-6 p-2 rounded-lg transition duration-200 bg-gray-500 bg-opacity-30 hover:bg-opacity-50">
+                <i class="fa-solid fa-right-from-bracket text-lg w-5"></i>
+                <span>Logout</span>
+            </a>
+            <div class="flex items-center mt-4 p-2 space-x-4">
+                <img class="w-8 h-8 rounded-full border-2 border-white" src="Image.png" alt="User Profile Picture">
+                <span class="text-xs font-medium">Jenifer winget</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content flex-grow p-6 ml-64">
+        <div id="experiments-section" class="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
+            <header class="mb-6">
+                <h1
+                    class="text-xl font-bold text-center bg-custom-dark text-custom-light py-3 px-5 rounded-lg shadow-md font-['Inter']">
+                    Experiments Console</h1>
+            </header>
+
+            <section id="create-experiment" class="mb-6 p-5 border rounded-lg shadow-sm bg-gray-50">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Create New Experiment</h2>
+                <form id="experiment-form" class="grid grid-cols-1 md:grid-cols-2 gap-5 font-['Nunito Sans']">
+                    <div>
+                        <label for="exp-name" class="block text-xs font-medium text-gray-700">Experiment Name</label>
+                        <input type="text" id="exp-name"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs">
+                    </div>
+                    <div>
+                        <label for="task" class="block text-xs font-medium text-gray-700">Task</label>
+                        <select id="task"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs">
+                            <option>outfit recommendation</option>
+                            <option>price nudge</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="split" class="block text-xs font-medium text-gray-700">Population Split</label>
+                        <input type="text" id="split" value="50/50"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs">
+                    </div>
+                    <div>
+                        <label for="metric" class="block text-xs font-medium text-gray-700">Primary Metric</label>
+                        <select id="metric"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs">
+                            <option>CTR</option>
+                            <option>CVR</option>
+                            <option>AOV</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit"
+                            class="w-full py-2 px-3 border border-transparent rounded-md shadow-sm text-xs font-medium text-white bg-custom-accent hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-accent transition">
+                            Launch Experiment
+                        </button>
+                    </div>
+                </form>
+                <div id="status-message" class="mt-3 text-center text-xs font-medium hidden"></div>
+            </section>
+
+            <section id="active-experiments" class="mb-6">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Active Experiments</h2>
+                <div id="experiments-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                </div>
+            </section>
+
+            <section id="uplift-chart-container" class="p-5 border rounded-lg shadow-sm bg-gray-50 uplift-container">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Uplift Visualization</h2>
+                <div id="uplift-content" class="uplift-content">
+                    <canvas id="upliftChart" class="w-full h-80"></canvas>
+                    <div id="uplift-message" class="uplift-message"></div>
+                </div>
+                <div id="no-data-message" class="text-center text-gray-500 mt-3 text-sm hidden">Select an experiment to
+                    see data.</div>
+            </section>
+        </div>
+
+        <div id="policy-section" class="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 hidden">
+            <header class="mb-6">
+                <h1
+                    class="text-xl font-bold text-center bg-custom-dark text-custom-light py-3 px-5 rounded-lg shadow-md font-['Inter']">
+                    Policy & Attribution Explorer</h1>
+            </header>
+
+            <section id="policy-dashboard" class="mb-6 p-5 border rounded-lg shadow-sm bg-gray-50">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Policy Dashboard</h2>
+                <div id="policies-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-custom-accent">
+                        <h3 class="text-base font-bold text-custom-accent mb-2 font-['Nunito Sans']">Outfit
+                            Recommendation</h3>
+                        <p class="text-xs text-gray-600 mb-1"><strong>Active Policy:</strong> pol_rec_v5</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong>Version:</strong> 5</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong>Rollout %:</strong> 100%</p>
+                        <p class="text-xs text-gray-600"><strong>Exploration Rate:</strong> 5%</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-custom-accent">
+                        <h3 class="text-base font-bold text-custom-accent mb-2 font-['Nunito Sans']">Price Nudge</h3>
+                        <p class="text-xs text-gray-600 mb-1"><strong>Active Policy:</strong> pol_price_v3</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong>Version:</strong> 3</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong>Rollout %:</strong> 75%</p>
+                        <p class="text-xs text-gray-600"><strong>Exploration Rate:</strong> 10%</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="attribution-viewer" class="p-5 border rounded-lg shadow-sm bg-gray-50">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Attribution Viewer</h2>
+                <div class="flex flex-col md:flex-row gap-3 mb-4">
+                    <input type="text" id="request-id-input"
+                        class="flex-grow rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs"
+                        placeholder="Enter request_id (e.g., req_123)">
+                    <button id="search-btn"
+                        class="py-2 px-3 border border-transparent rounded-md shadow-sm text-xs font-medium text-white bg-custom-accent hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-accent transition">
+                        Search Trace
+                    </button>
+                </div>
+                <div id="attribution-results" class="space-y-5">
+                </div>
+            </section>
+        </div>
+
+        <div id="workflows-section" class="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 hidden">
+            <header class="mb-6">
+                <h1
+                    class="text-xl font-bold text-center bg-custom-dark text-custom-light py-3 px-5 rounded-lg shadow-md font-['Inter']">
+                    FlowGateOS Console</h1>
+            </header>
+
+            <section id="workflows-list-section" class="mb-6">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Workflow Definitions</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Name
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Version
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="workflows-table-body" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="workflows-create" class="mb-6 p-5 border rounded-lg shadow-sm bg-gray-50">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Launch New Run</h2>
+                <form id="launch-run-form" class="space-y-4 font-['Nunito Sans']">
+                    <div>
+                        <label for="workflow-name-select" class="block text-xs font-medium text-gray-700">Select
+                            Workflow</label>
+                        <select id="workflow-name-select"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs"
+                            required>
+                            <option value="">-- Select a workflow --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="inputs-json" class="block text-xs font-medium text-gray-700">Inputs JSON</label>
+                        <textarea id="inputs-json" rows="4"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs"
+                            placeholder='{"prompt": "my new design"}'></textarea>
+                    </div>
+                    <div>
+                        <label for="variables-json" class="block text-xs font-medium text-gray-700">Variables
+                            JSON</label>
+                        <textarea id="variables-json" rows="4"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent text-xs"
+                            placeholder='{"region": "EU"}'></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full py-2 px-3 border border-transparent rounded-md shadow-sm text-xs font-medium text-white bg-custom-accent hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-accent transition">
+                        Launch Run
+                    </button>
+                </form>
+                <div id="workflows-status-message" class="mt-3 text-center text-xs font-medium hidden"></div>
+            </section>
+        </div>
+
+        <div id="runs-section" class="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 hidden">
+            <header class="mb-6">
+                <h1
+                    class="text-xl font-bold text-center bg-custom-dark text-custom-light py-3 px-5 rounded-lg shadow-md font-['Inter']">
+                    FlowGateOS Runs Console
+                </h1>
+            </header>
+            <section id="runs-list-section" class="mb-6 p-5 border rounded-lg shadow-sm bg-gray-50">
+                <h2 class="text-lg font-semibold mb-3 font-['Nunito Sans']">Recent Runs</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Run ID</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Workflow</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Latency (ms)</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Started At</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="runs-table-body" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="run-detail-modal" class="modal hidden">
+        <div class="modal-content w-[90%] md:w-[80%] lg:w-[70%]">
+            <span class="modal-close cursor-pointer text-gray-600 hover:text-gray-900">&times;</span>
+            <div id="run-detail-content" class="p-6">
+                <h2 class="text-xl font-bold mb-4 font-['Nunito Sans']">Run Details: <span id="modal-run-id"></span>
+                </h2>
+                <div id="run-status-info" class="mb-4">
+                    <p class="text-sm">Status: <span id="run-status" class="font-semibold"></span></p>
+                    <p class="text-sm">Current Step: <span id="run-current-step" class="font-semibold"></span></p>
+                    <p class="text-sm">Latency: <span id="run-latency" class="font-semibold"></span></p>
+                </div>
+                <div id="run-actions" class="mb-6 space-x-2">
+                    <button id="cancel-run-btn"
+                        class="py-1 px-3 bg-red-500 text-white text-xs rounded-md">Cancel</button>
+                    <button id="retry-run-btn"
+                        class="py-1 px-3 bg-blue-500 text-white text-xs rounded-md">Retry</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold mb-2">DAG Visualization</h3>
+                        <div class="border border-gray-300 rounded-lg p-2">
+                            <canvas id="dag-canvas" class="w-full h-64"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">Timeline Waterfall</h3>
+                        <div class="border border-gray-300 rounded-lg p-2">
+                            <canvas id="timeline-canvas" class="w-full h-64"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div id="step-history" class="mt-6">
+                    <h3 class="font-semibold mb-2">Step History</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Step ID
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Latency
+                                        (ms)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="step-history-body" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="workflow-yaml-modal" class="modal hidden">
+        <div class="modal-content w-[90%] md:w-[80%] lg:w-[70%]">
+            <span class="modal-close cursor-pointer text-gray-600 hover:text-gray-900">&times;</span>
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-4 font-['Nunito Sans']">Workflow YAML: <span
+                        id="modal-workflow-name"></span></h2>
+                <pre id="workflow-yaml-content" class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto"></pre>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const experimentsSection = document.getElementById('experiments-section');
+            const workflowsSection = document.getElementById('workflows-section');
+            const runsSection = document.getElementById('runs-section');
+            const policySection = document.getElementById('policy-section');
+
+            const experimentsLink = document.getElementById('experiments-link');
+            const workflowsLink = document.getElementById('workflows-link');
+            const runsLink = document.getElementById('runs-link');
+            const policyLink = document.getElementById('policy-link');
+
+            const experimentForm = document.getElementById('experiment-form');
+            const experimentsList = document.getElementById('experiments-list');
+            const statusMessage = document.getElementById('status-message');
+            const noDataMessage = document.getElementById('no-data-message');
+            const upliftContent = document.getElementById('uplift-content');
+            const upliftMessage = document.getElementById('uplift-message');
+            const ctx = document.getElementById('upliftChart').getContext('2d');
+            let myChart = null;
+
+            const searchBtn = document.getElementById('search-btn');
+            const requestIdInput = document.getElementById('request-id-input');
+            const attributionResults = document.getElementById('attribution-results');
+
+            const dashboardLink = document.getElementById('dashboard-link');
+            const dashboardSubmenu = document.getElementById('dashboard-submenu');
+            const dashboardArrow = document.getElementById('dashboard-arrow');
+
+            const launchRunForm = document.getElementById('launch-run-form');
+            const workflowsStatusMessage = document.getElementById('workflows-status-message');
+
+            const workflowsTableBody = document.getElementById('workflows-table-body');
+            const workflowNameSelect = document.getElementById('workflow-name-select');
+
+            const runsTableBody = document.getElementById('runs-table-body');
+            const runDetailModal = document.getElementById('run-detail-modal');
+            const workflowYamlModal = document.getElementById('workflow-yaml-modal');
+
+            const modalRunId = document.getElementById('modal-run-id');
+            const runStatusInfo = document.getElementById('run-status-info');
+            const runStatus = document.getElementById('run-status');
+            const runCurrentStep = document.getElementById('run-current-step');
+            const runLatency = document.getElementById('run-latency');
+            const dagCanvas = document.getElementById('dag-canvas');
+            const timelineCanvas = document.getElementById('timeline-canvas');
+            const stepHistoryBody = document.getElementById('step-history-body');
+
+            const cancelRunBtn = document.getElementById('cancel-run-btn');
+            const retryRunBtn = document.getElementById('retry-run-btn');
+
+            let runInterval = null;
+
+            const experiences = [{
+                id: 'exp_1',
+                name: 'Outfit Rec V2',
+                task: 'outfit recommendation',
+                status: 'active',
+                split: '50/50',
+                kpis: {
+                    control: {
+                        ctr: 0.05,
+                        cvr: 0.02
+                    },
+                    variant_A: {
+                        ctr: 0.065,
+                        cvr: 0.025
+                    }
+                }
+            }, {
+                id: 'exp_2',
+                name: 'Price Nudge Test',
+                task: 'price nudge',
+                status: 'paused',
+                split: '80/20',
+                kpis: {
+                    control: {
+                        aov: 50.00
+                    },
+                    variant_A: {
+                        aov: 55.50
+                    }
+                }
+            }];
+
+            const sampleTraces = {
+                'req_123': {
+                    decision: {
+                        id: 'req_123',
+                        policy: 'pol_rec_v5',
+                        task: 'outfit recommendation',
+                        timestamp: '2023-10-27T10:00:00Z',
+                        chosen_item: 'skul',
+                        score: 0.81
+                    },
+                    events: [{
+                        type: 'impression',
+                        value: 1,
+                        timestamp: '2023-10-27T10:00:01Z'
+                    }, {
+                        type: 'click',
+                        value: 1,
+                        timestamp: '2023-10-27T10:00:15Z'
+                    }, {
+                        type: 'purchase',
+                        value: 1,
+                        timestamp: '2023-10-27T10:02:30Z'
+                    }],
+                    reward: {
+                        value: 1.0,
+                        components: {
+                            click: 0.1,
+                            purchase: 1.0
+                        },
+                        timestamp: '2023-10-27T10:03:00Z'
+                    }
+                }
+            };
+
+            const sampleWorkflows = [
+                {
+                    name: 'design_to_shop_v1',
+                    version: 1,
+                    yaml: `version: 1
+name: design_to_shop_v1
+sla ms: 2500
+variables:
+  region: "EU"
+  eco_required: true
+steps:
+- id: style
+  type: model_call
+  layer: StyleSense
+  inputs:
+    prompt: "{{inputs.prompt}}"
+  parallel_group: A
+- id: eco
+  type: model_call
+  layer: EcoSense
+  inputs:
+    prompt: "{{inputs.prompt}}"
+  when: "{{variables.eco_required}}"
+  parallel_group: A
+- id: trend
+  type: model_call
+  layer: TrendQuanta
+  inputs:
+    tags: "{{steps.style.output.tags}}"
+    region: "{{variables.region}}"
+  depends_on: ["A"]
+  timeout_ms: 800
+- id: preview
+  type: http_call
+  service: HoloShopOS
+  endpoint: /api/preview
+  method: POST
+  body:
+    design: "{{steps.style.output.design}}"
+    fabrics: "{{steps.eco.output.top_fabrics | default([])}}"
+  depends_on: ["trend"]
+- id: price
+  type: model_call
+  layer: SalesLift
+  inputs:
+    product: "{{steps.preview.output.sku}}"
+    region: "{{variables.region}}"
+  depends_on: ["preview"]
+  fallback:
+    type: python_fn
+    fn: "rules.simple_price"
+    args:
+      base: 69.0
+outputs:
+  sku: "{{steps.preview.output.sku}}"
+  price: "{{steps.price.output.value}}"`
+                },
+                {
+                    name: 'fabric_selection_sweep',
+                    version: 1,
+                    yaml: `version: 1
+name: fabric_selection_sweep
+steps:
+- id: map_fabrics
+  type: map
+  items: "{{inputs.fabrics}}"
+  steps:
+  - id: check_eco
+    type: model_call
+    layer: EcoSense
+  - id: check_supply
+    type: http_call
+    service: SupplyMind
+- id: join_results
+  type: join
+  depends_on: ["map_fabrics"]
+- id: pick_best
+  type: python_fn
+  fn: "rules.pick_top_two"
+  depends_on: ["join_results"]`
+                }
+            ];
+
+            let currentRuns = [
+                {
+                    id: 'run_123',
+                    workflow_name: 'design_to_shop_v1',
+                    status: 'running',
+                    latency_ms: 1200,
+                    started_at: new Date(Date.now() - 1200).toLocaleString(),
+                    critical_path_ms: 1000,
+                    steps: [
+                        { id: 'style', type: 'model_call', status: 'succeeded', started_at: 0, ended_at: 500, latency: 500 },
+                        { id: 'eco', type: 'model_call', status: 'succeeded', started_at: 10, ended_at: 520, latency: 510 },
+                        { id: 'trend', type: 'model_call', status: 'running', started_at: 520, ended_at: null, latency: null },
+                        { id: 'preview', type: 'http_call', status: 'waiting', started_at: null, ended_at: null, latency: null },
+                        { id: 'price', type: 'model_call', status: 'waiting', started_at: null, ended_at: null, latency: null }
+                    ]
+                },
+                {
+                    id: 'run_124',
+                    workflow_name: 'fabric_selection_sweep',
+                    status: 'failed',
+                    latency_ms: 800,
+                    started_at: new Date(Date.now() - 50000).toLocaleString(),
+                    critical_path_ms: 800,
+                    steps: [
+                        { id: 'map_fabrics', type: 'map', status: 'succeeded', started_at: 0, ended_at: 300, latency: 300 },
+                        { id: 'join_results', type: 'join', status: 'succeeded', started_at: 300, ended_at: 350, latency: 50 },
+                        { id: 'pick_best', type: 'python_fn', status: 'failed', started_at: 350, ended_at: 800, latency: 450 }
+                    ]
+                },
+                {
+                    id: 'run_125',
+                    workflow_name: 'design_to_shop_v1',
+                    status: 'succeeded',
+                    latency_ms: 1800,
+                    started_at: new Date(Date.now() - 120000).toLocaleString(),
+                    critical_path_ms: 1800,
+                    steps: [
+                        { id: 'style', type: 'model_call', status: 'succeeded', started_at: 0, ended_at: 500, latency: 500 },
+                        { id: 'eco', type: 'model_call', status: 'succeeded', started_at: 10, ended_at: 520, latency: 510 },
+                        { id: 'trend', type: 'model_call', status: 'succeeded', started_at: 520, ended_at: 1020, latency: 500 },
+                        { id: 'preview', type: 'http_call', status: 'succeeded', started_at: 1020, ended_at: 1400, latency: 380 },
+                        { id: 'price', type: 'model_call', status: 'succeeded', started_at: 1400, ended_at: 1800, latency: 400 }
+                    ]
+                }
+            ];
+
+            const renderWorkflows = () => {
+                workflowsTableBody.innerHTML = '';
+                workflowNameSelect.innerHTML = '<option value="">-- Select a workflow --</option>';
+                sampleWorkflows.forEach(wf => {
+                    const row = workflowsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer hover:text-custom-accent" data-name="${wf.name}">${wf.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${wf.version}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="text-custom-accent hover:text-custom-accent-dark show-yaml-btn" data-name="${wf.name}">View YAML</button>
+                        </td>
+                    `;
+                    const option = document.createElement('option');
+                    option.value = wf.name;
+                    option.textContent = wf.name;
+                    workflowNameSelect.appendChild(option);
+                });
+            };
+
+            const renderRuns = () => {
+                runsTableBody.innerHTML = '';
+                currentRuns.forEach(run => {
+                    const row = runsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer hover:text-custom-accent view-run-btn" data-id="${run.id}">${run.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${run.workflow_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm capitalize font-semibold ${run.status === 'succeeded' ? 'text-green-600' : run.status === 'failed' ? 'text-red-600' : 'text-yellow-600'}">${run.status}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${run.latency_ms || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${run.started_at}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <button class="text-blue-500 hover:text-blue-700 retry-btn ${run.status !== 'failed' ? 'opacity-50 cursor-not-allowed' : ''}" data-id="${run.id}" ${run.status !== 'failed' ? 'disabled' : ''}>Retry</button>
+                        </td>
+                    `;
+                });
+            };
+
+            const showSection = (sectionId) => {
+                experimentsSection.classList.add('hidden');
+                workflowsSection.classList.add('hidden');
+                runsSection.classList.add('hidden');
+                policySection.classList.add('hidden');
+
+                document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+
+                document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+                document.getElementById(`${sectionId}-link`).classList.add('active');
+            };
+
+            const setActiveLink = (activeId) => {
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById(activeId).classList.add('active');
+            };
+
+            experimentsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('experiments');
+                renderExperiments();
+            });
+
+            workflowsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('workflows');
+                renderWorkflows();
+            });
+
+            runsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('runs');
+                renderRuns();
+            });
+
+            policyLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('policy');
+            });
+
+            const renderExperiments = () => {
+                experimentsList.innerHTML = '';
+                experiences.forEach(exp => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-5 rounded-lg shadow-md border-t-4 border-custom-accent';
+                    card.innerHTML = `
+                        <h3 class="text-base font-bold text-custom-accent mb-2 font-['Nunito Sans']">${exp.name}</h3>
+                        <p class="text-xs text-gray-600 mb-1 font-['Nunito Sans']"><strong>ID:</strong> ${exp.id}</p>
+                        <p class="text-xs text-gray-600 mb-1 font-['Nunito Sans']"><strong>Task:</strong> ${exp.task}</p>
+                        <p class="text-xs text-gray-600 mb-1 font-['Nunito Sans']"><strong>Status:</strong> <span class="font-semibold capitalize">${exp.status}</span></p>
+                        <div class="mt-3 flex space-x-2">
+                            <button class="view-btn py-1 px-2 bg-custom-accent text-white text-xs rounded-md shadow-sm transition hover:bg-opacity-90" data-id="${exp.id}">View Details</button>
+                            <button class="status-btn py-1 px-2 bg-slate-500 text-white text-xs rounded-md shadow-sm transition hover:bg-opacity-90" data-id="${exp.id}" data-status="${exp.status}">${exp.status === 'active' ? 'Stop' : 'Start'}</button>
+                        </div>
+                    `;
+                    experimentsList.appendChild(card);
+                });
+            };
+
+            const renderChart = (experiment) => {
+                let kpi, controlValue, variantValue;
+                if (experiment.task === 'outfit recommendation') {
+                    kpi = 'ctr';
+                    controlValue = experiment.kpis.control.ctr;
+                    variantValue = experiment.kpis.variant_A.ctr;
+                } else if (experiment.task === 'price nudge') {
+                    kpi = 'aov';
+                    controlValue = experiment.kpis.control.aov;
+                    variantValue = experiment.kpis.variant_A.aov;
+                }
+
+                const uplift = ((variantValue - controlValue) / controlValue) * 100;
+                let messageText = '';
+                let messageColor = '';
+
+                if (uplift > 0) {
+                    messageText = `✅ Significant Uplift! The variant improved ${kpi.toUpperCase()} by ${uplift.toFixed(2)}% compared to control.`;
+                    messageColor = 'text-green-600';
+                } else if (uplift < 0) {
+                    messageText = `❌ Negative Uplift. The variant decreased ${kpi.toUpperCase()} by ${Math.abs(uplift).toFixed(2)}%. Consider stopping the experiment.`;
+                    messageColor = 'text-red-600';
+                } else {
+                    messageText = `⚠️ No significant change. The variant had a ${uplift.toFixed(2)}% uplift. More data may be needed.`;
+                    messageColor = 'text-yellow-600';
+                }
+
+                if (myChart) {
+                    myChart.destroy();
+                }
+
+                Chart.register(ChartDataLabels);
+
+                myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Control', `Variant A`],
+                        datasets: [{
+                            label: `KPI: ${kpi.toUpperCase()}`,
+                            data: [controlValue, variantValue],
+                            backgroundColor: ['#222222', '#c19a6b'],
+                            borderColor: ['#222222', '#c19a6b'],
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: `Uplift for ${experiment.name}`,
+                                font: {
+                                    family: 'Nunito Sans',
+                                    size: 14
+                                }
+                            },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: function (value, context) {
+                                    return value.toFixed(2);
+                                },
+                                font: {
+                                    weight: 'bold',
+                                    size: 12
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                upliftMessage.textContent = messageText;
+                upliftMessage.className = `uplift-message ${messageColor}`;
+                noDataMessage.classList.add('hidden');
+                upliftContent.classList.remove('hidden');
+            };
+
+            dashboardLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                dashboardSubmenu.classList.toggle('hidden');
+                dashboardArrow.classList.toggle('rotate-90');
+            });
+
+            experimentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newExp = {
+                    id: `exp_${experiences.length + 1}`,
+                    name: document.getElementById('exp-name').value || 'New Experiment',
+                    task: document.getElementById('task').value,
+                    status: 'active',
+                    split: document.getElementById('split').value,
+                    kpis: {
+                        control: {
+                            ctr: Math.random() * 0.1,
+                            cvr: Math.random() * 0.05,
+                            aov: Math.random() * 100 + 50
+                        },
+                        variant_A: {
+                            ctr: Math.random() * 0.1,
+                            cvr: Math.random() * 0.05,
+                            aov: Math.random() * 100 + 50
+                        }
+                    }
+                };
+                experiences.push(newExp);
+                renderExperiments();
+                statusMessage.textContent = 'Experiment launched successfully!';
+                statusMessage.classList.remove('hidden');
+                statusMessage.classList.add('text-green-600');
+                experimentForm.reset();
+            });
+
+            launchRunForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const workflowName = document.getElementById('workflow-name-select').value;
+                if (!workflowName) {
+                    alert('Please select a workflow.');
+                    return;
+                }
+                const runId = `run_${Math.floor(Math.random() * 1000) + 100}`;
+                const newRun = {
+                    id: runId,
+                    workflow_name: workflowName,
+                    status: 'queued',
+                    latency_ms: null,
+                    started_at: new Date().toLocaleString(),
+                    critical_path_ms: null,
+                    steps: []
+                };
+                currentRuns.unshift(newRun);
+                renderRuns();
+                workflowsStatusMessage.textContent = `Workflow "${workflowName}" launched successfully! Run ID: ${runId}`;
+                workflowsStatusMessage.classList.remove('hidden', 'text-red-600');
+                workflowsStatusMessage.classList.add('text-green-600');
+                launchRunForm.reset();
+                setTimeout(() => {
+                    workflowsStatusMessage.classList.add('hidden');
+                }, 5000);
+            });
+
+            experimentsList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-btn')) {
+                    const id = e.target.dataset.id;
+                    const experiment = experiences.find(exp => exp.id === id);
+                    if (experiment) {
+                        renderChart(experiment);
+                    }
+                } else if (e.target.classList.contains('status-btn')) {
+                    const id = e.target.dataset.id;
+                    const experiment = experiences.find(exp => exp.id === id);
+                    if (experiment) {
+                        if (experiment.status === 'active') {
+                            experiment.status = 'paused';
+                            e.target.textContent = 'Start';
+                            e.target.classList.remove('bg-custom-accent');
+                            e.target.classList.add('bg-green-600');
+                        } else {
+                            experiment.status = 'active';
+                            e.target.textContent = 'Stop';
+                            e.target.classList.remove('bg-green-600');
+                            e.target.classList.add('bg-custom-accent');
+                        }
+                        renderExperiments();
+                    }
+                }
+            });
+
+            searchBtn.addEventListener('click', () => {
+                const requestId = requestIdInput.value.trim();
+                const trace = sampleTraces[requestId];
+
+                attributionResults.innerHTML = '';
+                if (trace) {
+                    const traceContainer = document.createElement('div');
+                    traceContainer.className = 'bg-white p-5 rounded-lg shadow-md';
+                    traceContainer.innerHTML = `
+                        <h3 class="text-base font-bold text-custom-accent mb-3 font-['Nunito Sans']">Trace for Request ID: ${trace.decision.id}</h3>
+                        <div class="space-y-4">
+                            <div class="timeline-item">
+                                <p class="text-xs font-semibold">Decision Logged</p>
+                                <p class="text-xs text-gray-500">${new Date(trace.decision.timestamp).toLocaleString()}</p>
+                                <ul class="text-xs list-disc list-inside mt-2 text-gray-700">
+                                    <li>Policy: ${trace.decision.policy}</li>
+                                    <li>Task: ${trace.decision.task}</li>
+                                    <li>Chosen Item: ${trace.decision.chosen_item}</li>
+                                    <li>Score: ${trace.decision.score}</li>
+                                </ul>
+                            </div>
+                            <div class="timeline-item">
+                                <p class="text-xs font-semibold">Events</p>
+                                <ul class="text-xs list-disc list-inside mt-2 text-gray-700">
+                                    ${trace.events.map(event => `
+                                        <li>${event.type} event (Value: ${event.value}) at ${new Date(event.timestamp).toLocaleTimeString()}</li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            <div class="timeline-item">
+                                <p class="text-xs font-semibold">Reward Computed</p>
+                                <p class="text-xs text-gray-500">${new Date(trace.reward.timestamp).toLocaleString()}</p>
+                                <ul class="text-xs list-disc list-inside mt-2 text-gray-700">
+                                    <li>Total Reward: ${trace.reward.value}</li>
+                                    <li>Components: ${JSON.stringify(trace.reward.components)}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    attributionResults.appendChild(traceContainer);
+                } else {
+                    attributionResults.innerHTML = `<p class="text-center text-gray-500 text-sm">No trace found for that request ID.</p>`;
+                }
+            });
+
+            workflowsTableBody.addEventListener('click', (e) => {
+                if (e.target.classList.contains('show-yaml-btn')) {
+                    const workflowName = e.target.dataset.name;
+                    const workflow = sampleWorkflows.find(wf => wf.name === workflowName);
+                    if (workflow) {
+                        document.getElementById('modal-workflow-name').textContent = workflow.name;
+                        document.getElementById('workflow-yaml-content').textContent = workflow.yaml;
+                        workflowYamlModal.classList.remove('hidden');
+                    }
+                }
+            });
+
+            runsTableBody.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-run-btn')) {
+                    const runId = e.target.dataset.id;
+                    showRunDetail(runId);
+                } else if (e.target.classList.contains('retry-btn')) {
+                    const runId = e.target.dataset.id;
+                    handleRunAction(runId, 'retry');
+                }
+            });
+
+            document.querySelectorAll('.modal-close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', (e) => {
+                    const modal = e.target.closest('.modal');
+                    modal.classList.add('hidden');
+                    if (runInterval) {
+                        clearInterval(runInterval);
+                        runInterval = null;
+                    }
+                });
+            });
+
+            cancelRunBtn.addEventListener('click', () => {
+                const runId = modalRunId.textContent;
+                handleRunAction(runId, 'cancel');
+            });
+
+            retryRunBtn.addEventListener('click', () => {
+                const runId = modalRunId.textContent;
+                handleRunAction(runId, 'retry');
+            });
+
+            const showRunDetail = (runId) => {
+                const run = currentRuns.find(r => r.id === runId);
+                if (!run) return;
+
+                modalRunId.textContent = run.id;
+                runStatus.textContent = run.status;
+                runCurrentStep.textContent = '...';
+                runLatency.textContent = 'N/A';
+
+                updateRunDetail(run);
+
+                if (run.status === 'running' || run.status === 'queued') {
+                    if (runInterval) clearInterval(runInterval);
+                    runInterval = setInterval(() => {
+                        updateSimulatedRun(run);
+                        updateRunDetail(run);
+                    }, 2000);
+                }
+
+                runDetailModal.classList.remove('hidden');
+            };
+
+            const updateRunDetail = (run) => {
+                const lastStep = run.steps[run.steps.length - 1];
+                runStatus.textContent = run.status;
+                runCurrentStep.textContent = run.status === 'running' && lastStep ? lastStep.id : run.status;
+                runLatency.textContent = run.latency_ms !== null ? `${run.latency_ms} ms` : 'N/A';
+
+                renderStepHistory(run.steps);
+                renderDAG(run.workflow_name);
+                renderTimeline(run.steps);
+                renderRuns();
+            };
+
+            const updateSimulatedRun = (run) => {
+                if (run.status !== 'running') return;
+
+                const lastStep = run.steps.find(s => s.status === 'running');
+                if (lastStep) {
+                    lastStep.status = 'succeeded';
+                    lastStep.ended_at = new Date().getTime();
+                    lastStep.latency = lastStep.ended_at - lastStep.started_at;
+                }
+
+                const nextWaitingStep = run.steps.find(s => s.status === 'waiting');
+                if (nextWaitingStep) {
+                    nextWaitingStep.status = 'running';
+                    nextWaitingStep.started_at = new Date().getTime();
+                }
+
+                if (!nextWaitingStep && !run.steps.find(s => s.status === 'running')) {
+                    run.status = 'succeeded';
+                    run.latency_ms = new Date().getTime() - new Date(run.started_at).getTime();
+                    clearInterval(runInterval);
+                    runInterval = null;
+                }
+            };
+
+            const handleRunAction = (runId, action) => {
+                const run = currentRuns.find(r => r.id === runId);
+                if (!run) return;
+
+                if (action === 'cancel') {
+                    run.status = 'canceled';
+                    if (runInterval) {
+                        clearInterval(runInterval);
+                        runInterval = null;
+                    }
+                    alert(`Run ${runId} has been canceled.`);
+                } else if (action === 'retry') {
+                    run.status = 'running';
+                    run.steps.forEach(step => step.status = 'waiting');
+                    run.steps[0].status = 'running'; // Reset and start first step
+                    alert(`Run ${runId} has been retried.`);
+                    showRunDetail(runId);
+                }
+                updateRunDetail(run);
+            };
+
+            const renderStepHistory = (steps) => {
+                stepHistoryBody.innerHTML = '';
+                steps.forEach(step => {
+                    const row = stepHistoryBody.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${step.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${step.type}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm capitalize font-semibold ${step.status === 'succeeded' ? 'text-green-600' : step.status === 'failed' ? 'text-red-600' : 'text-yellow-600'}">${step.status}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${step.latency !== null ? `${step.latency} ms` : 'N/A'}</td>
+                    `;
+                });
+            };
+
+            const renderDAG = (workflowName) => {
+                const workflow = sampleWorkflows.find(wf => wf.name === workflowName);
+                if (!workflow) return;
+
+                const dagSteps = parseDAG(workflow.yaml);
+                const canvas = dagCanvas;
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const nodeWidth = 100, nodeHeight = 40, hSpacing = 120, vSpacing = 60;
+                let x = 20, y = 20;
+
+                const nodes = {};
+                dagSteps.forEach(step => {
+                    nodes[step.id] = { x: x, y: y, id: step.id };
+                    x += hSpacing;
+                    if (x + nodeWidth > canvas.width) {
+                        x = 20;
+                        y += vSpacing;
+                    }
+                });
+
+
+                ctx.font = '12px Nunito Sans';
+                for (const nodeId in nodes) {
+                    const node = nodes[nodeId];
+                    ctx.fillStyle = '#c19a6b';
+                    ctx.fillRect(node.x, node.y, nodeWidth, nodeHeight);
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(node.id, node.x + nodeWidth / 2 - ctx.measureText(node.id).width / 2, node.y + nodeHeight / 2 + 4);
+                }
+            };
+
+            const parseDAG = (yaml) => {
+                const lines = yaml.split('\n');
+                const stepsSection = lines.findIndex(line => line.trim() === 'steps:');
+                if (stepsSection === -1) return [];
+
+                const steps = [];
+                let currentStep = null;
+                for (let i = stepsSection + 1; i < lines.length; i++) {
+                    const line = lines[i];
+                    const trimmedLine = line.trim();
+                    const indent = line.search(/\S/);
+
+                    if (trimmedLine.startsWith('- id:')) {
+                        if (currentStep) {
+                            steps.push(currentStep);
+                        }
+                        const id = trimmedLine.split(' ')[2];
+                        currentStep = { id: id, depends_on: [] };
+                    } else if (trimmedLine.startsWith('depends_on:')) {
+                        const deps = trimmedLine.substring(trimmedLine.indexOf('[') + 1, trimmedLine.indexOf(']')).replace(/"|'| /g, '').split(',').filter(d => d);
+                        if (currentStep) {
+                            currentStep.depends_on = deps;
+                        }
+                    }
+                }
+                if (currentStep) {
+                    steps.push(currentStep);
+                }
+                return steps;
+            };
+
+            const renderTimeline = (steps) => {
+                const canvas = timelineCanvas;
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (steps.length === 0) return;
+
+                const maxLatency = steps.reduce((max, step) => Math.max(max, step.latency || 0), 0) + 100;
+                const scale = canvas.width / maxLatency;
+                const barHeight = 20, barSpacing = 10;
+                let y = 20;
+
+                ctx.font = '10px Nunito Sans';
+
+                steps.forEach(step => {
+                    if (step.latency !== null) {
+                        const barWidth = step.latency * scale;
+                        ctx.fillStyle = step.status === 'succeeded' ? '#c19a6b' : '#dc3545';
+                        ctx.fillRect(step.started_at * scale, y, barWidth, barHeight);
+                        ctx.fillStyle = '#222';
+                        ctx.fillText(`${step.id} (${step.latency}ms)`, step.started_at * scale, y - 5);
+                        y += barHeight + barSpacing;
+                    }
+                });
+            };
+
+            renderExperiments();
+            upliftContent.classList.add('hidden');
+            noDataMessage.classList.remove('hidden');
+
+            showSection('experiments');
+        });
+    </script>
+</body>
+
+</html>

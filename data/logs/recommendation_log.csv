@@ -1,0 +1,74 @@
+timestamp,product_id,title,action,input_product_id
+2025-06-16 12:21:40,2,maxi dress,shown,1
+2025-06-16 12:21:51,3,empire puff sleeve dress,shown,1
+2025-06-16 12:21:56,4,smocked fit and flare midi dress,shown,1
+2025-06-17 10:44:35,14,checked causal blazer,shown,101
+2025-06-17 10:44:35,21,spread collar casual shirt,shown,101
+2025-06-17 10:44:35,8,slim collar formal shirt,shown,101
+2025-06-17 10:52:38,2,maxi dress,shown,1
+2025-06-17 10:52:40,3,empire puff sleeve dress,shown,1
+2025-06-17 10:52:41,4,smocked fit and flare midi dress,shown,1
+2025-06-17 10:52:42,4,smocked fit and flare midi dress,clicked,1
+2025-06-17 10:53:25,2,maxi dress,shown,1000
+2025-06-17 10:53:25,8,slim collar formal shirt,shown,1000
+2025-06-17 10:53:25,30,slim fit cotton formal shirt,shown,1000
+2025-06-17 18:05:00,2,maxi dress,shown,1
+2025-06-17 18:05:15,3,empire puff sleeve dress,shown,1
+2025-06-17 18:05:16,4,smocked fit and flare midi dress,shown,1
+2025-06-17 18:07:44,2,maxi dress,shown,1
+2025-06-17 18:08:03,2,maxi dress,clicked,1
+2025-06-17 18:08:03,3,empire puff sleeve dress,shown,1
+2025-06-17 18:08:05,4,smocked fit and flare midi dress,shown,1
+2025-06-23 13:59:44,2,maxi dress,shown,dress
+2025-06-23 13:59:49,2,maxi dress,clicked,dress
+2025-06-23 13:59:49,1,empire midi dress,shown,dress
+2025-06-23 13:59:51,5,bodycon midi dress,shown,dress
+2025-06-24 10:30:15,11,women formal shirt,shown,shirt
+2025-06-24 10:30:20,12,opaque formal shirt,shown,shirt
+2025-06-24 10:30:21,15,women printed t-shirt,shown,shirt
+2025-06-24 10:30:50,31,men shorts,shown,men's shorts
+2025-06-24 10:30:52,32,men sports shorts,shown,men's shorts
+2025-06-24 10:30:53,33,cotton pace shorts,shown,men's shorts
+2025-06-24 10:42:00,25,men cotton casual shirt,shown,men's shirt
+2025-06-24 10:42:02,31,men shorts,shown,men's shirt
+2025-06-24 10:42:03,35,men cargo trousers,shown,men's shirt
+2025-06-24 10:42:04,35,men cargo trousers,clicked,men's shirt
+2025-06-24 10:42:30,31,men shorts,shown,men short
+2025-06-24 10:42:32,25,men cotton casual shirt,shown,men short
+2025-06-24 10:42:34,35,men cargo trousers,shown,men short
+2025-06-24 10:42:51,31,men shorts,shown,men's shorts
+2025-06-24 10:42:56,32,men sports shorts,shown,men's shorts
+2025-06-24 10:42:59,33,cotton pace shorts,shown,men's shorts
+2025-06-25 09:51:20,2,maxi dress,shown,dress
+2025-06-25 09:51:20,1,empire midi dress,shown,dress
+2025-06-25 09:51:20,5,bodycon midi dress,shown,dress
+2025-06-25 09:51:40,1,empire midi dress,clicked,dress
+2025-06-25 09:55:53,31,men shorts,shown,shorts
+2025-06-25 09:55:53,33,cotton pace shorts,shown,shorts
+2025-06-25 09:55:53,32,men sports shorts,shown,shorts
+2025-06-25 09:55:59,31,men shorts,clicked,shorts
+2025-06-25 09:59:06,33,cotton pace shorts,clicked,shorts
+2025-06-25 10:00:01,11,women formal shirt,shown,shirt
+2025-06-25 10:00:01,12,opaque formal shirt,shown,shirt
+2025-06-25 10:00:01,15,women printed t-shirt,shown,shirt
+2025-06-25 10:00:04,12,opaque formal shirt,clicked,shirt
+2025-06-25 10:00:24,15,women printed t-shirt,clicked,shirt
+2025-06-25 10:00:31,31,men shorts,shown,shorts
+2025-06-25 10:00:31,33,cotton pace shorts,shown,shorts
+2025-06-25 10:00:31,32,men sports shorts,shown,shorts
+2025-06-25 10:00:33,32,men sports shorts,clicked,shorts
+2025-06-25 10:12:25,13,women striped cotton t-shirt,shown,women's trouser
+2025-06-25 10:12:29,15,women printed t-shirt,shown,women's trouser
+2025-06-25 10:12:31,11,women formal shirt,shown,women's trouser
+2025-06-25 10:14:43,2,maxi dress,shown,dress
+2025-06-25 10:14:43,4,smocked fit and flare midi dress,shown,dress
+2025-06-25 10:14:43,5,bodycon midi dress,shown,dress
+2025-06-25 10:14:45,4,smocked fit and flare midi dress,clicked,dress
+2025-07-21 10:29:59,2,maxi dress,shown,dress
+2025-07-21 10:29:59,4,smocked fit and flare midi dress,shown,dress
+2025-07-21 10:29:59,5,bodycon midi dress,shown,dress
+2025-07-21 10:30:03,5,bodycon midi dress,clicked,dress
+2025-07-21 15:28:19,31,men shorts,shown,shorts
+2025-07-21 15:28:19,33,cotton pace shorts,shown,shorts
+2025-07-21 15:28:19,32,men sports shorts,shown,shorts
+2025-07-21 15:28:24,33,cotton pace shorts,clicked,shorts
